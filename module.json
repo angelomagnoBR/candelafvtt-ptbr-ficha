@@ -1,0 +1,40 @@
+{
+  "id": "candelafvtt-ptbr-ficha",
+  "title": "Candela Obscura PT-BR - Ficha",
+  "description": "Tradução em português brasileiro da interface da ficha do sistema candelafvtt, usando termos do módulo básico de Candela Obscura.",
+  "version": "1.0.0",
+  "authors": [
+    {
+      "name": "Angelo Magno"
+    }
+  ],
+  "compatibility": {
+    "minimum": "13",
+    "verified": "13.351"
+  },
+  "relationships": {
+    "systems": [
+      {
+        "id": "candelafvtt",
+        "type": "system"
+      }
+    ]
+  },
+  "languages": [
+    {
+      "lang": "pt-BR",
+      "name": "Português Brasileiro - Candela Obscura",
+      "path": "lang/pt-BR.json",
+      "system": "candelafvtt"
+    },
+    {
+      "lang": "pt-br",
+      "name": "Português Brasileiro - Candela Obscura",
+      "path": "lang/pt-br.json",
+      "system": "candelafvtt"
+    }
+  ],
+  "esmodules": [
+    "main.js"
+  ]
+}
