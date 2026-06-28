@@ -243,7 +243,6 @@
   border-bottom: 1px solid transparent !important;
   border-radius: 0 !important;
   box-shadow: none !important;
-  /* Ocupa toda a área abaixo do nome */
   padding: 4px 0 0 0 !important;
   height: 100% !important;
   width: 100% !important;
@@ -251,12 +250,49 @@
   box-sizing: border-box !important;
   outline: none !important;
   letter-spacing: 0.04em !important;
-  /* Input HTML é single-line: ellipsis para texto longo */
+  /* <input> é single-line por natureza do HTML — não dá word-wrap real.
+     Para ter quebra de linha, o campo precisaria ser <textarea> no HTML do Foundry.
+     Aqui mostramos o texto com ellipsis quando excede a largura. */
   white-space: nowrap !important;
   overflow: hidden !important;
   text-overflow: ellipsis !important;
-  /* Alinha ao topo do espaço disponível */
   align-self: flex-start !important;
+}
+
+/* ── MACRO SUGERIDO no Foundry para quebra real de linha ──
+   Cole num macro JS do Foundry (uma vez por sessão):
+   document.querySelectorAll('input[name="system.pronouns"]').forEach(el => {
+     const ta = document.createElement('textarea');
+     ta.name = el.name; ta.value = el.value;
+     ta.className = el.className; ta.rows = 3;
+     el.replaceWith(ta);
+     ta.addEventListener('change', () => el.dispatchEvent(new Event('change')));
+   });
+── */
+
+/* Caso o Foundry já use textarea em alguma versão futura */
+.candela-classico-window .pronouns textarea,
+.candela-classico-window textarea[name="system.pronouns"] {
+  font-family: 'Cinzel', serif !important;
+  font-size: 13px !important;
+  font-style: normal !important;
+  font-weight: 400 !important;
+  color: var(--co-text) !important;
+  background: transparent !important;
+  border: none !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  padding: 4px 0 0 0 !important;
+  height: 100% !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+  outline: none !important;
+  letter-spacing: 0.04em !important;
+  resize: none !important;
+  line-height: 1.5 !important;
+  overflow: hidden !important;
+  word-wrap: break-word !important;
+  white-space: pre-wrap !important;
 }
 .candela-classico-window .pronouns input:hover,
 .candela-classico-window input[name="system.pronouns"]:hover {
@@ -579,25 +615,34 @@
   font-size: 15px !important;
 }
 
-/* "/ 2" texto de max — esconde a barra, mostra só o número em muted */
+/* "/ 2" max das resistências — box visual igual ao input, sem "/" ───
+   O HTML renderiza: <span class="actioncategory-label" name="...resistance.max">/ 2</span>
+   Escondemos o conteúdo real via font-size 0 e mostramos o número via attr() não funciona
+   então usamos outro truque: width fixo, overflow hidden, text-indent para sumir com o "/"  */
 .candela-classico-window .actioncategory-label[name$=".max"] {
   display: inline-flex !important;
   align-items: center !important;
-  height: 24px !important;
+  justify-content: center !important;
+  width: 34px !important;
+  height: 28px !important;
   padding: 0 !important;
   font-family: 'Cinzel', serif !important;
-  font-size: 13px !important;
-  font-weight: 600 !important;
-  color: var(--co-muted) !important;
-  background: transparent !important;
-  border: none !important;
+  font-size: 15px !important;
+  font-weight: 700 !important;
+  color: var(--co-gold-dim) !important;
+  /* Box igual ao input ao lado — fundo escuro, borda dourada dim */
+  background: var(--co-bg) !important;
+  border: 1.5px solid var(--co-border-dim) !important;
+  border-radius: 3px !important;
   letter-spacing: 0 !important;
   text-transform: none !important;
   white-space: nowrap !important;
-  /* Esconde o "/" que vem antes do número via overflow + indent */
   overflow: hidden !important;
-  /* O texto HTML é "/ 2" — recua o texto para esconder o "/" */
-  text-indent: -0.55em !important;
+  /* "/ 2" → o "/" tem ~0.5em; indent negativo corta ele, centraliza o número */
+  text-indent: 0.6em !important;
+  cursor: default !important;
+  pointer-events: none !important;
+  flex-shrink: 0 !important;
 }
 
 /* ══════════════════════════════════════════════
