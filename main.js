@@ -32,12 +32,46 @@ const CANDELA_PTBR_REPLACEMENTS = new Map([
   ["attune, channel, reveal", "sintonizar, canalizar, revelar"]
 ]);
 
+const CANDELA_CLASSICO_SIZE = Object.freeze({ width: 900, height: 740 });
+const LOCKED_WINDOWS = new WeakSet();
+let lockTimer = null;
+
 function getRoot(element) {
   if (!element) return null;
   if (element instanceof HTMLElement) return element;
   if (Array.isArray(element)) return element[0] ?? null;
   if (element[0] instanceof HTMLElement) return element[0];
   return null;
+}
+
+function getAppWindow(app, element) {
+  const root = getRoot(element) ?? getRoot(app?.element);
+  if (!root) return getRoot(app?.element);
+  return root.closest?.(".app, .application, .window-app") ?? root;
+}
+
+function isCandelaApplication(app, element) {
+  const systemId = game?.system?.id;
+  if (systemId !== "candelafvtt") return false;
+
+  const root = getRoot(element) ?? getRoot(app?.element);
+  const appName = String(app?.constructor?.name ?? "").toLowerCase();
+  const actorType = String(app?.actor?.type ?? app?.object?.type ?? "").toLowerCase();
+  const docName = String(app?.object?.documentName ?? app?.actor?.documentName ?? "").toLowerCase();
+
+  return appName.includes("candela")
+    || appName.includes("actor")
+    || appName.includes("item")
+    || docName === "actor"
+    || docName === "item"
+    || actorType === "character"
+    || !!root?.querySelector?.("[data-action], .sheet-tabs, .tabs, input[name^='system.']");
+}
+
+function isCandelaActorSheet(app) {
+  const docName = String(app?.object?.documentName ?? app?.actor?.documentName ?? "").toLowerCase();
+  const actorType = String(app?.actor?.type ?? app?.object?.type ?? "").toLowerCase();
+  return game?.system?.id === "candelafvtt" && (docName === "actor" || actorType === "character");
 }
 
 function translateCandelaSheet(element) {
@@ -69,61 +103,118 @@ function translateCandelaSheet(element) {
   }
 }
 
-Hooks.on("renderActorSheet", (_app, html) => translateCandelaSheet(html));
-Hooks.on("renderItemSheet", (_app, html) => translateCandelaSheet(html));
-Hooks.on("renderApplicationV2", (app, element) => {
-  const name = String(app?.constructor?.name ?? "").toLowerCase();
-  const root = getRoot(element);
-  const isCandela = name.includes("candela") || root?.closest?.(".candelafvtt") || root?.querySelector?.(".candelafvtt");
-  if (isCandela) translateCandelaSheet(root);
+function applyLockedSize(app, windowElement) {
+  if (!windowElement || !isCandelaActorSheet(app)) return;
+
+  const { width, height } = CANDELA_CLASSICO_SIZE;
+  windowElement.classList.add("candela-classico-window", "candela-classico-locked");
+  windowElement.dataset.candelaLockedWidth = String(width);
+  windowElement.dataset.candelaLockedHeight = String(height);
+
+  try {
+    if (app?.options) app.options.resizable = false;
+    if (typeof app?.setPosition === "function") app.setPosition({ width, height });
+  } catch (err) {
+    console.warn("Candela Clássico | Não foi possível aplicar setPosition.", err);
+  }
+
+  Object.assign(windowElement.style, {
+    width: `${width}px`,
+    minWidth: `${width}px`,
+    maxWidth: `${width}px`,
+    height: `${height}px`,
+    minHeight: `${height}px`,
+    maxHeight: `${height}px`,
+    resize: "none"
+  });
+
+  windowElement.querySelectorAll(".window-resizable-handle, .resize-handle, [data-resize-handle]").forEach((handle) => {
+    handle.remove();
+  });
+
+  if (LOCKED_WINDOWS.has(windowElement)) return;
+  LOCKED_WINDOWS.add(windowElement);
+
+  const observer = new MutationObserver(() => {
+    if (lockTimer) return;
+    lockTimer = window.setTimeout(() => {
+      lockTimer = null;
+      if (!document.body.contains(windowElement)) {
+        observer.disconnect();
+        return;
+      }
+      if (windowElement.offsetWidth !== width || windowElement.offsetHeight !== height) {
+        applyLockedSize(app, windowElement);
+      }
+    }, 80);
+  });
+
+  observer.observe(windowElement, { attributes: true, attributeFilter: ["style", "class"] });
+}
+
+function applyCandelaClassic(app, element) {
+  if (!isCandelaApplication(app, element)) return;
+
+  const root = getRoot(element) ?? getRoot(app?.element);
+  const win = getAppWindow(app, root);
+  if (!root || !win) return;
+
+  translateCandelaSheet(root);
+
+  if (isCandelaActorSheet(app)) {
+    root.classList.add("candela-classico-sheet-root");
+    applyLockedSize(app, win);
+  }
+}
+
+Hooks.once("ready", () => {
+  console.log("Candela Obscura PT-BR - Ficha Clássica | Tema ativo.");
 });
 
+Hooks.on("renderActorSheet", (app, html) => applyCandelaClassic(app, html));
+Hooks.on("renderItemSheet", (app, html) => applyCandelaClassic(app, html));
+Hooks.on("renderApplicationV2", (app, element) => applyCandelaClassic(app, element));
+
 // =====================================================================
-// INTEGRAÇÃO DE ARREMESSO ÚNICO COM DICE SO NICE (CANDELA OBSCURA)
+// AUTOMAÇÃO ADICIONADA: SUPORTE VISUAL DE ARREMESSO PARA DADOS DOURADOS
 // =====================================================================
 
-// 1. Registra o set de cores douradas
 Hooks.on('diceSoNiceReady', (dice3d) => {
     dice3d.addColorset({
         name: 'candela_gilded',
         description: 'Candela Obscura - Dado Dourado',
         category: 'Candela Obscura',
-        foreground: '#FFFFFF', // Números brancos
-        background: '#D4AF37', // Corpo dourado
-        outline: '#8B6508',    // Contorno
-        edge: '#AA7C11',       // Bordas
+        foreground: '#FFFFFF', 
+        background: '#D4AF37', 
+        outline: '#8B6508',    
+        edge: '#AA7C11',       
         texture: 'none'
     }, "preferred");
 });
 
-// 2. Intercepta o arremesso e pinta os dados baseado na ordem da fórmula
 Hooks.on('diceSoNiceRollStart', (messageId, diceData) => {
     const chatMessage = game.messages.get(messageId);
     if (!chatMessage || !chatMessage.rolls || !diceData.throws || !diceData.throws[0]) return;
 
-    let flatDieIndex = 0; // Ponteiro para acompanhar qual dado físico estamos olhando
-    const currentThrow = diceData.throws[0]; // Pega o arremesso unificado na mesa
+    let flatDieIndex = 0; 
+    const currentThrow = diceData.throws[0]; 
 
-    // Varre as rolagens da mensagem
     chatMessage.rolls.forEach(roll => {
-        // Passa por cada termo da fórmula (ex: Termo 0 = 2d6, Termo 2 = 1d6)
         roll.terms.forEach(term => {
-            // Se o termo não for um dado (ex: o sinal de "+"), pula
             if (!term.results) return;
 
-            // Verifica se a marcação deste termo específico diz "dourado"
+            // Busca os termos exatos de identificação do seu arquivo de tradução (pt-BR.json)
             const isGilded = term.faces === 6 && 
                              term.options && 
                              term.options.flavor && 
-                             term.options.flavor.toLowerCase().includes("dourado");
+                             (term.options.flavor.toLowerCase().includes("dourado") || 
+                              term.options.flavor.toLowerCase().includes("gilded"));
 
-            // Passa por cada um dos dados gerados por este termo
             term.results.forEach(() => {
-                // Se for um termo dourado, pinta o dado correspondente no 3D
                 if (isGilded && currentThrow.dice[flatDieIndex]) {
                     currentThrow.dice[flatDieIndex].colorset = 'candela_gilded';
                 }
-                flatDieIndex++; // Avança para o próximo dado da fila física
+                flatDieIndex++; 
             });
         });
     });
