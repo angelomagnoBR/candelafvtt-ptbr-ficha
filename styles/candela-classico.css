@@ -30,14 +30,14 @@
     linear-gradient(135deg, #17130e, #0d0a07 72%) !important;
 }
 
-/* FORÇAR O RETRATO DA FOTO A CRESCER */
+/* AMPLIAR RETRATO SEM QUEBRAR O ALINHAMENTO */
 .candela-classico-window .profile-image,
 .candela-classico-window img.profile-image,
-.candela-classico-window .candelafvtt .profile-image {
-  width: 110px !important;
-  height: 110px !important;
-  min-width: 110px !important;
-  min-height: 110px !important;
-  flex: 0 0 110px !important;
+.candela-classico-window .sheet-header img {
+  width: 115px !important;
+  height: 115px !important;
+  min-width: 115px !important;
+  min-height: 115px !important;
+  flex: 0 0 115px !important;
   object-fit: cover !important;
 }
