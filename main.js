@@ -32,7 +32,7 @@ const CANDELA_PTBR_REPLACEMENTS = new Map([
   ["attune, channel, reveal", "sintonizar, canalizar, revelar"]
 ]);
 
-const CANDELA_CLASSICO_SIZE = Object.freeze({ width: 900, height: 740 });
+const CANDELA_CLASSICO_SIZE = Object.freeze({ width: 840, height: 580 });
 const LOCKED_WINDOWS = new WeakSet();
 let lockTimer = null;
 
