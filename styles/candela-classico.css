@@ -1,113 +1,440 @@
+/* ============================================================
+   CANDELA OBSCURA PT-BR — Visual Escuro/Dourado
+   Substitua todo o conteúdo do seu arquivo CSS por este.
+   ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap');
+
 :root {
-  --candela-classico-paper: #e8debf;
-  --candela-classico-paper-light: #f5efd9;
-  --candela-classico-paper-dark: #cfc09a;
-  --candela-classico-ink: #241b14;
-  --candela-classico-muted: #5f513c;
-  --candela-classico-gold: #9c7c33;
-  --candela-classico-gold-bright: #d6b869;
-  --candela-classico-dark: #17130e;
-  --candela-classico-red: #6d201f;
+  --co-bg:          #0e0b10;
+  --co-panel:       #14101a;
+  --co-card:        #1b1624;
+  --co-border:      #b8960c;
+  --co-border-dim:  #4a3a10;
+  --co-gold:        #d4a820;
+  --co-gold-bright: #f0c93a;
+  --co-gold-dim:    #7a6010;
+  --co-text:        #e8dfc0;
+  --co-muted:       #8a7a50;
+  --co-row-hover:   #1f1830;
 }
 
-/* Janela principal da ficha */
+/* ── JANELA PRINCIPAL ── */
 .candela-classico-window {
   width: 960px !important;
   min-width: 960px !important;
   max-width: 960px !important;
-  height: 700px !important;
-  min-height: 700px !important;
-  max-height: 700px !important;
+  height: 720px !important;
+  min-height: 720px !important;
+  max-height: 720px !important;
   resize: none !important;
-  border: 1px solid rgba(214, 184, 105, 0.8) !important;
-  border-radius: 2px !important;
+  border: 1px solid var(--co-border-dim) !important;
+  border-radius: 6px !important;
   box-shadow:
-    0 0 0 1px rgba(37, 28, 17, 0.95),
-    0 0 28px rgba(0, 0, 0, 0.88),
-    inset 0 0 20px rgba(214, 184, 105, 0.08) !important;
-  background:
-    radial-gradient(circle at 50% 0%, rgba(214, 184, 105, 0.20), transparent 40%),
-    linear-gradient(135deg, #17130e, #0d0a07 72%) !important;
+    0 0 0 1px rgba(184,150,12,0.3),
+    0 0 40px rgba(0,0,0,0.95) !important;
+  background: var(--co-bg) !important;
+  font-family: 'Crimson Text', Georgia, serif !important;
+  color: var(--co-text) !important;
 }
 
-/* Fundo de pergaminho */
+/* ── CONTEÚDO DA JANELA ── */
 .candela-classico-window .window-content {
   overflow: hidden !important;
-  color: var(--candela-classico-ink) !important;
-  padding: 14px !important;
-  background:
-    radial-gradient(ellipse at 20% 10%, rgba(255,255,255,0.32), transparent 32%),
-    radial-gradient(ellipse at 80% 85%, rgba(80,49,24,0.13), transparent 42%),
-    linear-gradient(90deg, rgba(120, 92, 50, 0.08) 0 1px, transparent 1px 100%),
-    linear-gradient(0deg, rgba(120, 92, 50, 0.06) 0 1px, transparent 1px 100%),
-    linear-gradient(135deg, var(--candela-classico-paper-light), var(--candela-classico-paper) 52%, var(--candela-classico-paper-dark)) !important;
-  background-size: auto, auto, 24px 24px, 24px 24px, auto !important;
-  border: 1px solid rgba(72, 51, 25, 0.75) !important;
-  box-shadow: inset 0 0 38px rgba(64, 40, 19, 0.30) !important;
+  padding: 0 !important;
+  background: var(--co-bg) !important;
+  border: none !important;
+  box-shadow: none !important;
+  color: var(--co-text) !important;
 }
 
-/* CABEÇALHO NO ESTILO DAGGERHEART (Duas Colunas Horizontais) */
+/* ── CABEÇALHO (retrato + info) ── */
 .candela-classico-window .sheet-header,
 .candela-classico-window header.sheet-header {
   display: flex !important;
   flex-direction: row !important;
   align-items: stretch !important;
-  padding: 12px !important;
-  margin-bottom: 12px !important;
-  gap: 20px !important;
-  height: 160px !important; /* Altura fixa para acomodar o card vertical */
+  padding: 14px 16px !important;
+  margin-bottom: 0 !important;
+  gap: 16px !important;
+  height: auto !important;
+  min-height: 160px !important;
+  background: #100d15 !important;
+  border-bottom: 1px solid var(--co-border-dim) !important;
 }
 
-/* RETRATO ESTILO CARD VERTICAL (Esquerda) */
+/* ── RETRATO ── */
 .candela-classico-window .profile-image,
 .candela-classico-window img.profile-image,
 .candela-classico-window .sheet-header img,
 .candela-classico-window img[data-edit="img"] {
-  width: 120px !important;
-  height: 140px !important; /* Mais alta do que larga, criando o visual retangular vertical */
-  min-width: 120px !important;
-  min-height: 140px !important;
-  flex: 0 0 120px !important;
-  object-fit: cover !important; /* Impede que a imagem fique esticada ou distorcida */
-  border: 2px solid rgba(91, 68, 34, 0.85) !important;
+  width: 150px !important;
+  height: 150px !important;
+  min-width: 150px !important;
+  min-height: 150px !important;
+  flex: 0 0 150px !important;
+  object-fit: cover !important;
+  border: 2px solid var(--co-border) !important;
   border-radius: 4px !important;
   box-shadow:
-    0 0 0 1px rgba(214, 184, 105, 0.65),
-    0 4px 10px rgba(0, 0, 0, 0.4) !important;
+    0 0 0 1px var(--co-border-dim),
+    0 4px 14px rgba(0,0,0,0.6) !important;
 }
 
-/* COLUNA DA DIREITA DO CABEÇALHO (Nome, Pronomes e Atributos de Status) */
+/* ── COLUNA DIREITA DO CABEÇALHO ── */
 .candela-classico-window .sheet-header .header-details,
-.candela-classico-window .sheet-header > div:not(.profile-image) {
+.candela-classico-window .sheet-header > div:not(.profile-image),
+.candela-classico-window .sheet-header > .header-fields {
   flex: 1 !important;
   display: flex !important;
   flex-direction: column !important;
   justify-content: space-between !important;
+  gap: 8px !important;
 }
 
-/* MELHORIA NA LEITURA (Letras Maiores) */
-.candela-classico-window form,
-.candela-classico-window .candelafvtt,
-.candela-classico-window .list-row,
-.candela-classico-window .action-row {
-  font-size: 14px !important; /* Aumentado do padrão minúsculo do sistema */
+/* ── NOME DO PERSONAGEM ── */
+.candela-classico-window .charname input,
+.candela-classico-window input[name="name"] {
+  font-family: 'Cinzel', serif !important;
+  font-size: 20px !important;
+  font-weight: 700 !important;
+  color: var(--co-gold) !important;
+  letter-spacing: 0.08em !important;
+  background: var(--co-card) !important;
+  border: 1px solid var(--co-border-dim) !important;
+  border-radius: 4px !important;
+  padding: 7px 12px !important;
+  width: 100% !important;
 }
 
+.candela-classico-window .charname input:focus,
+.candela-classico-window input[name="name"]:focus {
+  border-color: var(--co-border) !important;
+  outline: none !important;
+}
+
+/* ── INPUTS GERAIS ── */
 .candela-classico-window input,
 .candela-classico-window textarea,
 .candela-classico-window select {
+  font-family: 'Crimson Text', Georgia, serif !important;
   font-size: 14px !important;
+  color: var(--co-text) !important;
+  background: var(--co-card) !important;
+  border: 1px solid var(--co-border-dim) !important;
+  border-radius: 4px !important;
 }
 
-.candela-classico-window table thead th,
-.candela-classico-window .items-header,
-.candela-classico-window .section-header {
+.candela-classico-window input:focus,
+.candela-classico-window textarea:focus,
+.candela-classico-window select:focus {
+  border-color: var(--co-border) !important;
+  outline: none !important;
+}
+
+.candela-classico-window input[type="text"]::placeholder,
+.candela-classico-window textarea::placeholder {
+  color: var(--co-muted) !important;
+  font-style: italic !important;
+}
+
+/* ── INPUTS NUMÉRICOS (Corpo, Mente, Sangria, scores) ── */
+.candela-classico-window input[type="number"],
+.candela-classico-window .resource input,
+.candela-classico-window .attribute input {
+  font-family: 'Cinzel', serif !important;
+  font-size: 16px !important;
+  font-weight: 600 !important;
+  color: var(--co-gold) !important;
+  background: var(--co-bg) !important;
+  border: 1.5px solid var(--co-border) !important;
+  border-radius: 3px !important;
+  text-align: center !important;
+  padding: 4px 6px !important;
+  width: 36px !important;
+}
+
+/* ── LABELS DE ATRIBUTOS (Corpo, Mente, Sangria) ── */
+.candela-classico-window .resource label,
+.candela-classico-window .attribute label,
+.candela-classico-window .resource-label,
+.candela-classico-window .vital-label {
+  font-family: 'Cinzel', serif !important;
+  font-size: 9px !important;
+  letter-spacing: 0.1em !important;
+  color: var(--co-gold-dim) !important;
+  text-transform: uppercase !important;
+}
+
+/* ── ABAS DE NAVEGAÇÃO ── */
+.candela-classico-window .sheet-tabs,
+.candela-classico-window nav.sheet-tabs,
+.candela-classico-window .tabs {
+  display: flex !important;
+  background: #0a0810 !important;
+  border-bottom: 2px solid var(--co-border-dim) !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  gap: 0 !important;
+}
+
+.candela-classico-window .sheet-tabs .item,
+.candela-classico-window nav.sheet-tabs a,
+.candela-classico-window .tabs .item {
+  flex: 1 !important;
+  padding: 11px 8px !important;
+  text-align: center !important;
+  font-family: 'Cinzel', serif !important;
+  font-size: 11px !important;
+  letter-spacing: 0.12em !important;
+  color: var(--co-muted) !important;
+  border-bottom: 2px solid transparent !important;
+  margin-bottom: -2px !important;
+  cursor: pointer !important;
+  transition: color 0.15s !important;
+  background: transparent !important;
+  text-decoration: none !important;
+  text-transform: uppercase !important;
+}
+
+.candela-classico-window .sheet-tabs .item:hover,
+.candela-classico-window nav.sheet-tabs a:hover {
+  color: var(--co-text) !important;
+}
+
+.candela-classico-window .sheet-tabs .item.active,
+.candela-classico-window nav.sheet-tabs a.active {
+  color: var(--co-gold) !important;
+  border-bottom-color: var(--co-gold) !important;
+}
+
+/* ── CORPO DAS ABAS ── */
+.candela-classico-window .sheet-body,
+.candela-classico-window .tab-content,
+.candela-classico-window section.sheet-body {
+  background: var(--co-bg) !important;
+  padding: 0 !important;
+  overflow-y: auto !important;
+  flex: 1 !important;
+}
+
+/* ── BLOCOS DE ATRIBUTO (Coragem / Astúcia / Intuição) ── */
+.candela-classico-window .attribute-block,
+.candela-classico-window .action-group,
+.candela-classico-window .skill-group {
+  border-bottom: 1px solid var(--co-border-dim) !important;
+}
+
+/* Cabeçalho de cada bloco de atributo */
+.candela-classico-window .attribute-header,
+.candela-classico-window .action-group-header,
+.candela-classico-window .skill-group-header {
+  display: grid !important;
+  grid-template-columns: 150px 1fr auto !important;
+  align-items: center !important;
+  padding: 7px 14px !important;
+  background: var(--co-card) !important;
+  border-bottom: 1px solid var(--co-border-dim) !important;
+  gap: 8px !important;
+}
+
+/* Acento lateral por atributo */
+.candela-classico-window .attribute-block.courage .attribute-header,
+.candela-classico-window .action-group.courage .action-group-header {
+  border-left: 3px solid #c06010 !important;
+}
+.candela-classico-window .attribute-block.cunning .attribute-header,
+.candela-classico-window .action-group.cunning .action-group-header {
+  border-left: 3px solid #30803a !important;
+}
+.candela-classico-window .attribute-block.intuition .attribute-header,
+.candela-classico-window .action-group.intuition .action-group-header {
+  border-left: 3px solid #4040b0 !important;
+}
+
+/* Nome do atributo */
+.candela-classico-window .attribute-name,
+.candela-classico-window .action-group-name {
+  font-family: 'Cinzel', serif !important;
   font-size: 13px !important;
-  letter-spacing: 0.03em;
+  font-weight: 600 !important;
+  color: var(--co-text) !important;
+  letter-spacing: 0.06em !important;
 }
 
-.candela-classico-window .charname input,
-.candela-classico-window input[name="name"] {
-  font-size: 24px !important; /* Nome do Investigador bem destacado */
-  font-weight: bold !important;
+/* Labels Impulsos / Resistências */
+.candela-classico-window .impulsos-label,
+.candela-classico-window .resist-label,
+.candela-classico-window .attribute-header label {
+  font-family: 'Cinzel', serif !important;
+  font-size: 10px !important;
+  color: var(--co-muted) !important;
+  letter-spacing: 0.08em !important;
+  text-transform: uppercase !important;
+}
+
+/* ── LINHAS DE AÇÃO ── */
+.candela-classico-window .list-row,
+.candela-classico-window .action-row,
+.candela-classico-window .item-row {
+  display: grid !important;
+  grid-template-columns: 44px 150px 1fr 80px !important;
+  align-items: center !important;
+  padding: 7px 14px !important;
+  border-bottom: 1px solid #1a1520 !important;
+  gap: 8px !important;
+  cursor: pointer !important;
+  transition: background 0.12s !important;
+  background: transparent !important;
+}
+
+.candela-classico-window .list-row:hover,
+.candela-classico-window .action-row:hover,
+.candela-classico-window .item-row:hover {
+  background: var(--co-row-hover) !important;
+}
+
+.candela-classico-window .list-row:last-child,
+.candela-classico-window .action-row:last-child {
+  border-bottom: none !important;
+}
+
+/* Ícone da ação */
+.candela-classico-window .action-icon,
+.candela-classico-window .item-icon {
+  width: 26px !important;
+  height: 26px !important;
+  border: 1.5px solid var(--co-border-dim) !important;
+  border-radius: 50% !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  font-size: 13px !important;
+  color: var(--co-gold-dim) !important;
+  background: var(--co-card) !important;
+}
+
+/* Nome da ação */
+.candela-classico-window .action-name,
+.candela-classico-window .item-name,
+.candela-classico-window .list-row .name {
+  font-family: 'Cinzel', serif !important;
+  font-size: 13px !important;
+  color: var(--co-text) !important;
+}
+
+/* Descrição da ação */
+.candela-classico-window .action-description,
+.candela-classico-window .action-desc,
+.candela-classico-window .item-desc,
+.candela-classico-window .list-row .description {
+  font-style: italic !important;
+  font-size: 13px !important;
+  color: var(--co-muted) !important;
+  line-height: 1.3 !important;
+}
+
+/* Score / valor da ação */
+.candela-classico-window .action-score,
+.candela-classico-window .action-rating,
+.candela-classico-window .list-row input[type="number"],
+.candela-classico-window .action-row input[type="number"] {
+  width: 32px !important;
+  height: 26px !important;
+  border: 1.5px solid var(--co-border-dim) !important;
+  border-radius: 3px !important;
+  background: var(--co-bg) !important;
+  font-family: 'Cinzel', serif !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  color: var(--co-muted) !important;
+  text-align: center !important;
+}
+
+.candela-classico-window .action-score:hover,
+.candela-classico-window .action-rating:hover {
+  border-color: var(--co-border) !important;
+  color: var(--co-gold) !important;
+}
+
+/* ── CABEÇALHOS DE SEÇÃO ── */
+.candela-classico-window .section-header,
+.candela-classico-window .items-header,
+.candela-classico-window table thead th {
+  font-family: 'Cinzel', serif !important;
+  font-size: 11px !important;
+  letter-spacing: 0.1em !important;
+  color: var(--co-gold-dim) !important;
+  text-transform: uppercase !important;
+  background: var(--co-card) !important;
+  border-bottom: 1px solid var(--co-border-dim) !important;
+  padding: 6px 14px !important;
+}
+
+/* ── TEXTAREAS (Biografia etc) ── */
+.candela-classico-window textarea {
+  min-height: 65px !important;
+  resize: vertical !important;
+  padding: 7px 10px !important;
+  line-height: 1.5 !important;
+}
+
+/* ── BOTÕES ── */
+.candela-classico-window button,
+.candela-classico-window .control-btn {
+  font-family: 'Cinzel', serif !important;
+  font-size: 11px !important;
+  letter-spacing: 0.08em !important;
+  color: var(--co-gold) !important;
+  background: var(--co-card) !important;
+  border: 1px solid var(--co-border-dim) !important;
+  border-radius: 3px !important;
+  padding: 4px 10px !important;
+  cursor: pointer !important;
+  transition: all 0.15s !important;
+}
+
+.candela-classico-window button:hover,
+.candela-classico-window .control-btn:hover {
+  border-color: var(--co-border) !important;
+  background: #1a1530 !important;
+}
+
+/* ── SCROLLBAR ── */
+.candela-classico-window ::-webkit-scrollbar {
+  width: 6px !important;
+}
+.candela-classico-window ::-webkit-scrollbar-track {
+  background: var(--co-bg) !important;
+}
+.candela-classico-window ::-webkit-scrollbar-thumb {
+  background: var(--co-border-dim) !important;
+  border-radius: 3px !important;
+}
+.candela-classico-window ::-webkit-scrollbar-thumb:hover {
+  background: var(--co-border) !important;
+}
+
+/* ── TÍTULO DA JANELA DO FOUNDRY ── */
+.candela-classico-window .window-header {
+  background: #09070d !important;
+  border-bottom: 1px solid var(--co-border-dim) !important;
+  color: var(--co-gold) !important;
+  font-family: 'Cinzel', serif !important;
+}
+
+.candela-classico-window .window-header .window-title {
+  font-family: 'Cinzel', serif !important;
+  font-size: 13px !important;
+  color: var(--co-gold) !important;
+  letter-spacing: 0.08em !important;
+}
+
+.candela-classico-window .window-header a.header-button {
+  color: var(--co-muted) !important;
+  transition: color 0.15s !important;
+}
+
+.candela-classico-window .window-header a.header-button:hover {
+  color: var(--co-gold) !important;
 }
