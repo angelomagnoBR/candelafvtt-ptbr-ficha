@@ -10,14 +10,14 @@
   --candela-classico-red: #6d201f;
 }
 
-/* Janela principal da ficha - Agora mais Retangular e Compacta */
+/* Janela principal da ficha - Retangular Ideal */
 .candela-classico-window {
-  width: 840px !important;
-  min-width: 840px !important;
-  max-width: 840px !important;
-  height: 580px !important;
-  min-height: 580px !important;
-  max-height: 580px !important;
+  width: 960px !important;
+  min-width: 960px !important;
+  max-width: 960px !important;
+  height: 700px !important;
+  min-height: 700px !important;
+  max-height: 700px !important;
   resize: none !important;
   border: 1px solid rgba(214, 184, 105, 0.8) !important;
   border-radius: 2px !important;
@@ -30,18 +30,14 @@
     linear-gradient(135deg, #17130e, #0d0a07 72%) !important;
 }
 
-/* AJUSTE DO ESPAÇO DA FOTO (Aumentando o Retrato) */
-.candela-classico-window img.profile-img, 
-.candela-classico-window .profile,
-.candela-classico-window img[data-edit="img"] {
-  width: 100px !important;
-  height: 100px !important;
-  min-width: 100px !important;
-  min-height: 100px !important;
+/* FORÇAR O RETRATO DA FOTO A CRESCER */
+.candela-classico-window .profile-image,
+.candela-classico-window img.profile-image,
+.candela-classico-window .candelafvtt .profile-image {
+  width: 110px !important;
+  height: 110px !important;
+  min-width: 110px !important;
+  min-height: 110px !important;
+  flex: 0 0 110px !important;
   object-fit: cover !important;
-}
-
-/* Alinhamento do cabeçalho para acomodar a foto maior sem esmagar os campos */
-.candela-classico-window .sheet-header {
-  gap: 15px !important;
 }
