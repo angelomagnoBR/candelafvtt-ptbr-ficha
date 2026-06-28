@@ -77,3 +77,45 @@ Hooks.on("renderApplicationV2", (app, element) => {
   const isCandela = name.includes("candela") || root?.closest?.(".candelafvtt") || root?.querySelector?.(".candelafvtt");
   if (isCandela) translateCandelaSheet(root);
 });
+
+// ==========================================
+// ADICIONADO: INTEGRAÇÃO COM DICE SO NICE (DADOS DOURADOS)
+// ==========================================
+
+// 1. Cria a paleta de cores dourada no Dice So Nice assim que o módulo de dados iniciar
+Hooks.on('diceSoNiceReady', (dice3d) => {
+    dice3d.addColorset({
+        name: 'candela_gilded',
+        description: 'Candela Obscura - Dado Dourado',
+        category: 'Candela Obscura',
+        foreground: '#FFFFFF', // Números Brancos
+        background: '#D4AF37', // Corpo do dado Dourado (Gold metálico)
+        outline: '#8B6508',    // Contorno do número em marrom/ouro velho
+        edge: '#AA7C11',       // Bordas do dado
+        texture: 'none'
+    }, "preferred");
+});
+
+// 2. Escuta as mensagens do chat e altera a cor do dado se for um teste dourado
+Hooks.on('preCreateChatMessage', (document, data, options, userId) => {
+    // Se a mensagem não contiver dados matemáticos/rolagens, ignora
+    if (!document.rolls || document.rolls.length === 0) return;
+
+    // Obtém o texto descritivo (flavor text) anexado à rolagem
+    const flavorText = document.flavor || "";
+    
+    // Como o seu sistema está traduzido e o chat exibe "dados dourados" (visto nas imagens image_e0b7d7.jpg e image_e0b472.jpg)
+    if (flavorText.includes("dados dourados")) {
+        
+        // Pega a primeira rolagem contida no chat
+        const roll = document.rolls[0];
+        
+        // Altera a propriedade visual de todos os d6 pertencentes a esta rolagem específica
+        roll.dice.forEach(dice => {
+            if (dice.faces === 6) {
+                // Força o Dice So Nice a renderizar usando o set 'candela_gilded' criado acima
+                dice.options.colorset = 'candela_gilded';
+            }
+        });
+    }
+});
