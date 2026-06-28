@@ -2,7 +2,7 @@
   "id": "candelafvtt-ptbr-ficha",
   "title": "Candela Obscura PT-BR - Ficha",
   "description": "Tradução em português brasileiro da interface da ficha do sistema candelafvtt, usando termos do módulo básico de Candela Obscura e suporte a dados dourados.",
-  "version": "1.0.0",
+  "version": "1.3.0",
   "authors": [
     {
       "name": "Angelo Magno"
