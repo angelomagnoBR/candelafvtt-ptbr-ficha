@@ -221,78 +221,49 @@
 }
 
 /* ──────────────────────────────────────────
-   PRONOMES → campo de bio expandido
-   Ocupa todo o espaço abaixo do nome,
-   placeholder "bio / história..."
-   Sem aspecto de box quadrado — bordas suaves
+   PRONOMES → igual ao nome, sem box, sem cor
+   Totalmente transparente, parece texto solto
 ────────────────────────────────────────── */
 .candela-classico-window .pronouns {
   grid-column: 1 !important;
   display: flex !important;
   flex-direction: column !important;
   flex: 1 !important;
-  margin-top: 6px !important;
+  margin-top: 2px !important;
 }
-.candela-classico-window .pronouns input {
-  font-family: 'Crimson Text', serif !important;
+.candela-classico-window .pronouns input,
+.candela-classico-window input[name="system.pronouns"] {
+  font-family: 'Cinzel', serif !important;
   font-size: 13px !important;
-  font-style: italic !important;
+  font-style: normal !important;
+  font-weight: 400 !important;
   color: var(--co-text) !important;
-  background: rgba(27,22,36,0.6) !important;
-  border: 1px solid var(--co-border-dim) !important;
-  border-radius: 4px !important;
-  padding: 6px 10px !important;
-  /* Altura que preenche o espaço disponível */
-  height: 80px !important;
+  /* Sem fundo, sem borda, sem radius — idêntico ao nome */
+  background: transparent !important;
+  border: none !important;
+  border-bottom: 1px solid transparent !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  padding: 0 0 3px 0 !important;
+  height: auto !important;
   width: 100% !important;
   box-sizing: border-box !important;
-}
-/* Troca o placeholder visível — o HTML tem "pronomes",
-   mas sobrescrevemos via CSS pseudo-elemento */
-.candela-classico-window .pronouns input::placeholder {
-  content: "bio / história..." !important;
-  color: var(--co-muted) !important;
-  font-style: italic !important;
-}
-/* Hack para sobrescrever o texto do placeholder sem JS:
-   esconde o placeholder padrão e injeta o novo */
-.candela-classico-window input[name="system.pronouns"]::placeholder {
-  /* Foundry define o placeholder no atributo HTML,
-     mas CSS pode sobrescrevê-lo com este truque em alguns navegadores */
-  color: transparent !important;
-}
-.candela-classico-window input[name="system.pronouns"]:placeholder-shown::before {
-  content: "bio / história..." !important;
-}
-/* Solução mais compatível: tornamos o campo transparente
-   quando vazio e adicionamos o texto via attr trick  */
-.candela-classico-window input[name="system.pronouns"] {
-  /* placeholder sobrescrito com pseudo-atributo — funciona em Chrome/Firefox */
-}
-.candela-classico-window input[name="system.pronouns"]:not(:focus):placeholder-shown {
-  color: var(--co-muted) !important;
-  font-style: italic !important;
-}
-
-/* Como o Foundry hardcoda o placeholder no HTML, a melhor abordagem
-   compatível é criar uma aparência limpa e deixar o usuário ler
-   "pronomes" — mas escondemos a palavra visualmente via font-size 0
-   e mostramos nosso texto via content/after trick não suportado em inputs.
-   
-   SOLUÇÃO REAL: ocultamos o placeholder nativo e fingimos com o campo vazio */
-.candela-classico-window input[name="system.pronouns"]::placeholder {
-  font-size: 13px !important;
-  color: var(--co-muted) !important;
-  font-style: italic !important;
-  /* Não conseguimos mudar o texto do placeholder via CSS puro —
-     o texto "pronomes" vem do atributo HTML placeholder.
-     Para mudar precisaria de JS. Estilizamos bonito o que temos. */
-  letter-spacing: 0.02em !important;
-}
-.candela-classico-window input[name="system.pronouns"]:focus {
-  border-color: var(--co-border) !important;
   outline: none !important;
-  background: rgba(27,22,36,0.9) !important;
+  letter-spacing: 0.04em !important;
+}
+.candela-classico-window .pronouns input:hover,
+.candela-classico-window input[name="system.pronouns"]:hover {
+  border-bottom-color: var(--co-border-dim) !important;
+}
+.candela-classico-window .pronouns input:focus,
+.candela-classico-window input[name="system.pronouns"]:focus {
+  border-bottom-color: var(--co-border) !important;
+  outline: none !important;
+}
+/* Placeholder invisível — campo parece vazio/livre */
+.candela-classico-window input[name="system.pronouns"]::placeholder {
+  color: transparent !important;
+  font-size: 0 !important;
 }
 
 /* Link do Círculo */
@@ -489,10 +460,14 @@
 
 /* ══════════════════════════════════════════════
    CABEÇALHO DE CATEGORIA (Coragem/Astúcia/Intuição)
+   Grid explícito de 5 colunas numa linha só.
+   Nada pode quebrar para a linha de baixo.
 ══════════════════════════════════════════════ */
 .candela-classico-window .actioncategory.grid.grid-8col {
   display: grid !important;
-  grid-template-columns: 100px 1fr auto 1fr auto !important;
+  /* [nome] [label-impulsos] [val-impulsos] [label-resist] [val-resist] */
+  grid-template-columns: minmax(80px,110px) auto auto auto auto !important;
+  grid-template-rows: 36px !important; /* linha única — sem wrap */
   align-items: center !important;
   column-gap: 8px !important;
   padding: 0 12px !important;
@@ -504,12 +479,16 @@
   max-height: 36px !important;
   box-sizing: border-box !important;
   width: 100% !important;
+  overflow: hidden !important;
 }
 .candela-classico-window .actioncategory.grid.grid-8col:first-child {
   border-top: none !important;
 }
 
+/* Col 1 — Nome da categoria: mesmo tamanho que o texto das ações */
 .candela-classico-window .actioncategory-label.grid-span-1 {
+  grid-column: 1 !important;
+  grid-row: 1 !important;
   font-family: 'Cinzel', serif !important;
   font-size: 12px !important;
   font-weight: 700 !important;
@@ -520,36 +499,56 @@
   overflow: hidden !important;
   text-overflow: ellipsis !important;
 }
+
+/* Col 2 — Label "Impulsos" */
 .candela-classico-window .actioncategory.grid.grid-8col > span.grid-span-2.align-center:not([class*="grid-start"]) {
+  grid-column: 2 !important;
+  grid-row: 1 !important;
   font-family: 'Cinzel', serif !important;
-  font-size: 8px !important;
+  font-size: 10px !important;
   letter-spacing: 0.1em !important;
   color: var(--co-muted) !important;
   text-transform: uppercase !important;
   white-space: nowrap !important;
   text-align: center !important;
 }
+
+/* Col 3 — Valores de Impulsos (dois inputs + barra) */
 .candela-classico-window .actioncategory.grid.grid-8col > span.grid-span-1.align-center:nth-of-type(1) {
+  grid-column: 3 !important;
+  grid-row: 1 !important;
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
-  gap: 4px !important;
+  gap: 3px !important;
+  white-space: nowrap !important;
 }
+
+/* Col 4 — Label "Resistências" */
 .candela-classico-window .actioncategory.grid.grid-8col > span.grid-span-2.grid-start-6 {
+  grid-column: 4 !important;
+  grid-row: 1 !important;
   font-family: 'Cinzel', serif !important;
-  font-size: 8px !important;
+  font-size: 10px !important;
   letter-spacing: 0.1em !important;
   color: var(--co-muted) !important;
   text-transform: uppercase !important;
   white-space: nowrap !important;
   text-align: center !important;
 }
+
+/* Col 5 — Valores de Resistências (input + "/max") */
 .candela-classico-window .actioncategory.grid.grid-8col > span.grid-span-1.align-center:last-of-type {
+  grid-column: 5 !important;
+  grid-row: 1 !important;
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
-  gap: 4px !important;
+  gap: 3px !important;
+  white-space: nowrap !important;
 }
+
+/* Inputs numéricos nas categorias */
 .candela-classico-window .actioncategory-value {
   width: 30px !important;
   height: 24px !important;
@@ -565,19 +564,22 @@
   flex-shrink: 0 !important;
   -moz-appearance: textfield !important;
 }
+
+/* "/ 2" texto de max das resistências */
 .candela-classico-window .actioncategory-label[name$=".max"] {
   display: inline-flex !important;
   align-items: center !important;
   height: 24px !important;
   padding: 0 2px !important;
   font-family: 'Cinzel', serif !important;
-  font-size: 14px !important;
+  font-size: 13px !important;
   font-weight: 600 !important;
   color: var(--co-muted) !important;
   background: transparent !important;
   border: none !important;
   letter-spacing: 0 !important;
   text-transform: none !important;
+  white-space: nowrap !important;
 }
 
 /* ══════════════════════════════════════════════
