@@ -79,7 +79,7 @@ Hooks.on("renderApplicationV2", (app, element) => {
 });
 
 // =====================================================================
-// INTEGRAÇÃO FINAL E CIRÚRGICA COM DICE SO NICE (BASEADO NA FÓRMULA)
+// INTEGRAÇÃO DE ARREMESSO ÚNICO COM DICE SO NICE (CANDELA OBSCURA)
 // =====================================================================
 
 // 1. Registra o set de cores douradas
@@ -96,44 +96,35 @@ Hooks.on('diceSoNiceReady', (dice3d) => {
     }, "preferred");
 });
 
-// 2. Intercepta no início da animação 3D usando os dados da fórmula real
+// 2. Intercepta o arremesso e pinta os dados baseado na ordem da fórmula
 Hooks.on('diceSoNiceRollStart', (messageId, diceData) => {
     const chatMessage = game.messages.get(messageId);
-    if (!chatMessage || !chatMessage.rolls) return;
+    if (!chatMessage || !chatMessage.rolls || !diceData.throws || !diceData.throws[0]) return;
 
-    // Varre as rolagens reais da mensagem
-    chatMessage.rolls.forEach((roll, rollIndex) => {
-        // Varre cada termo (Die, OperatorTerm, etc.) de dentro da fórmula
-        roll.terms.forEach((term, termIndex) => {
-            // Verifica se o termo é um dado, se tem 6 faces e se a marcação dele indica dado dourado
-            const isGildedTerm = term.faces === 6 && 
-                                 term.options && 
-                                 term.options.flavor && 
-                                 term.options.flavor.toLowerCase().includes("dourado");
+    let flatDieIndex = 0; // Ponteiro para acompanhar qual dado físico estamos olhando
+    const currentThrow = diceData.throws[0]; // Pega o arremesso unificado na mesa
 
-            if (isGildedTerm) {
-                // Achamos o termo dourado! Agora mapeamos isso para os dados físicos do 3D
-                if (diceData.throws && diceData.throws[rollIndex]) {
-                    const currentThrow = diceData.throws[rollIndex];
-                    
-                    // O Dice So Nice junta todos os dados sequencialmente. 
-                    // Vamos encontrar o índice inicial dos dados deste termo específico
-                    let dieOffset = 0;
-                    for (let i = 0; i < termIndex; i++) {
-                        if (roll.terms[i].results) {
-                            dieOffset += roll.terms[i].results.length;
-                        }
-                    }
+    // Varre as rolagens da mensagem
+    chatMessage.rolls.forEach(roll => {
+        // Passa por cada termo da fórmula (ex: Termo 0 = 2d6, Termo 2 = 1d6)
+        roll.terms.forEach(term => {
+            // Se o termo não for um dado (ex: o sinal de "+"), pula
+            if (!term.results) return;
 
-                    // Pinta de dourado apenas a quantidade exata de dados que pertencem a este termo!
-                    for (let d = 0; d < term.results.length; d++) {
-                        const targetDie = currentThrow.dice[dieOffset + d];
-                        if (targetDie) {
-                            targetDie.colorset = 'candela_gilded';
-                        }
-                    }
+            // Verifica se a marcação deste termo específico diz "dourado"
+            const isGilded = term.faces === 6 && 
+                             term.options && 
+                             term.options.flavor && 
+                             term.options.flavor.toLowerCase().includes("dourado");
+
+            // Passa por cada um dos dados gerados por este termo
+            term.results.forEach(() => {
+                // Se for um termo dourado, pinta o dado correspondente no 3D
+                if (isGilded && currentThrow.dice[flatDieIndex]) {
+                    currentThrow.dice[flatDieIndex].colorset = 'candela_gilded';
                 }
-            }
+                flatDieIndex++; // Avança para o próximo dado da fila física
+            });
         });
     });
 });
