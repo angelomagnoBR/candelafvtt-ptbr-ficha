@@ -1,6 +1,6 @@
 /* ============================================================
    CANDELA OBSCURA PT-BR — Visual Escuro/Dourado
-   v3 — corrigido: scrollbars, impulsos, diamante, cabeçalho
+   v4 — formato portrait A5, impulsos corrigidos, sem scrollbar horizontal
    ============================================================ */
 
 @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap');
@@ -20,19 +20,19 @@
 }
 
 /* ══════════════════════════════════════════════
-   JANELA PRINCIPAL
+   JANELA — formato portrait (mais estreita e alta)
 ══════════════════════════════════════════════ */
 .candela-classico-window {
-  width: 960px !important;
-  min-width: 960px !important;
-  max-width: 960px !important;
-  height: 720px !important;
-  min-height: 720px !important;
-  max-height: 720px !important;
+  width: 680px !important;
+  min-width: 680px !important;
+  max-width: 680px !important;
+  height: 860px !important;
+  min-height: 860px !important;
+  max-height: 860px !important;
   resize: none !important;
+  overflow: hidden !important;
   border: 1px solid var(--co-border-dim) !important;
   border-radius: 6px !important;
-  overflow: hidden !important;   /* evita scrollbar horizontal global */
   box-shadow:
     0 0 0 1px rgba(184,150,12,0.3),
     0 0 40px rgba(0,0,0,0.95) !important;
@@ -57,23 +57,57 @@
 }
 
 /* ══════════════════════════════════════════════
-   CABEÇALHO — retrato + coluna de info
+   TÍTULO DA JANELA DO FOUNDRY
+══════════════════════════════════════════════ */
+.candela-classico-window .window-header {
+  background: #09070d !important;
+  border-bottom: 1px solid var(--co-border-dim) !important;
+  color: var(--co-gold) !important;
+  font-family: 'Cinzel', serif !important;
+  flex-shrink: 0 !important;
+  padding: 0 10px !important;
+  height: 30px !important;
+  display: flex !important;
+  align-items: center !important;
+}
+
+.candela-classico-window .window-header .window-title {
+  font-family: 'Cinzel', serif !important;
+  font-size: 12px !important;
+  color: var(--co-gold) !important;
+  letter-spacing: 0.08em !important;
+}
+
+.candela-classico-window .window-header a.header-button {
+  color: var(--co-muted) !important;
+  transition: color 0.15s !important;
+}
+
+.candela-classico-window .window-header a.header-button:hover {
+  color: var(--co-gold) !important;
+}
+
+/* ══════════════════════════════════════════════
+   CABEÇALHO — retrato à esquerda, info à direita
+   Layout vertical mais compacto
 ══════════════════════════════════════════════ */
 .candela-classico-window .sheet-header,
 .candela-classico-window header.sheet-header {
   display: flex !important;
   flex-direction: row !important;
   align-items: stretch !important;
-  padding: 16px !important;
+  padding: 14px !important;
   margin: 0 !important;
-  gap: 20px !important;
-  min-height: 230px !important;
-  max-height: 230px !important;
+  gap: 16px !important;
+  height: 200px !important;
+  min-height: 200px !important;
+  max-height: 200px !important;
   background: #100d15 !important;
   border-bottom: 1px solid var(--co-border-dim) !important;
   box-sizing: border-box !important;
   flex-shrink: 0 !important;
   overflow: hidden !important;
+  width: 100% !important;
 }
 
 /* ── RETRATO — portrait vertical ── */
@@ -81,60 +115,75 @@
 .candela-classico-window img.profile-image,
 .candela-classico-window .sheet-header img,
 .candela-classico-window img[data-edit="img"] {
-  width: 155px !important;
-  height: 198px !important;
-  min-width: 155px !important;
-  min-height: 198px !important;
-  flex: 0 0 155px !important;
+  width: 130px !important;
+  height: 172px !important;
+  min-width: 130px !important;
+  min-height: 172px !important;
+  max-height: 172px !important;
+  flex: 0 0 130px !important;
   object-fit: cover !important;
   object-position: top center !important;
   border: 2px solid var(--co-border) !important;
   border-radius: 4px !important;
   box-shadow:
     0 0 0 1px var(--co-border-dim),
-    0 4px 20px rgba(0,0,0,0.7) !important;
+    0 4px 16px rgba(0,0,0,0.7) !important;
+  align-self: center !important;
 }
 
 /* ── COLUNA DIREITA DO CABEÇALHO ── */
 .candela-classico-window .sheet-header .header-details,
-.candela-classico-window .sheet-header > div:not(.profile-image):not([class*="profile"]),
+.candela-classico-window .sheet-header > div:not([class*="profile"]):not([class*="img"]),
 .candela-classico-window .sheet-header > .header-fields {
   flex: 1 !important;
   display: flex !important;
   flex-direction: column !important;
-  justify-content: flex-start !important;
-  gap: 10px !important;
+  justify-content: space-between !important;
+  gap: 0 !important;
   min-width: 0 !important;
   overflow: hidden !important;
+  height: 100% !important;
 }
 
 /* ── NOME DO PERSONAGEM ── */
-.candela-classico-window .charname,
-.candela-classico-window .charname h1 {
-  margin: 0 !important;
-  padding: 0 !important;
-}
-
 .candela-classico-window .charname input,
 .candela-classico-window input[name="name"] {
   font-family: 'Cinzel', serif !important;
-  font-size: 22px !important;
+  font-size: 20px !important;
   font-weight: 700 !important;
   color: var(--co-gold) !important;
-  letter-spacing: 0.08em !important;
+  letter-spacing: 0.06em !important;
   background: var(--co-card) !important;
   border: 1px solid var(--co-border-dim) !important;
-  border-radius: 4px !important;
-  padding: 8px 14px !important;
+  border-bottom: 2px solid var(--co-border) !important;
+  border-radius: 4px 4px 0 0 !important;
+  padding: 8px 12px !important;
   width: 100% !important;
   box-sizing: border-box !important;
-  height: 46px !important;
+  height: 44px !important;
 }
 
 .candela-classico-window .charname input:focus,
 .candela-classico-window input[name="name"]:focus {
   border-color: var(--co-border) !important;
   outline: none !important;
+}
+
+/* ── PRONOMES / CAMPOS EXTRAS ── */
+.candela-classico-window input[name="system.pronouns"],
+.candela-classico-window input[placeholder="pronomes"],
+.candela-classico-window .sheet-header input[type="text"]:not([name="name"]) {
+  font-family: 'Crimson Text', Georgia, serif !important;
+  font-size: 13px !important;
+  color: var(--co-muted) !important;
+  background: var(--co-card) !important;
+  border: 1px solid var(--co-border-dim) !important;
+  border-top: none !important;
+  border-radius: 0 0 4px 4px !important;
+  padding: 5px 12px !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+  height: 32px !important;
 }
 
 /* ── RECURSOS (CORPO / MENTE / SANGRIA) ── */
@@ -145,9 +194,9 @@
   flex-direction: row !important;
   align-items: center !important;
   justify-content: flex-start !important;
-  gap: 32px !important;
+  gap: 20px !important;
+  padding: 10px 0 0 0 !important;
   margin-top: auto !important;
-  padding-top: 12px !important;
   border-top: 1px solid var(--co-border-dim) !important;
   flex-shrink: 0 !important;
 }
@@ -155,9 +204,22 @@
 .candela-classico-window .resource,
 .candela-classico-window .vital {
   display: flex !important;
-  flex-direction: column !important;
+  flex-direction: row !important;
   align-items: center !important;
-  gap: 4px !important;
+  gap: 6px !important;
+}
+
+/* Labels CORPO / MENTE / SANGRIA */
+.candela-classico-window .resource label,
+.candela-classico-window .attribute label,
+.candela-classico-window .resource-label,
+.candela-classico-window .vital-label {
+  font-family: 'Cinzel', serif !important;
+  font-size: 9px !important;
+  letter-spacing: 0.12em !important;
+  color: var(--co-gold-dim) !important;
+  text-transform: uppercase !important;
+  white-space: nowrap !important;
 }
 
 /* ══════════════════════════════════════════════
@@ -182,7 +244,7 @@
   outline: none !important;
 }
 
-.candela-classico-window input[type="text"]::placeholder,
+.candela-classico-window input::placeholder,
 .candela-classico-window textarea::placeholder {
   color: var(--co-muted) !important;
   font-style: italic !important;
@@ -193,29 +255,17 @@
 .candela-classico-window .resource input,
 .candela-classico-window .attribute input {
   font-family: 'Cinzel', serif !important;
-  font-size: 16px !important;
+  font-size: 15px !important;
   font-weight: 600 !important;
   color: var(--co-gold) !important;
   background: var(--co-bg) !important;
   border: 1.5px solid var(--co-border) !important;
   border-radius: 3px !important;
   text-align: center !important;
-  padding: 2px 4px !important;
-  width: 36px !important;
-  height: 30px !important;
+  padding: 2px 2px !important;
+  width: 32px !important;
+  height: 28px !important;
   flex-shrink: 0 !important;
-}
-
-/* ── LABELS (Corpo, Mente, Sangria) ── */
-.candela-classico-window .resource label,
-.candela-classico-window .attribute label,
-.candela-classico-window .resource-label,
-.candela-classico-window .vital-label {
-  font-family: 'Cinzel', serif !important;
-  font-size: 9px !important;
-  letter-spacing: 0.1em !important;
-  color: var(--co-gold-dim) !important;
-  text-transform: uppercase !important;
 }
 
 /* ══════════════════════════════════════════════
@@ -232,17 +282,19 @@
   gap: 0 !important;
   flex-shrink: 0 !important;
   overflow: hidden !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
 }
 
 .candela-classico-window .sheet-tabs .item,
 .candela-classico-window nav.sheet-tabs a,
 .candela-classico-window .tabs .item {
   flex: 1 !important;
-  padding: 11px 8px !important;
+  padding: 10px 6px !important;
   text-align: center !important;
   font-family: 'Cinzel', serif !important;
-  font-size: 11px !important;
-  letter-spacing: 0.12em !important;
+  font-size: 10px !important;
+  letter-spacing: 0.14em !important;
   color: var(--co-muted) !important;
   border-bottom: 2px solid transparent !important;
   margin-bottom: -2px !important;
@@ -266,7 +318,7 @@
 }
 
 /* ══════════════════════════════════════════════
-   CORPO DAS ABAS — scroll apenas vertical, sem horizontal
+   CORPO DAS ABAS — apenas scroll vertical
 ══════════════════════════════════════════════ */
 .candela-classico-window .sheet-body,
 .candela-classico-window .tab-content,
@@ -274,29 +326,28 @@
   background: var(--co-bg) !important;
   padding: 0 !important;
   overflow-y: auto !important;
-  overflow-x: hidden !important;  /* elimina scrollbar horizontal */
+  overflow-x: hidden !important;
   flex: 1 !important;
   min-height: 0 !important;
   box-sizing: border-box !important;
+  width: 100% !important;
 }
 
-/* ── Scrollbar vertical fina e discreta ── */
-.candela-classico-window .sheet-body::-webkit-scrollbar,
-.candela-classico-window .tab-content::-webkit-scrollbar {
+.candela-classico-window .sheet-body::-webkit-scrollbar {
   width: 4px !important;
 }
-.candela-classico-window .sheet-body::-webkit-scrollbar-track,
-.candela-classico-window .tab-content::-webkit-scrollbar-track {
+.candela-classico-window .sheet-body::-webkit-scrollbar-track {
   background: transparent !important;
 }
-.candela-classico-window .sheet-body::-webkit-scrollbar-thumb,
-.candela-classico-window .tab-content::-webkit-scrollbar-thumb {
+.candela-classico-window .sheet-body::-webkit-scrollbar-thumb {
   background: var(--co-border-dim) !important;
   border-radius: 3px !important;
 }
 
 /* ══════════════════════════════════════════════
-   BLOCOS DE ATRIBUTO (Coragem / Astúcia / Intuição)
+   BLOCOS DE ATRIBUTO
+   Layout: [NOME] [IMPULSOS label + inputs] [flex] [RESISTÊNCIAS label + inputs]
+   Tudo numa única linha de altura fixa
 ══════════════════════════════════════════════ */
 .candela-classico-window .attribute-block,
 .candela-classico-window .action-group,
@@ -304,76 +355,92 @@
   border-bottom: 1px solid var(--co-border-dim) !important;
   width: 100% !important;
   box-sizing: border-box !important;
+  overflow: hidden !important;
 }
 
-/* ── Cabeçalho do bloco de atributo ── */
+/* ── Cabeçalho do bloco ── */
 .candela-classico-window .attribute-header,
 .candela-classico-window .action-group-header,
 .candela-classico-window .skill-group-header {
   display: flex !important;
   flex-direction: row !important;
   align-items: center !important;
-  padding: 6px 14px !important;
+  padding: 0 12px !important;
   background: var(--co-card) !important;
   border-bottom: 1px solid var(--co-border-dim) !important;
-  gap: 8px !important;
-  height: 38px !important;          /* altura fixa para não estourar */
+  gap: 6px !important;
+  height: 36px !important;
+  min-height: 36px !important;
+  max-height: 36px !important;
   box-sizing: border-box !important;
   overflow: hidden !important;
   width: 100% !important;
 }
 
-/* Nome do atributo — espaço fixo à esquerda */
+/* Nome do atributo */
 .candela-classico-window .attribute-name,
 .candela-classico-window .action-group-name {
   font-family: 'Cinzel', serif !important;
-  font-size: 13px !important;
-  font-weight: 600 !important;
+  font-size: 11px !important;
+  font-weight: 700 !important;
   color: var(--co-text) !important;
-  letter-spacing: 0.06em !important;
-  width: 120px !important;
-  flex-shrink: 0 !important;
-}
-
-/* Grupo IMPULSOS — label + inputs lado a lado, sem overflow */
-.candela-classico-window .impulsos-group,
-.candela-classico-window .drives-group,
-.candela-classico-window [class*="impulso"],
-.candela-classico-window [class*="drive"] {
-  display: flex !important;
-  flex-direction: row !important;
-  align-items: center !important;
-  gap: 4px !important;
-  flex-shrink: 0 !important;
-}
-
-/* Labels Impulsos / Resistências dentro do header */
-.candela-classico-window .impulsos-label,
-.candela-classico-window .resist-label,
-.candela-classico-window .attribute-header label {
-  font-family: 'Cinzel', serif !important;
-  font-size: 9px !important;
-  color: var(--co-muted) !important;
-  letter-spacing: 0.08em !important;
+  letter-spacing: 0.1em !important;
   text-transform: uppercase !important;
   white-space: nowrap !important;
   flex-shrink: 0 !important;
+  width: 90px !important;
 }
 
-/* Inputs de Impulso dentro do header — contidos na linha */
-.candela-classico-window .attribute-header input[type="number"],
-.candela-classico-window .action-group-header input[type="number"] {
-  width: 30px !important;
-  height: 24px !important;
-  font-size: 13px !important;
-  padding: 1px 2px !important;
-  flex-shrink: 0 !important;
-}
-
-/* Separador que empurra Resistências para a direita */
+/* Espaçador que empurra resistências para direita */
+.candela-classico-window .attribute-header .flex-spacer,
 .candela-classico-window .attribute-header .spacer,
 .candela-classico-window .action-group-header .spacer {
   flex: 1 !important;
+  min-width: 0 !important;
+}
+
+/* Labels IMPULSOS / RESISTÊNCIAS */
+.candela-classico-window .impulsos-label,
+.candela-classico-window .resist-label,
+.candela-classico-window .attribute-header label,
+.candela-classico-window .action-group-header label {
+  font-family: 'Cinzel', serif !important;
+  font-size: 8px !important;
+  color: var(--co-muted) !important;
+  letter-spacing: 0.1em !important;
+  text-transform: uppercase !important;
+  white-space: nowrap !important;
+  flex-shrink: 0 !important;
+  line-height: 1 !important;
+}
+
+/* Inputs de impulso/resistência dentro do header — forçados pequenos */
+.candela-classico-window .attribute-header input[type="number"],
+.candela-classico-window .action-group-header input[type="number"] {
+  width: 28px !important;
+  height: 22px !important;
+  font-size: 12px !important;
+  font-family: 'Cinzel', serif !important;
+  font-weight: 600 !important;
+  color: var(--co-gold) !important;
+  background: var(--co-bg) !important;
+  border: 1.5px solid var(--co-border) !important;
+  border-radius: 3px !important;
+  text-align: center !important;
+  padding: 0 !important;
+  flex-shrink: 0 !important;
+  line-height: 22px !important;
+}
+
+/* Separador "/" entre inputs */
+.candela-classico-window .attribute-header .separator,
+.candela-classico-window .action-group-header .separator,
+.candela-classico-window .attribute-header span:not([class]),
+.candela-classico-window .action-group-header span:not([class]) {
+  color: var(--co-border-dim) !important;
+  font-size: 12px !important;
+  flex-shrink: 0 !important;
+  padding: 0 1px !important;
 }
 
 /* Acentos laterais por atributo */
@@ -399,7 +466,7 @@
   display: flex !important;
   flex-direction: row !important;
   align-items: center !important;
-  padding: 7px 14px !important;
+  padding: 6px 12px !important;
   border-bottom: 1px solid #1a1520 !important;
   gap: 10px !important;
   cursor: pointer !important;
@@ -408,6 +475,7 @@
   width: 100% !important;
   box-sizing: border-box !important;
   overflow: hidden !important;
+  height: 40px !important;
 }
 
 .candela-classico-window .list-row:hover,
@@ -421,60 +489,60 @@
   border-bottom: none !important;
 }
 
-/* ── DIAMANTE / ÍCONE DA AÇÃO ── */
+/* ── DIAMANTE / ÍCONE ── */
 .candela-classico-window .action-icon,
 .candela-classico-window .item-icon,
-.candela-classico-window .list-row img,
-.candela-classico-window .action-row img,
+.candela-classico-window .list-row img:first-child,
+.candela-classico-window .action-row img:first-child,
 .candela-classico-window .pip,
 .candela-classico-window [class*="diamond"],
-.candela-classico-window [class*="die-icon"],
-.candela-classico-window [data-action="roll"] img {
-  width: 26px !important;
-  height: 26px !important;
-  min-width: 26px !important;
+.candela-classico-window [class*="die-icon"] {
+  width: 24px !important;
+  height: 24px !important;
+  min-width: 24px !important;
   flex-shrink: 0 !important;
   border: 1.5px solid var(--co-border-dim) !important;
   border-radius: 4px !important;
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
-  font-size: 13px !important;
+  font-size: 12px !important;
   color: var(--co-gold-dim) !important;
   background: var(--co-card) !important;
   cursor: pointer !important;
   transition:
     border-color 0.15s,
-    box-shadow 0.15s,
+    box-shadow 0.2s,
     filter 0.15s !important;
 }
 
-/* Estado ATIVO / SELECIONADO do diamante/dado — brilho dourado */
+/* BRILHO DOURADO ao selecionar/ativar */
 .candela-classico-window .action-icon.active,
 .candela-classico-window .item-icon.active,
 .candela-classico-window .pip.active,
 .candela-classico-window [class*="diamond"].active,
 .candela-classico-window [class*="die-icon"].active,
-.candela-classico-window input[type="checkbox"]:checked + .action-icon,
 .candela-classico-window .list-row.active .action-icon,
 .candela-classico-window .action-row.active img,
-.candela-classico-window img.active {
+.candela-classico-window img.active,
+.candela-classico-window .action-icon[data-selected="true"],
+.candela-classico-window .item-icon[data-selected="true"] {
   border-color: var(--co-gold-bright) !important;
   box-shadow:
-    0 0 6px 2px rgba(240,201,58,0.55),
-    0 0 14px 4px rgba(212,168,32,0.25) !important;
-  filter: brightness(1.3) drop-shadow(0 0 4px rgba(240,201,58,0.7)) !important;
+    0 0 0 1px rgba(240,201,58,0.4),
+    0 0 8px 3px rgba(212,168,32,0.45),
+    0 0 18px 6px rgba(212,168,32,0.15) !important;
+  filter: brightness(1.35) drop-shadow(0 0 5px rgba(240,201,58,0.65)) !important;
   color: var(--co-gold-bright) !important;
 }
 
-/* Hover sobre o ícone — prévia do brilho */
+/* Hover — prévia suave do brilho */
 .candela-classico-window .action-icon:hover,
 .candela-classico-window .item-icon:hover,
 .candela-classico-window .pip:hover,
-.candela-classico-window [class*="diamond"]:hover,
-.candela-classico-window [class*="die-icon"]:hover {
+.candela-classico-window [class*="diamond"]:hover {
   border-color: var(--co-border) !important;
-  box-shadow: 0 0 6px rgba(212,168,32,0.3) !important;
+  box-shadow: 0 0 6px 1px rgba(212,168,32,0.2) !important;
 }
 
 /* ── NOME DA AÇÃO ── */
@@ -482,10 +550,11 @@
 .candela-classico-window .item-name,
 .candela-classico-window .list-row .name {
   font-family: 'Cinzel', serif !important;
-  font-size: 13px !important;
+  font-size: 12px !important;
   color: var(--co-text) !important;
-  width: 130px !important;
+  width: 100px !important;
   flex-shrink: 0 !important;
+  white-space: nowrap !important;
 }
 
 /* ── DESCRIÇÃO DA AÇÃO ── */
@@ -494,22 +563,23 @@
 .candela-classico-window .item-desc,
 .candela-classico-window .list-row .description {
   font-style: italic !important;
-  font-size: 13px !important;
+  font-size: 12px !important;
   color: var(--co-muted) !important;
-  line-height: 1.3 !important;
+  line-height: 1.2 !important;
   flex: 1 !important;
   overflow: hidden !important;
   text-overflow: ellipsis !important;
   white-space: nowrap !important;
+  min-width: 0 !important;
 }
 
-/* ── SCORE / VALOR DA AÇÃO ── */
+/* ── SCORE DA AÇÃO ── */
 .candela-classico-window .action-score,
 .candela-classico-window .action-rating,
 .candela-classico-window .list-row input[type="number"],
 .candela-classico-window .action-row input[type="number"] {
-  width: 30px !important;
-  height: 26px !important;
+  width: 28px !important;
+  height: 24px !important;
   border: 1.5px solid var(--co-border-dim) !important;
   border-radius: 3px !important;
   background: var(--co-bg) !important;
@@ -519,11 +589,14 @@
   color: var(--co-muted) !important;
   text-align: center !important;
   flex-shrink: 0 !important;
-  padding: 1px 2px !important;
+  padding: 0 !important;
+  transition: border-color 0.15s, color 0.15s !important;
 }
 
 .candela-classico-window .action-score:hover,
-.candela-classico-window .action-rating:hover {
+.candela-classico-window .action-rating:hover,
+.candela-classico-window .list-row input[type="number"]:hover,
+.candela-classico-window .action-row input[type="number"]:hover {
   border-color: var(--co-border) !important;
   color: var(--co-gold) !important;
 }
@@ -535,17 +608,17 @@
 .candela-classico-window .items-header,
 .candela-classico-window table thead th {
   font-family: 'Cinzel', serif !important;
-  font-size: 11px !important;
+  font-size: 10px !important;
   letter-spacing: 0.1em !important;
   color: var(--co-gold-dim) !important;
   text-transform: uppercase !important;
   background: var(--co-card) !important;
   border-bottom: 1px solid var(--co-border-dim) !important;
-  padding: 6px 14px !important;
+  padding: 5px 12px !important;
 }
 
 /* ══════════════════════════════════════════════
-   TEXTAREAS (Biografia etc)
+   TEXTAREAS
 ══════════════════════════════════════════════ */
 .candela-classico-window textarea {
   min-height: 65px !important;
@@ -554,6 +627,7 @@
   line-height: 1.5 !important;
   width: 100% !important;
   box-sizing: border-box !important;
+  font-size: 14px !important;
 }
 
 /* ══════════════════════════════════════════════
@@ -562,7 +636,7 @@
 .candela-classico-window button,
 .candela-classico-window .control-btn {
   font-family: 'Cinzel', serif !important;
-  font-size: 11px !important;
+  font-size: 10px !important;
   letter-spacing: 0.08em !important;
   color: var(--co-gold) !important;
   background: var(--co-card) !important;
@@ -580,14 +654,14 @@
 }
 
 /* ══════════════════════════════════════════════
-   SCROLLBAR GLOBAL (lateral da ficha)
+   SCROLLBAR — apenas vertical, sem horizontal
 ══════════════════════════════════════════════ */
 .candela-classico-window ::-webkit-scrollbar {
   width: 4px !important;
-  height: 0px !important;    /* zera scrollbar horizontal em qualquer filho */
+  height: 0px !important;
 }
 .candela-classico-window ::-webkit-scrollbar-track {
-  background: var(--co-bg) !important;
+  background: transparent !important;
 }
 .candela-classico-window ::-webkit-scrollbar-thumb {
   background: var(--co-border-dim) !important;
@@ -595,31 +669,4 @@
 }
 .candela-classico-window ::-webkit-scrollbar-thumb:hover {
   background: var(--co-border) !important;
-}
-
-/* ══════════════════════════════════════════════
-   TÍTULO DA JANELA DO FOUNDRY
-══════════════════════════════════════════════ */
-.candela-classico-window .window-header {
-  background: #09070d !important;
-  border-bottom: 1px solid var(--co-border-dim) !important;
-  color: var(--co-gold) !important;
-  font-family: 'Cinzel', serif !important;
-  flex-shrink: 0 !important;
-}
-
-.candela-classico-window .window-header .window-title {
-  font-family: 'Cinzel', serif !important;
-  font-size: 13px !important;
-  color: var(--co-gold) !important;
-  letter-spacing: 0.08em !important;
-}
-
-.candela-classico-window .window-header a.header-button {
-  color: var(--co-muted) !important;
-  transition: color 0.15s !important;
-}
-
-.candela-classico-window .window-header a.header-button:hover {
-  color: var(--co-gold) !important;
 }
