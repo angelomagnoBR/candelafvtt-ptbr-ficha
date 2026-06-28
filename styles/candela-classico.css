@@ -506,10 +506,12 @@
 .candela-classico-window li.action.grid.grid-8col {
   display: grid !important;
   grid-template-columns: 36px 110px 1fr 42px !important;
+  grid-template-rows: 44px !important;
   align-items: center !important;
   padding: 0 12px !important;
   border-bottom: 1px solid rgba(74,58,16,0.4) !important;
   column-gap: 10px !important;
+  row-gap: 0 !important;
   cursor: pointer !important;
   transition: background 0.12s !important;
   background: transparent !important;
@@ -517,15 +519,41 @@
   box-sizing: border-box !important;
   height: 44px !important;
   min-height: 44px !important;
+  max-height: 44px !important;
+  overflow: hidden !important;
 }
 .candela-classico-window li.action.grid.grid-8col:hover { background: var(--co-row-hover) !important; }
 .candela-classico-window ol.actions-list li.action:last-child { border-bottom: none !important; }
+
+/* Força a posição de cada filho na linha, ignorando qualquer
+   grid-span-N herdado do grid de 8 colunas original do sistema —
+   sem isso, .grid-span-2/.grid-span-4 tentam ocupar colunas que
+   não existem no nosso grid de 4 colunas e quebram o layout. */
+.candela-classico-window li.action.grid.grid-8col > .action-checkbox-icon {
+  grid-column: 1 !important;
+  grid-row: 1 !important;
+}
+.candela-classico-window li.action.grid.grid-8col > a.rollable {
+  grid-column: 2 !important;
+  grid-row: 1 !important;
+}
+.candela-classico-window li.action.grid.grid-8col > span.action-description {
+  grid-column: 3 !important;
+  grid-row: 1 !important;
+}
+.candela-classico-window li.action.grid.grid-8col > .action-editbox {
+  grid-column: 4 !important;
+  grid-row: 1 !important;
+}
 
 /* Checkbox "dourado" (gilded) — funciona como o diamante/brilho */
 .candela-classico-window .action-checkbox-icon {
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
+  width: 36px !important;
+  height: 100% !important;
+  overflow: hidden !important;
 }
 .candela-classico-window .action-checkbox-icon input[type="checkbox"] {
   appearance: none !important;
@@ -563,7 +591,18 @@
   box-shadow: 0 0 6px 2px rgba(240,201,58,0.9) !important;
 }
 
-/* Nome da ação (Mover, Atacar...) — agora visível de fato */
+/* Nome da ação (Mover, Atacar...) — agora visível e alinhado à esquerda
+   (sobrescreve .align-center do sistema, que centralizava o texto) */
+.candela-classico-window a.rollable.align-center,
+.candela-classico-window a.rollable {
+  text-decoration: none !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+  text-align: left !important;
+  overflow: hidden !important;
+  height: 100% !important;
+}
 .candela-classico-window a.rollable .action-label {
   font-family: 'Cinzel', serif !important;
   font-size: 13px !important;
@@ -573,11 +612,7 @@
   overflow: hidden !important;
   text-overflow: ellipsis !important;
   text-decoration: none !important;
-}
-.candela-classico-window a.rollable {
-  text-decoration: none !important;
-  display: block !important;
-  overflow: hidden !important;
+  text-align: left !important;
 }
 .candela-classico-window a.rollable:hover .action-label {
   color: var(--co-gold) !important;
@@ -594,6 +629,10 @@
   text-overflow: ellipsis !important;
   white-space: nowrap !important;
   min-width: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  height: 100% !important;
+  text-align: left !important;
 }
 
 /* Score (input à direita de cada ação) */
@@ -601,6 +640,9 @@
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
+  width: 42px !important;
+  height: 100% !important;
+  overflow: hidden !important;
 }
 .candela-classico-window .action-editbox input.action-value {
   width: 34px !important;
