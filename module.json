@@ -34,7 +34,6 @@
  "esmodules": [
   "scripts/main.js",
   "scripts/dado-dourado.js"
-]
   ],
   "manifest": "https://raw.githubusercontent.com/angelomagnoBR/candelafvtt-ptbr-ficha/main/module.json",
   "download": "https://github.com/angelomagnoBR/candelafvtt-ptbr-ficha/archive/refs/heads/main.zip"
