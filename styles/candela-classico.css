@@ -29,9 +29,9 @@
   width: 680px !important;
   min-width: 680px !important;
   max-width: 680px !important;
-  height: 860px !important;
+  height: 920px !important;
   min-height: 600px !important;
-  max-height: 90vh !important;
+  max-height: 92vh !important;
   resize: vertical !important;
   overflow: hidden !important;
   border: 1px solid var(--co-border-dim) !important;
@@ -178,7 +178,7 @@
 .candela-classico-window .header-fields {
   flex: 1 !important;
   display: grid !important;
-  grid-template-columns: 1fr 128px !important;
+  grid-template-columns: 1fr 150px !important;
   column-gap: 16px !important;
   align-items: start !important;
   min-width: 0 !important;
@@ -216,16 +216,24 @@
   outline: none !important;
 }
 
-/* Pronomes — compactos */
+/* Pronomes — campo de texto visível e confortável para digitar */
 .candela-classico-window .pronouns input {
   font-family: 'Crimson Text', serif !important;
-  font-size: 12px !important;
+  font-size: 13px !important;
   font-style: italic !important;
-  color: var(--co-muted) !important;
-  background: transparent !important;
-  border: none !important;
-  padding: 3px 0 !important;
+  color: var(--co-text) !important;
+  background: var(--co-card) !important;
+  border: 1px solid var(--co-border-dim) !important;
+  border-radius: 3px !important;
+  padding: 6px 10px !important;
+  height: 30px !important;
   width: 100% !important;
+  box-sizing: border-box !important;
+  margin-top: 4px !important;
+}
+.candela-classico-window .pronouns input:focus {
+  border-color: var(--co-border) !important;
+  outline: none !important;
 }
 
 /* Link do Círculo */
@@ -252,9 +260,9 @@
   flex-direction: column !important;
   align-items: stretch !important;
   justify-content: flex-start !important;
-  gap: 8px !important;
+  gap: 9px !important;
   height: 100% !important;
-  padding-left: 14px !important;
+  padding-left: 16px !important;
   border-left: 1px solid var(--co-border-dim) !important;
 }
 .candela-classico-window .mark.flex-group-center {
@@ -262,17 +270,17 @@
   flex-direction: row !important;
   align-items: center !important;
   justify-content: space-between !important;
-  gap: 6px !important;
+  gap: 8px !important;
   background: var(--co-card) !important;
   border: 1px solid var(--co-border-dim) !important;
   border-radius: 4px !important;
-  padding: 6px 8px !important;
+  padding: 8px 10px !important;
   overflow: visible !important;
 }
 .candela-classico-window .mark .resource-label {
   font-family: 'Cinzel', serif !important;
-  font-size: 9px !important;
-  letter-spacing: 0.1em !important;
+  font-size: 10px !important;
+  letter-spacing: 0.08em !important;
   color: var(--co-gold-dim) !important;
   text-transform: uppercase !important;
   white-space: nowrap !important;
@@ -284,12 +292,12 @@
   display: flex !important;
   flex-direction: row !important;
   align-items: center !important;
-  gap: 3px !important;
+  gap: 4px !important;
   flex-shrink: 0 !important;
 }
 .candela-classico-window .mark-content input[type="number"] {
   font-family: 'Cinzel', serif !important;
-  font-size: 15px !important;
+  font-size: 16px !important;
   font-weight: 700 !important;
   color: var(--co-gold) !important;
   background: var(--co-bg) !important;
@@ -297,8 +305,8 @@
   border-radius: 3px !important;
   text-align: center !important;
   padding: 0 !important;
-  width: 24px !important;
-  height: 24px !important;
+  width: 28px !important;
+  height: 28px !important;
   flex-shrink: 0 !important;
   -moz-appearance: textfield !important;
 }
@@ -384,16 +392,26 @@
 .candela-classico-window section.sheet-body {
   background: var(--co-bg) !important;
   padding: 0 !important;
-  padding-bottom: 16px !important;
   overflow-y: scroll !important;
   overflow-x: hidden !important;
   flex: 1 1 auto !important;
   min-height: 0 !important;
   max-height: 100% !important;
   box-sizing: border-box !important;
+  position: relative !important;
+}
+.candela-classico-window section.sheet-body .tab {
+  display: block !important;
+  position: static !important;
+  height: auto !important;
+  min-height: auto !important;
+  overflow: visible !important;
 }
 .candela-classico-window .tab.actions {
-  padding-bottom: 12px !important;
+  padding-bottom: 40px !important;
+}
+.candela-classico-window ol.actions-list:last-of-type {
+  margin-bottom: 24px !important;
 }
 .candela-classico-window section.sheet-body::-webkit-scrollbar { width: 3px !important; }
 .candela-classico-window section.sheet-body::-webkit-scrollbar-track { background: transparent !important; }
@@ -509,21 +527,21 @@
 }
 
 /* texto "/ 0" das resistências (span ao invés de input) —
-   estilizado como uma caixinha, igual aos inputs, para consistência visual */
+   o sistema já escreve "/ N" no próprio texto; aqui só
+   estilizamos como texto solto ao lado da caixinha do valor
+   atual, sem criar uma segunda caixa com barra duplicada */
 .candela-classico-window .actioncategory-label[name$=".max"] {
   display: inline-flex !important;
   align-items: center !important;
   justify-content: center !important;
   height: 24px !important;
-  min-width: 30px !important;
-  padding: 0 6px !important;
+  padding: 0 2px !important;
   font-family: 'Cinzel', serif !important;
-  font-size: 13px !important;
-  font-weight: 700 !important;
-  color: var(--co-gold-dim) !important;
-  background: var(--co-bg) !important;
-  border: 1.5px solid var(--co-border-dim) !important;
-  border-radius: 3px !important;
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  color: var(--co-muted) !important;
+  background: transparent !important;
+  border: none !important;
   letter-spacing: 0 !important;
   text-transform: none !important;
 }
