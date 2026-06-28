@@ -233,12 +233,11 @@
 }
 .candela-classico-window .pronouns input,
 .candela-classico-window input[name="system.pronouns"] {
-  font-family: 'Cinzel', serif !important;
-  font-size: 13px !important;
-  font-style: normal !important;
+  font-family: 'Crimson Text', Georgia, serif !important;
+  font-size: 14px !important;
+  font-style: italic !important;
   font-weight: 400 !important;
-  color: var(--co-text) !important;
-  /* Sem fundo, sem borda, sem radius — idêntico ao nome */
+  color: var(--co-muted) !important;
   background: transparent !important;
   border: none !important;
   border-bottom: 1px solid transparent !important;
@@ -247,9 +246,13 @@
   padding: 0 0 3px 0 !important;
   height: auto !important;
   width: 100% !important;
+  max-width: 100% !important;
   box-sizing: border-box !important;
   outline: none !important;
-  letter-spacing: 0.04em !important;
+  letter-spacing: 0.01em !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
 }
 .candela-classico-window .pronouns input:hover,
 .candela-classico-window input[name="system.pronouns"]:hover {
@@ -743,21 +746,140 @@
 ══════════════════════════════════════════════ */
 .candela-classico-window li.items-header {
   font-family: 'Cinzel', serif !important;
-  font-size: 10px !important;
-  letter-spacing: 0.12em !important;
-  color: var(--co-gold-dim) !important;
+  font-size: 11px !important;
+  letter-spacing: 0.1em !important;
+  color: var(--co-gold) !important;
   text-transform: uppercase !important;
   background: var(--co-card) !important;
   border-bottom: 1px solid var(--co-border-dim) !important;
-  padding: 8px 12px !important;
+  padding: 10px 14px !important;
   list-style: none !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+}
+.candela-classico-window .item-controls {
+  display: flex !important;
+  gap: 8px !important;
+  align-items: center !important;
 }
 .candela-classico-window .item-control {
   color: var(--co-gold) !important;
   text-decoration: none !important;
+  font-size: 13px !important;
 }
 .candela-classico-window .item-control:hover {
   color: var(--co-gold-bright) !important;
+}
+
+/* ══════════════════════════════════════════════
+   HABILIDADES — itens da lista
+══════════════════════════════════════════════ */
+.candela-classico-window .tab.abilities .item.flexrow,
+.candela-classico-window .tab.abilities li.item {
+  display: flex !important;
+  align-items: center !important;
+  padding: 10px 14px !important;
+  border-bottom: 1px solid rgba(74,58,16,0.35) !important;
+  gap: 10px !important;
+  background: transparent !important;
+  transition: background 0.12s !important;
+}
+.candela-classico-window .tab.abilities .item.flexrow:hover,
+.candela-classico-window .tab.abilities li.item:hover {
+  background: var(--co-row-hover) !important;
+}
+/* Nome da habilidade */
+.candela-classico-window .circle-ability-label,
+.candela-classico-window .resource-label.circle-ability-label {
+  font-family: 'Cinzel', serif !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  color: var(--co-text) !important;
+  letter-spacing: 0.05em !important;
+}
+/* Descrição da habilidade */
+.candela-classico-window .gear-description span,
+.candela-classico-window .circle-ability-description span {
+  font-family: 'Crimson Text', Georgia, serif !important;
+  font-size: 13px !important;
+  font-style: italic !important;
+  color: var(--co-muted) !important;
+  line-height: 1.4 !important;
+}
+.candela-classico-window .circle-abilities {
+  flex: 1 !important;
+  min-width: 0 !important;
+}
+/* Link rollable de habilidade */
+.candela-classico-window .circle-abilities a.rollable {
+  display: block !important;
+  height: auto !important;
+}
+.candela-classico-window .circle-abilities a.rollable:hover .circle-ability-label {
+  color: var(--co-gold) !important;
+}
+
+/* ══════════════════════════════════════════════
+   EQUIPAMENTO — itens da lista
+══════════════════════════════════════════════ */
+.candela-classico-window .tab.gear .item.flexrow,
+.candela-classico-window .tab.gear li.item {
+  display: flex !important;
+  align-items: center !important;
+  padding: 9px 14px !important;
+  border-bottom: 1px solid rgba(74,58,16,0.35) !important;
+  gap: 10px !important;
+  background: transparent !important;
+  transition: background 0.12s !important;
+}
+.candela-classico-window .tab.gear .item.flexrow:hover,
+.candela-classico-window .tab.gear li.item:hover {
+  background: var(--co-row-hover) !important;
+}
+/* Cabeçalho de colunas do equipamento */
+.candela-classico-window .items-header-equipped,
+.candela-classico-window .items-header-name {
+  font-family: 'Cinzel', serif !important;
+  font-size: 10px !important;
+  letter-spacing: 0.1em !important;
+  color: var(--co-gold-dim) !important;
+  text-transform: uppercase !important;
+}
+/* Nome do item de equipamento */
+.candela-classico-window .tab.gear .item-name,
+.candela-classico-window .tab.gear li.item > *:not(.item-controls) {
+  font-family: 'Crimson Text', Georgia, serif !important;
+  font-size: 14px !important;
+  color: var(--co-text) !important;
+  flex: 1 !important;
+  min-width: 0 !important;
+}
+
+/* ══════════════════════════════════════════════
+   CHAVES DE ILUMINAÇÃO — itens
+══════════════════════════════════════════════ */
+.candela-classico-window .tab.biography .items-list .item.flexrow,
+.candela-classico-window .tab.biography li.item {
+  display: flex !important;
+  align-items: center !important;
+  padding: 9px 14px !important;
+  border-bottom: 1px solid rgba(74,58,16,0.35) !important;
+  gap: 10px !important;
+  background: transparent !important;
+  transition: background 0.12s !important;
+}
+.candela-classico-window .tab.biography .items-list .item.flexrow:hover {
+  background: var(--co-row-hover) !important;
+}
+/* Nome da chave de iluminação */
+.candela-classico-window .tab.biography .items-list .item a,
+.candela-classico-window .tab.biography .items-list .item span:not(.item-control i) {
+  font-family: 'Crimson Text', Georgia, serif !important;
+  font-size: 14px !important;
+  color: var(--co-text) !important;
+  text-decoration: none !important;
+  flex: 1 !important;
 }
 
 /* ══════════════════════════════════════════════
