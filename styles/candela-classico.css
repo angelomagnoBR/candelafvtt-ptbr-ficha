@@ -1,6 +1,6 @@
 /* ============================================================
    CANDELA OBSCURA PT-BR — Visual Escuro/Dourado
-   Substitua todo o conteúdo do seu arquivo CSS por este.
+   Versão corrigida: retrato maior + layout alinhado
    ============================================================ */
 
 @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap');
@@ -48,25 +48,39 @@
   color: var(--co-text) !important;
 }
 
-/* ── CABEÇALHO — aumentar altura e reorganizar ── */
+/* ── CABEÇALHO (retrato + info) ── */
 .candela-classico-window .sheet-header,
 .candela-classico-window header.sheet-header {
-  min-height: 220px !important;   /* era 160px */
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: stretch !important;
   padding: 16px !important;
+  margin-bottom: 0 !important;
+  gap: 20px !important;
+  height: auto !important;
+  min-height: 220px !important;   /* AUMENTADO: era 160px */
+  background: #100d15 !important;
+  border-bottom: 1px solid var(--co-border-dim) !important;
 }
 
-/* ── RETRATO — maior e mais imponente ── */
+/* ── RETRATO — maior, tipo portrait ── */
 .candela-classico-window .profile-image,
 .candela-classico-window img.profile-image,
 .candela-classico-window .sheet-header img,
 .candela-classico-window img[data-edit="img"] {
-  width: 200px !important;        /* era 150px */
-  height: 200px !important;       /* era 150px */
-  min-width: 200px !important;
-  min-height: 200px !important;
-  flex: 0 0 200px !important;
+  width: 190px !important;        /* AUMENTADO: era 150px */
+  height: 220px !important;       /* AUMENTADO: retrato vertical */
+  min-width: 190px !important;
+  min-height: 220px !important;
+  flex: 0 0 190px !important;
   object-fit: cover !important;
-  object-position: top center !important;  /* foca no rosto */
+  object-position: top center !important;
+  border: 2px solid var(--co-border) !important;
+  border-radius: 4px !important;
+  box-shadow:
+    0 0 0 1px var(--co-border-dim),
+    0 4px 20px rgba(0,0,0,0.7),
+    inset 0 0 0 1px rgba(184,150,12,0.1) !important;
 }
 
 /* ── COLUNA DIREITA DO CABEÇALHO ── */
@@ -77,28 +91,52 @@
   display: flex !important;
   flex-direction: column !important;
   justify-content: space-between !important;
-  gap: 8px !important;
+  gap: 10px !important;
+  min-width: 0 !important;
 }
 
 /* ── NOME DO PERSONAGEM ── */
 .candela-classico-window .charname input,
 .candela-classico-window input[name="name"] {
   font-family: 'Cinzel', serif !important;
-  font-size: 20px !important;
+  font-size: 22px !important;
   font-weight: 700 !important;
   color: var(--co-gold) !important;
   letter-spacing: 0.08em !important;
   background: var(--co-card) !important;
   border: 1px solid var(--co-border-dim) !important;
   border-radius: 4px !important;
-  padding: 7px 12px !important;
+  padding: 8px 14px !important;
   width: 100% !important;
+  box-sizing: border-box !important;
 }
 
 .candela-classico-window .charname input:focus,
 .candela-classico-window input[name="name"]:focus {
   border-color: var(--co-border) !important;
   outline: none !important;
+}
+
+/* ── RECURSOS (CORPO / MENTE / SANGRIA) ── */
+.candela-classico-window .resources,
+.candela-classico-window .vitals,
+.candela-classico-window .sheet-header .resources {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+  gap: 28px !important;
+  margin-top: auto !important;
+  padding-top: 8px !important;
+  border-top: 1px solid var(--co-border-dim) !important;
+}
+
+.candela-classico-window .resource,
+.candela-classico-window .vital {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  gap: 6px !important;
 }
 
 /* ── INPUTS GERAIS ── */
