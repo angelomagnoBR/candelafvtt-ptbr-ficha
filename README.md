@@ -10,5 +10,5 @@ Módulo para Foundry VTT v13 com:
 Manifest URL:
 
 ```text
-https://raw.githubusercontent.com/angelomagnoBR/candelafvtt-ptbr-ficha/main/module.json?v=1.1.0
+https://raw.githubusercontent.com/angelomagnoBR/candelafvtt-ptbr-ficha/main/module.json?update=true
 ```
