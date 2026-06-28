@@ -79,45 +79,46 @@ Hooks.on("renderApplicationV2", (app, element) => {
 });
 
 // =====================================================================
-// NOVO: INTEGRAÇÃO DIRETA COM GATILHO 3D DO DICE SO NICE (FOUNDRY v12+)
+// INTEGRAÇÃO COM DICE SO NICE (VERSÃO COMPATÍVEL POR CHAT RENDER)
 // =====================================================================
 
-// 1. Cria a paleta de cores dourada no Dice So Nice assim que o módulo iniciar
+// 1. Garante o registro da cor dourada no Dice So Nice
 Hooks.on('diceSoNiceReady', (dice3d) => {
     dice3d.addColorset({
         name: 'candela_gilded',
         description: 'Candela Obscura - Dado Dourado',
         category: 'Candela Obscura',
         foreground: '#FFFFFF', // Números Brancos
-        background: '#D4AF37', // Corpo do dado Dourado (Gold)
-        outline: '#8B6508',    // Contorno do número em marrom
+        background: '#D4AF37', // Corpo do dado Dourado
+        outline: '#8B6508',    // Contorno do número
         edge: '#AA7C11',       // Bordas do dado
         texture: 'none'
     }, "preferred");
 });
 
-// 2. Intercepta a animação 3D diretamente no início da rolagem física
-Hooks.on('diceSoNiceRollStart', (messageId, diceData) => {
-    // Pegamos a mensagem de chat que gerou essa rolagem 3D
-    const chatMessage = game.messages.get(messageId);
-    if (!chatMessage) return;
+// 2. Intercepta no momento em que a mensagem de chat é renderizada
+Hooks.on('renderChatMessage', (message, html, data) => {
+    // Se a mensagem não tiver dados de rolagem associados, ignora
+    if (!message.rolls || message.rolls.length === 0) return;
 
-    // Obtém o flavor text geral ou o conteúdo da mensagem
-    const flavorText = chatMessage.flavor || "";
-    const contentText = chatMessage.content || "";
-    
-    // Unifica os textos para buscar os termos chaves em português ou inglês
+    const flavorText = message.flavor || "";
+    const contentText = message.content || "";
     const textToSearch = (flavorText + " " + contentText).toLowerCase();
 
-    // Se a mensagem contiver indicações de que é um dado dourado
+    // Se identificarmos que é uma jogada dourada
     if (textToSearch.includes("dado dourado") || textToSearch.includes("dados dourados") || textToSearch.includes("gilded")) {
         
-        // O Dice So Nice nos dá uma lista direta de dados 3D (diceData.throws)
-        diceData.throws.forEach(throwItem => {
-            throwItem.dice.forEach(die => {
-                // Se for um dado de 6 faces (d6), força a cor dourada que criamos
-                if (die.faces === 6) {
-                    die.colorset = 'candela_gilded';
+        // Passa por todas as rolagens contidas nesta mensagem específica
+        message.rolls.forEach(roll => {
+            roll.dice.forEach(dice => {
+                if (dice.faces === 6) {
+                    // Atualiza o colorset nos dados da rolagem interna
+                    dice.options.colorset = 'candela_gilded';
+                    
+                    // Se o Dice So Nice já anexou dados 3D na propriedade da mensagem, força neles também
+                    if (dice.options.dsnValues) {
+                        dice.options.dsnValues.colorset = 'candela_gilded';
+                    }
                 }
             });
         });
