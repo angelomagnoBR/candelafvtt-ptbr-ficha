@@ -82,27 +82,20 @@ Hooks.on("renderApplicationV2", (app, element) => {
 // NOVO: INTEGRAÇÃO COM DICE SO NICE (FORÇAR COR DO DADO DOURADO NO CHAT)
 // =====================================================================
 
-Hooks.on('diceSoNiceReady', (dice3d) => {
-    dice3d.addColorset({
-        name: 'candela_gilded',
-        description: 'Candela Obscura - Dado Dourado',
-        category: 'Candela Obscura',
-        foreground: '#FFFFFF', 
-        background: '#D4AF37', 
-        outline: '#8B6508',    
-        edge: '#AA7C11',       
-        texture: 'none'
-    }, "preferred");
-});
-
 Hooks.on('preCreateChatMessage', (document, data, options, userId) => {
     if (!document.rolls || document.rolls.length === 0) return;
+
+    // Linha de diagnóstico: Abra o console do navegador (F12) para ver a estrutura da rolagem
+    console.log("Candela Obscura - Rolagem detectada:", document);
 
     const flavorText = document.flavor || "";
     
     document.rolls.forEach(roll => {
-        const isGildedRoll = flavorText.includes("dado dourado") || 
-                             flavorText.includes("dados dourados") || 
+        // Verifica termos em português (da sua tradução) e termos nativos do sistema em inglês
+        const isGildedRoll = flavorText.toLowerCase().includes("dado dourado") || 
+                             flavorText.toLowerCase().includes("dados dourados") || 
+                             flavorText.toLowerCase().includes("gilded") ||
+                             (roll.options && roll.options.flavor && roll.options.flavor.toLowerCase().includes("gilded")) ||
                              (roll.options && roll.options.flavor && roll.options.flavor.toLowerCase().includes("dourado"));
         
         if (isGildedRoll) {
@@ -112,5 +105,7 @@ Hooks.on('preCreateChatMessage', (document, data, options, userId) => {
                 }
             });
         }
+    });
+});
     });
 });
