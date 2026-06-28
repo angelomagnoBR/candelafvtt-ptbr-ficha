@@ -48,37 +48,25 @@
   color: var(--co-text) !important;
 }
 
-/* ── CABEÇALHO (retrato + info) ── */
+/* ── CABEÇALHO — aumentar altura e reorganizar ── */
 .candela-classico-window .sheet-header,
 .candela-classico-window header.sheet-header {
-  display: flex !important;
-  flex-direction: row !important;
-  align-items: stretch !important;
-  padding: 14px 16px !important;
-  margin-bottom: 0 !important;
-  gap: 16px !important;
-  height: auto !important;
-  min-height: 160px !important;
-  background: #100d15 !important;
-  border-bottom: 1px solid var(--co-border-dim) !important;
+  min-height: 220px !important;   /* era 160px */
+  padding: 16px !important;
 }
 
-/* ── RETRATO ── */
+/* ── RETRATO — maior e mais imponente ── */
 .candela-classico-window .profile-image,
 .candela-classico-window img.profile-image,
 .candela-classico-window .sheet-header img,
 .candela-classico-window img[data-edit="img"] {
-  width: 150px !important;
-  height: 150px !important;
-  min-width: 150px !important;
-  min-height: 150px !important;
-  flex: 0 0 150px !important;
+  width: 200px !important;        /* era 150px */
+  height: 200px !important;       /* era 150px */
+  min-width: 200px !important;
+  min-height: 200px !important;
+  flex: 0 0 200px !important;
   object-fit: cover !important;
-  border: 2px solid var(--co-border) !important;
-  border-radius: 4px !important;
-  box-shadow:
-    0 0 0 1px var(--co-border-dim),
-    0 4px 14px rgba(0,0,0,0.6) !important;
+  object-position: top center !important;  /* foca no rosto */
 }
 
 /* ── COLUNA DIREITA DO CABEÇALHO ── */
