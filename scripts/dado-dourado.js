@@ -1,11 +1,12 @@
 // ============================================================
-//  Candela Obscura — Patch de Dado Dourado v3 (sem race condition)
-//  Estratégia: sincroniza pelo messageId, sem estado global volátil
+//  Candela Obscura — Patch de Dado Dourado v4
+//  Baseado no debug real: usa diceSoNiceRollStart com o context
+//  para detectar a fórmula e colorir só o dado dourado
 // ============================================================
 
 const CANDELA_SOCKET = "module.candelafvtt-ptbr-ficha";
 
-// Mapa local: messageId -> true (rolagem dourada pendente)
+// Set de messageIds confirmados como dourados (vindos do socket)
 const candelaGildedMessages = new Set();
 
 // ── Instala interceptador no Dice So Nice ──
@@ -24,6 +25,7 @@ function candelaInstalarPatch() {
   if (factory._candelaPatched) return;
   factory._candelaPatched = true;
 
+  // ID da mensagem sendo renderizada agora
   factory._candelaCurrentMsgId = null;
 
   const origGetAppearance = factory.getAppearanceForDice.bind(factory);
@@ -42,45 +44,47 @@ function candelaInstalarPatch() {
     return result;
   };
 
-  console.log("Candela | Patch v3 instalado.");
+  console.log("Candela | Patch v4 instalado.");
 }
 
-// ── Marca a mensagem como dourada antes de criar no chat ──
-Hooks.on("preCreateChatMessage", (message) => {
-  const rolls = message.rolls ?? [];
-  const isGilded = rolls.some(r =>
-    (r?.formula ?? "").toLowerCase().includes("dourado")
-  );
-  if (!isGilded) return;
-
-  const msgId = message.id ?? message._id;
-  if (!msgId) return;
-
-  candelaGildedMessages.add(msgId);
-
-  game.socket.emit(CANDELA_SOCKET, {
-    action: "gildedRoll",
-    messageId: msgId
-  });
-});
-
-// ── DSN começa a renderizar: diz qual messageId está ativo ──
-Hooks.on("diceSoNiceRollStart", (messageId) => {
+// ── diceSoNiceRollStart: recebe (messageId, context) ──
+// context tem os rolls com as fórmulas reais
+Hooks.on("diceSoNiceRollStart", (messageId, context) => {
   const factory =
     game.dice3d?.box?.dicefactory ??
     game.dice3d?.dicefactory ??
     null;
   if (!factory) return;
+
+  // Verifica se algum roll tem "dourado" na fórmula
+  const rolls = context?.rolls ?? [];
+  const isGilded = rolls.some(r =>
+    (r?.formula ?? "").toLowerCase().includes("dourado")
+  );
+
+  if (isGilded) {
+    // Marca localmente
+    candelaGildedMessages.add(messageId);
+
+    // Avisa os outros clientes com o messageId real
+    game.socket.emit(CANDELA_SOCKET, {
+      action: "gildedRoll",
+      messageId: messageId
+    });
+  }
+
+  // Define o contexto para getAppearanceForDice
   factory._candelaCurrentMsgId = messageId;
 });
 
-// ── DSN terminou: limpa o contexto ──
+// ── diceSoNiceRollComplete: limpa o contexto ──
 Hooks.on("diceSoNiceRollComplete", (messageId) => {
   const factory =
     game.dice3d?.box?.dicefactory ??
     game.dice3d?.dicefactory ??
     null;
   if (!factory) return;
+
   factory._candelaCurrentMsgId = null;
   candelaGildedMessages.delete(messageId);
 });
@@ -89,6 +93,8 @@ Hooks.on("diceSoNiceRollComplete", (messageId) => {
 Hooks.once("ready", () => {
   game.socket.on(CANDELA_SOCKET, (data) => {
     if (data?.action === "gildedRoll" && data?.messageId) {
+      // Adiciona ao Set — quando o diceSoNiceRollStart chegar,
+      // o ID já estará marcado
       candelaGildedMessages.add(data.messageId);
     }
   });
