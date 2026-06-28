@@ -1,0 +1,311 @@
+:root {
+  --candela-classico-paper: #e8debf;
+  --candela-classico-paper-light: #f5efd9;
+  --candela-classico-paper-dark: #cfc09a;
+  --candela-classico-ink: #241b14;
+  --candela-classico-muted: #5f513c;
+  --candela-classico-gold: #9c7c33;
+  --candela-classico-gold-bright: #d6b869;
+  --candela-classico-dark: #17130e;
+  --candela-classico-red: #6d201f;
+}
+
+/* Janela principal da ficha */
+.candela-classico-window {
+  width: 900px !important;
+  min-width: 900px !important;
+  max-width: 900px !important;
+  height: 740px !important;
+  min-height: 740px !important;
+  max-height: 740px !important;
+  resize: none !important;
+  border: 1px solid rgba(214, 184, 105, 0.8) !important;
+  border-radius: 2px !important;
+  box-shadow:
+    0 0 0 1px rgba(37, 28, 17, 0.95),
+    0 0 28px rgba(0, 0, 0, 0.88),
+    inset 0 0 20px rgba(214, 184, 105, 0.08) !important;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(214, 184, 105, 0.20), transparent 40%),
+    linear-gradient(135deg, #17130e, #0d0a07 72%) !important;
+}
+
+.candela-classico-window .window-header {
+  height: 34px !important;
+  flex: 0 0 34px !important;
+  color: var(--candela-classico-paper-light) !important;
+  background:
+    linear-gradient(90deg, rgba(7, 6, 5, 0.96), rgba(44, 32, 18, 0.96), rgba(7, 6, 5, 0.96)) !important;
+  border-bottom: 1px solid rgba(214, 184, 105, 0.6) !important;
+  font-family: Georgia, "Times New Roman", serif !important;
+  letter-spacing: 0.04em;
+  text-shadow: 0 1px 2px #000;
+}
+
+.candela-classico-window .window-header .window-title {
+  color: var(--candela-classico-paper-light) !important;
+  font-weight: 700;
+}
+
+.candela-classico-window .window-header a,
+.candela-classico-window .window-header button {
+  color: var(--candela-classico-gold-bright) !important;
+}
+
+.candela-classico-window .window-content {
+  overflow: hidden !important;
+  color: var(--candela-classico-ink) !important;
+  padding: 14px !important;
+  background:
+    radial-gradient(ellipse at 20% 10%, rgba(255,255,255,0.32), transparent 32%),
+    radial-gradient(ellipse at 80% 85%, rgba(80,49,24,0.13), transparent 42%),
+    linear-gradient(90deg, rgba(120, 92, 50, 0.08) 0 1px, transparent 1px 100%),
+    linear-gradient(0deg, rgba(120, 92, 50, 0.06) 0 1px, transparent 1px 100%),
+    linear-gradient(135deg, var(--candela-classico-paper-light), var(--candela-classico-paper) 52%, var(--candela-classico-paper-dark)) !important;
+  background-size: auto, auto, 24px 24px, 24px 24px, auto !important;
+  border: 1px solid rgba(72, 51, 25, 0.75) !important;
+  box-shadow: inset 0 0 38px rgba(64, 40, 19, 0.30) !important;
+}
+
+.candela-classico-window .window-resizable-handle,
+.candela-classico-window .resize-handle,
+.candela-classico-window [data-resize-handle] {
+  display: none !important;
+  pointer-events: none !important;
+}
+
+/* Corpo da ficha */
+.candela-classico-window form,
+.candela-classico-window .sheet,
+.candela-classico-window .actor-sheet,
+.candela-classico-window .candelafvtt {
+  height: 100% !important;
+  max-height: 100% !important;
+  color: var(--candela-classico-ink) !important;
+  font-family: Georgia, "Times New Roman", serif !important;
+}
+
+.candela-classico-window form::before {
+  content: "";
+  position: absolute;
+  inset: 44px 22px 22px 22px;
+  pointer-events: none;
+  border: 1px solid rgba(156, 124, 51, 0.35);
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.18);
+}
+
+.candela-classico-window .sheet-header,
+.candela-classico-window header.sheet-header,
+.candela-classico-window .header {
+  padding: 8px 10px 10px !important;
+  margin-bottom: 8px !important;
+  border: 1px solid rgba(87, 62, 29, 0.65) !important;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.20), rgba(107, 77, 35, 0.12)),
+    rgba(233, 222, 190, 0.45) !important;
+  box-shadow: inset 0 0 18px rgba(65, 42, 20, 0.15) !important;
+}
+
+.candela-classico-window img,
+.candela-classico-window .profile-img,
+.candela-classico-window .profile {
+  border: 2px solid rgba(91, 68, 34, 0.85) !important;
+  background: rgba(246, 238, 211, 0.72) !important;
+  box-shadow:
+    0 0 0 1px rgba(214, 184, 105, 0.65),
+    0 6px 14px rgba(37, 23, 10, 0.30) !important;
+}
+
+.candela-classico-window h1,
+.candela-classico-window h2,
+.candela-classico-window h3,
+.candela-classico-window .charname,
+.candela-classico-window .window-content label {
+  color: var(--candela-classico-ink) !important;
+}
+
+.candela-classico-window h1,
+.candela-classico-window .charname input,
+.candela-classico-window input[name="name"] {
+  color: #1c140e !important;
+  font-family: Georgia, "Times New Roman", serif !important;
+  letter-spacing: 0.03em;
+  text-transform: none;
+}
+
+/* Campos */
+.candela-classico-window input,
+.candela-classico-window textarea,
+.candela-classico-window select {
+  color: var(--candela-classico-ink) !important;
+  background: rgba(250, 244, 222, 0.62) !important;
+  border: 1px solid rgba(90, 66, 30, 0.62) !important;
+  border-radius: 1px !important;
+  box-shadow: inset 0 1px 3px rgba(37, 23, 10, 0.20) !important;
+  font-family: Georgia, "Times New Roman", serif !important;
+}
+
+.candela-classico-window input:focus,
+.candela-classico-window textarea:focus,
+.candela-classico-window select:focus {
+  outline: 1px solid rgba(214, 184, 105, 0.8) !important;
+  box-shadow:
+    0 0 6px rgba(214, 184, 105, 0.36),
+    inset 0 1px 3px rgba(37, 23, 10, 0.20) !important;
+}
+
+.candela-classico-window textarea {
+  min-height: 90px;
+  line-height: 1.35;
+}
+
+/* Abas */
+.candela-classico-window .tabs,
+.candela-classico-window .sheet-tabs,
+.candela-classico-window nav.tabs {
+  flex: 0 0 34px !important;
+  margin: 6px 0 8px !important;
+  padding: 0 6px !important;
+  border-top: 1px solid rgba(80, 55, 24, 0.55) !important;
+  border-bottom: 1px solid rgba(80, 55, 24, 0.55) !important;
+  background:
+    linear-gradient(90deg, transparent, rgba(96, 67, 29, 0.18), transparent) !important;
+}
+
+.candela-classico-window .tabs a,
+.candela-classico-window .sheet-tabs a,
+.candela-classico-window nav.tabs a,
+.candela-classico-window .tabs .item,
+.candela-classico-window .sheet-tabs .item {
+  height: 30px !important;
+  line-height: 30px !important;
+  margin: 0 4px !important;
+  padding: 0 12px !important;
+  color: #3d2c18 !important;
+  border: 1px solid transparent !important;
+  font-family: Georgia, "Times New Roman", serif !important;
+  font-size: 15px !important;
+  font-weight: 700 !important;
+  text-transform: none !important;
+  text-shadow: none !important;
+}
+
+.candela-classico-window .tabs a.active,
+.candela-classico-window .sheet-tabs a.active,
+.candela-classico-window nav.tabs a.active,
+.candela-classico-window .tabs .item.active,
+.candela-classico-window .sheet-tabs .item.active {
+  color: #130e09 !important;
+  border-color: rgba(111, 80, 33, 0.78) !important;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.26), rgba(156,124,51,0.22)) !important;
+  box-shadow: inset 0 -2px 0 rgba(105, 74, 31, 0.55) !important;
+}
+
+/* Blocos internos */
+.candela-classico-window .sheet-body,
+.candela-classico-window .tab.active,
+.candela-classico-window .tab[data-tab].active {
+  overflow: auto !important;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(82, 57, 24, 0.65) rgba(250, 244, 222, 0.25);
+}
+
+.candela-classico-window .sheet-body {
+  height: calc(100% - 145px) !important;
+  max-height: calc(100% - 145px) !important;
+}
+
+.candela-classico-window .tab.active::-webkit-scrollbar,
+.candela-classico-window .sheet-body::-webkit-scrollbar {
+  width: 8px;
+}
+
+.candela-classico-window .tab.active::-webkit-scrollbar-thumb,
+.candela-classico-window .sheet-body::-webkit-scrollbar-thumb {
+  background: rgba(82, 57, 24, 0.62);
+  border: 1px solid rgba(238, 224, 183, 0.55);
+}
+
+.candela-classico-window table,
+.candela-classico-window .items-list,
+.candela-classico-window .item-list,
+.candela-classico-window .list-row,
+.candela-classico-window .resource,
+.candela-classico-window .attribute,
+.candela-classico-window .action,
+.candela-classico-window .action-row {
+  border-color: rgba(82, 57, 24, 0.40) !important;
+}
+
+.candela-classico-window table thead,
+.candela-classico-window .items-header,
+.candela-classico-window .item-header,
+.candela-classico-window .section-header,
+.candela-classico-window .action-group,
+.candela-classico-window .group-header {
+  color: #17100a !important;
+  background:
+    linear-gradient(90deg, rgba(23, 19, 14, 0.10), rgba(156, 124, 51, 0.24), rgba(23, 19, 14, 0.10)) !important;
+  border-top: 1px solid rgba(82, 57, 24, 0.42) !important;
+  border-bottom: 1px solid rgba(82, 57, 24, 0.42) !important;
+  font-family: Georgia, "Times New Roman", serif !important;
+  font-weight: 700 !important;
+}
+
+.candela-classico-window a,
+.candela-classico-window button,
+.candela-classico-window .item-control,
+.candela-classico-window .rollable {
+  color: #4e3518 !important;
+}
+
+.candela-classico-window a:hover,
+.candela-classico-window button:hover,
+.candela-classico-window .item-control:hover,
+.candela-classico-window .rollable:hover {
+  color: #7b511c !important;
+  text-shadow: 0 0 5px rgba(214, 184, 105, 0.65) !important;
+}
+
+/* Diamantes e marcadores dourados da ficha */
+.candela-classico-window .fa-diamond,
+.candela-classico-window i[class*="diamond"],
+.candela-classico-window .diamond,
+.candela-classico-window .gilded,
+.candela-classico-window [class*="gild"] {
+  color: var(--candela-classico-gold) !important;
+  text-shadow: 0 0 4px rgba(214, 184, 105, 0.45) !important;
+}
+
+.candela-classico-window input[type="checkbox"],
+.candela-classico-window input[type="radio"] {
+  accent-color: var(--candela-classico-gold) !important;
+}
+
+/* Botões de rolagem e controles */
+.candela-classico-window button,
+.candela-classico-window .button {
+  background:
+    linear-gradient(180deg, rgba(244, 232, 190, 0.92), rgba(191, 166, 98, 0.56)) !important;
+  border: 1px solid rgba(82, 57, 24, 0.62) !important;
+  color: #21170d !important;
+  border-radius: 2px !important;
+  font-family: Georgia, "Times New Roman", serif !important;
+}
+
+.candela-classico-window .editor,
+.candela-classico-window .editor-content {
+  background: rgba(250, 244, 222, 0.35) !important;
+  border: 1px solid rgba(90, 66, 30, 0.36) !important;
+  padding: 6px !important;
+}
+
+/* Evita que o conteúdo force a janela a mudar */
+.candela-classico-window * {
+  box-sizing: border-box !important;
+}
+
+.candela-classico-window.candela-classico-locked {
+  overflow: hidden !important;
+}
