@@ -1,23 +1,30 @@
-Hooks.on("diceSoNiceRollStart", (id, data) => {
-  const terms = data?.roll?.terms ?? [];
-  terms.forEach((term) => {
-    if (!term.results) return;
-    const flavor = term.options?.flavor ?? "";
-    if (!flavor.toLowerCase().includes("dourado")) return;
+Hooks.on("diceSoNiceMessageProcessed", (id, data) => {
+  const hasGilded = data?.roll?.dice?.some(d =>
+    d.options?.flavor?.toLowerCase().includes("dourado")
+  );
+  if (!hasGilded) return;
 
-    // Cores diretas, sem depender de colorset registrado
-    const appearance = {
-      colorset    : "custom",
+  const original = foundry.utils.deepClone(
+    game.user.getFlag("dice-so-nice", "appearance") ?? {}
+  );
+
+  game.user.setFlag("dice-so-nice", "appearance", {
+    global: {
       labelColor  : "#FFFFFF",
       diceColor   : "#d4a820",
       outlineColor: "#d4a820",
       edgeColor   : "#b8860c",
       texture     : "metal",
       material    : "auto",
-      font        : "auto"
-    };
-
-    term.options.appearance = appearance;
-    term.results.forEach(r => { r.appearance = appearance; });
+      font        : "auto",
+      colorset    : "custom",
+      system      : "candelafvtt"
+    }
+  }).then(() => {
+    Hooks.once("diceSoNiceRollComplete", () => {
+      game.user.setFlag("dice-so-nice", "appearance", {
+        global: original.global ?? {}
+      });
+    });
   });
 });
