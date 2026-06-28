@@ -30,10 +30,27 @@
     linear-gradient(135deg, #17130e, #0d0a07 72%) !important;
 }
 
+/* RESTAURADO: Fundo de pergaminho com a textura original */
+.candela-classico-window .window-content {
+  overflow: hidden !important;
+  color: var(--candela-classico-ink) !important;
+  padding: 14px !important;
+  background:
+    radial-gradient(ellipse at 20% 10%, rgba(255,255,255,0.32), transparent 32%),
+    radial-gradient(ellipse at 80% 85%, rgba(80,49,24,0.13), transparent 42%),
+    linear-gradient(90deg, rgba(120, 92, 50, 0.08) 0 1px, transparent 1px 100%),
+    linear-gradient(0deg, rgba(120, 92, 50, 0.06) 0 1px, transparent 1px 100%),
+    linear-gradient(135deg, var(--candela-classico-paper-light), var(--candela-classico-paper) 52%, var(--candela-classico-paper-dark)) !important;
+  background-size: auto, auto, 24px 24px, 24px 24px, auto !important;
+  border: 1px solid rgba(72, 51, 25, 0.75) !important;
+  box-shadow: inset 0 0 38px rgba(64, 40, 19, 0.30) !important;
+}
+
 /* AMPLIAR RETRATO SEM QUEBRAR O ALINHAMENTO */
 .candela-classico-window .profile-image,
 .candela-classico-window img.profile-image,
-.candela-classico-window .sheet-header img {
+.candela-classico-window .sheet-header img,
+.candela-classico-window img[data-edit="img"] {
   width: 115px !important;
   height: 115px !important;
   min-width: 115px !important;
