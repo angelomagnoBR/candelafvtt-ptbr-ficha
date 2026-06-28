@@ -1,102 +1,104 @@
 // ============================================================
-//  Candela Obscura — Patch de Dado Dourado (multiplayer)
-//  Usa socket para sincronizar o estado "gilded" entre clientes
+//  Candela Obscura — Patch de Dado Dourado v3 (sem race condition)
+//  Estratégia: sincroniza pelo messageId, sem estado global volátil
 // ============================================================
 
 const CANDELA_SOCKET = "module.candelafvtt-ptbr-ficha";
 
-// ── Instala o patch visual no Dice So Nice de um cliente ──
+// Mapa local: messageId -> true (rolagem dourada pendente)
+const candelaGildedMessages = new Set();
+
+// ── Instala interceptador no Dice So Nice ──
 function candelaInstalarPatch() {
   if (!game.dice3d) return;
 
-  // Tenta achar a factory em diferentes versões do DSN
   const factory =
-    (game.dice3d.box && game.dice3d.box.dicefactory) ||
-    (game.dice3d._buildCanvas && game.dice3d.dicefactory) ||
+    game.dice3d?.box?.dicefactory ??
+    game.dice3d?.dicefactory ??
     null;
 
   if (!factory) {
     console.warn("Candela | Dice factory não encontrada.");
     return;
   }
-
-  // Evita instalar duas vezes
   if (factory._candelaPatched) return;
   factory._candelaPatched = true;
 
-  // Guarda estado local "próxima rolagem é dourada?"
-  factory._candelaGilded = false;
+  factory._candelaCurrentMsgId = null;
 
-  // Intercepta getAppearanceForDice para colorir quando necessário
   const origGetAppearance = factory.getAppearanceForDice.bind(factory);
   factory.getAppearanceForDice = function(...args) {
     const result = origGetAppearance(...args);
-    if (factory._candelaGilded) {
-      factory._candelaGilded = false;
+    if (
+      factory._candelaCurrentMsgId &&
+      candelaGildedMessages.has(factory._candelaCurrentMsgId)
+    ) {
       result.background = "#d4a820";
       result.edge       = "#b8860c";
       result.foreground = "#FFFFFF";
       result.outline    = "none";
-      // Limpa cache para garantir que a cor nova seja aplicada
       if (factory.baseMaterialCache) factory.baseMaterialCache = {};
     }
     return result;
   };
 
-  // Intercepta showForRoll para detectar rolagens douradas LOCAIS
-  const origShow = game.dice3d.showForRoll.bind(game.dice3d);
-  game.dice3d.showForRoll = function(roll, ...rest) {
-    const formula = (roll?.formula ?? "").toLowerCase();
-    if (formula.includes("dourado")) {
-      factory._candelaGilded = true;
-    }
-    return origShow(roll, ...rest);
-  };
-
-  console.log("Candela | Patch de dado dourado instalado.");
+  console.log("Candela | Patch v3 instalado.");
 }
 
-// ── Recebe aviso de outro cliente e ativa o gilded local ──
-function candelaAtivarGildedLocal() {
+// ── Marca a mensagem como dourada antes de criar no chat ──
+Hooks.on("preCreateChatMessage", (message) => {
+  const rolls = message.rolls ?? [];
+  const isGilded = rolls.some(r =>
+    (r?.formula ?? "").toLowerCase().includes("dourado")
+  );
+  if (!isGilded) return;
+
+  const msgId = message.id ?? message._id;
+  if (!msgId) return;
+
+  candelaGildedMessages.add(msgId);
+
+  game.socket.emit(CANDELA_SOCKET, {
+    action: "gildedRoll",
+    messageId: msgId
+  });
+});
+
+// ── DSN começa a renderizar: diz qual messageId está ativo ──
+Hooks.on("diceSoNiceRollStart", (messageId) => {
   const factory =
-    (game.dice3d?.box?.dicefactory) ||
+    game.dice3d?.box?.dicefactory ??
+    game.dice3d?.dicefactory ??
     null;
   if (!factory) return;
-  factory._candelaGilded = true;
-  if (factory.baseMaterialCache) factory.baseMaterialCache = {};
-}
-
-// ── Antes de rolar, avisa todos os outros clientes via socket ──
-Hooks.on("preCreateChatMessage", (message) => {
-  const conteudo = message?.rolls?.[0]?.formula?.toLowerCase() ?? "";
-  if (!conteudo.includes("dourado")) return;
-
-  // Emite para todos os outros clientes
-  game.socket.emit(CANDELA_SOCKET, {
-    action: "gildedRoll"
-  });
-
-  // Ativa localmente também (o emitter não recebe o próprio emit)
-  candelaAtivarGildedLocal();
+  factory._candelaCurrentMsgId = messageId;
 });
 
-// ── Escuta mensagens de outros clientes ──
+// ── DSN terminou: limpa o contexto ──
+Hooks.on("diceSoNiceRollComplete", (messageId) => {
+  const factory =
+    game.dice3d?.box?.dicefactory ??
+    game.dice3d?.dicefactory ??
+    null;
+  if (!factory) return;
+  factory._candelaCurrentMsgId = null;
+  candelaGildedMessages.delete(messageId);
+});
+
+// ── Escuta socket dos outros clientes ──
 Hooks.once("ready", () => {
   game.socket.on(CANDELA_SOCKET, (data) => {
-    if (data?.action === "gildedRoll") {
-      candelaAtivarGildedLocal();
+    if (data?.action === "gildedRoll" && data?.messageId) {
+      candelaGildedMessages.add(data.messageId);
     }
   });
 });
 
-// ── Instala o patch quando o DSN estiver pronto ──
+// ── Instala o patch quando DSN estiver pronto ──
 Hooks.once("diceSoNiceReady", () => {
   candelaInstalarPatch();
 });
 
-// ── Fallback caso diceSoNiceReady já tenha passado ──
 Hooks.once("ready", () => {
-  setTimeout(() => {
-    candelaInstalarPatch();
-  }, 1500);
+  setTimeout(() => candelaInstalarPatch(), 1500);
 });
