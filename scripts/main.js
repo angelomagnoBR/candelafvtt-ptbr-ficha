@@ -174,3 +174,46 @@ Hooks.once("ready", () => {
 Hooks.on("renderActorSheet", (app, html) => applyCandelaClassic(app, html));
 Hooks.on("renderItemSheet", (app, html) => applyCandelaClassic(app, html));
 Hooks.on("renderApplicationV2", (app, element) => applyCandelaClassic(app, element));
+
+// =====================================================================
+// AUTOMAÇÃO ADICIONADA: SUPORTE VISUAL DE ARREMESSO PARA DADOS DOURADOS
+// =====================================================================
+Hooks.on('diceSoNiceReady', (dice3d) => {
+    dice3d.addColorset({
+        name: 'candela_gilded',
+        description: 'Candela Obscura - Dado Dourado',
+        category: 'Candela Obscura',
+        foreground: '#FFFFFF', 
+        background: '#D4AF37', 
+        outline: '#8B6508',    
+        edge: '#AA7C11',       
+        texture: 'none'
+    }, "preferred");
+});
+
+Hooks.on('diceSoNiceRollStart', (messageId, diceData) => {
+    const chatMessage = game.messages.get(messageId);
+    if (!chatMessage || !chatMessage.rolls || !diceData.throws || !diceData.throws[0]) return;
+
+    let flatDieIndex = 0; 
+    const currentThrow = diceData.throws[0]; 
+
+    chatMessage.rolls.forEach(roll => {
+        roll.terms.forEach(term => {
+            if (!term.results) return;
+
+            const isGilded = term.faces === 6 && 
+                             term.options && 
+                             term.options.flavor && 
+                             (term.options.flavor.toLowerCase().includes("dourado") || 
+                              term.options.flavor.toLowerCase().includes("gilded"));
+
+            term.results.forEach(() => {
+                if (isGilded && currentThrow.dice[flatDieIndex]) {
+                    currentThrow.dice[flatDieIndex].colorset = 'candela_gilded';
+                }
+                flatDieIndex++; 
+            });
+        });
+    });
+});
