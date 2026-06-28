@@ -14,10 +14,10 @@ Hooks.once("diceSoNiceReady", (dice3d) => {
     description : "Candela — Dado Dourado",
     category    : "Candela Obscura",
     // ── Cores douradas ────────────────────────────────
-    labelColor  : "#1a1000",   // número escuro (igual ao vermelho usa #FFFFFF)
-    diceColor   : "#c8960c",   // corpo dourado
-    outlineColor: "#c8960c",   // contorno igual ao corpo (padrão do vermelho)
-    edgeColor   : "#c8960c",   // borda igual ao corpo (padrão do vermelho)
+    labelColor  : "#FFFFFF",   // número escuro (igual ao vermelho usa #FFFFFF)
+    diceColor   : "#d4a820",   // corpo dourado
+    outlineColor: "#d4a820",   // contorno igual ao corpo (padrão do vermelho)
+    edgeColor   : "#b8860c",   // borda igual ao corpo (padrão do vermelho)
     // ── Mesmo estético do dado normal ─────────────────
     texture     : "metal",     // igual ao seu dado vermelho
     material    : "auto",      // igual ao seu dado vermelho
