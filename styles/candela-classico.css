@@ -1,6 +1,10 @@
 /* ============================================================
-   CANDELA OBSCURA PT-BR — v5
-   Portrait 680×860 · impulsos corrigidos · fonte legível
+   CANDELA OBSCURA PT-BR — v7
+   · Baseado na estrutura HTML REAL do sistema candelafvtt
+   · Impulsos/Resistências alinhados corretamente (grid-8col real)
+   · Nomes das ações (Mover/Atacar/etc.) visíveis
+   · Checkbox "gilded" brilha quando marcado
+   · Botões da barra de título: ícone apenas, sem texto
    ============================================================ */
 
 @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap');
@@ -14,7 +18,7 @@
   --co-gold-bright: #f0c93a;
   --co-gold-dim:    #7a6010;
   --co-text:        #e8dfc0;
-  --co-muted:       #8a7a50;
+  --co-muted:       #9a8a60;
   --co-row-hover:   #1f1830;
 }
 
@@ -54,7 +58,8 @@
 }
 
 /* ══════════════════════════════════════════════
-   BARRA DE TÍTULO
+   BARRA DE TÍTULO — mantém todos os botões,
+   mas mostra SÓ o ícone (esconde o texto/label)
 ══════════════════════════════════════════════ */
 .candela-classico-window .window-header {
   background: #07050a !important;
@@ -63,19 +68,55 @@
   flex-shrink: 0 !important;
   display: flex !important;
   align-items: center !important;
-  padding: 0 10px !important;
+  padding: 0 8px !important;
   height: 32px !important;
   box-sizing: border-box !important;
+  gap: 4px !important;
 }
 .candela-classico-window .window-header .window-title {
   font-family: 'Cinzel', serif !important;
   font-size: 12px !important;
   color: var(--co-gold) !important;
   letter-spacing: 0.1em !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
 }
+
+/* Botões nativos do header (PopOut, Ficha, Theatre, Add to Stage,
+   Protótipo de Token, Fechar...): mantém todos, some só com o texto */
+.candela-classico-window .window-header button.header-control,
 .candela-classico-window .window-header a.header-button {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 24px !important;
+  height: 24px !important;
+  min-width: 24px !important;
+  padding: 0 !important;
+  margin: 0 !important;
   color: var(--co-muted) !important;
+  background: transparent !important;
+  border: none !important;
+  font-size: 13px !important;
+  overflow: hidden !important;
+  white-space: nowrap !important;
 }
+/* Esconde apenas o texto do botão, preserva o ícone <i> */
+.candela-classico-window .window-header button.header-control > *:not(i),
+.candela-classico-window .window-header a.header-button > *:not(i) {
+  display: none !important;
+}
+/* Caso o texto esteja solto (text node) e não dentro de outra tag,
+   reduz a fonte do botão a 0 e usa o ::before do FontAwesome do ícone <i> */
+.candela-classico-window .window-header button.header-control,
+.candela-classico-window .window-header a.header-button {
+  font-size: 0 !important;
+}
+.candela-classico-window .window-header button.header-control i,
+.candela-classico-window .window-header a.header-button i {
+  font-size: 13px !important;
+}
+.candela-classico-window .window-header button.header-control:hover,
 .candela-classico-window .window-header a.header-button:hover {
   color: var(--co-gold) !important;
 }
@@ -83,17 +124,16 @@
 /* ══════════════════════════════════════════════
    CABEÇALHO — foto + info
 ══════════════════════════════════════════════ */
-.candela-classico-window .sheet-header,
-.candela-classico-window header.sheet-header {
+.candela-classico-window .sheet-header {
   display: flex !important;
   flex-direction: row !important;
   align-items: stretch !important;
   padding: 14px 16px !important;
   margin: 0 !important;
   gap: 16px !important;
-  height: 210px !important;
-  min-height: 210px !important;
-  max-height: 210px !important;
+  height: 200px !important;
+  min-height: 200px !important;
+  max-height: 200px !important;
   background: #100d15 !important;
   border-bottom: 2px solid var(--co-border-dim) !important;
   box-sizing: border-box !important;
@@ -101,27 +141,39 @@
   overflow: hidden !important;
 }
 
-/* ── Foto portrait ── */
-.candela-classico-window .profile-image,
-.candela-classico-window img.profile-image,
-.candela-classico-window .sheet-header img,
-.candela-classico-window img[data-edit="img"] {
-  width: 130px !important;
-  height: 182px !important;
-  min-width: 130px !important;
-  flex: 0 0 130px !important;
+/* Coluna esquerda (foto + papel/especialidade) */
+.candela-classico-window .actor-header-left {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  flex: 0 0 134px !important;
+  gap: 4px !important;
+}
+.candela-classico-window .actor-header-left .role,
+.candela-classico-window .actor-header-left .specialty {
+  font-family: 'Cinzel', serif !important;
+  font-size: 9px !important;
+  color: var(--co-gold-dim) !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.08em !important;
+  min-height: 11px !important;
+}
+
+/* Foto */
+.candela-classico-window img.profile-img {
+  width: 134px !important;
+  height: 160px !important;
+  min-width: 134px !important;
+  flex: 0 0 160px !important;
   object-fit: cover !important;
   object-position: top center !important;
   border: 2px solid var(--co-border) !important;
   border-radius: 3px !important;
   box-shadow: 0 0 0 1px var(--co-border-dim), 0 6px 20px rgba(0,0,0,0.8) !important;
-  align-self: center !important;
 }
 
-/* ── Coluna direita ── */
-.candela-classico-window .sheet-header .header-details,
-.candela-classico-window .sheet-header > div:not([class*="profile"]):not([class*="img"]),
-.candela-classico-window .sheet-header > .header-fields {
+/* Coluna direita */
+.candela-classico-window .header-fields {
   flex: 1 !important;
   display: flex !important;
   flex-direction: column !important;
@@ -131,8 +183,7 @@
 }
 
 /* Nome */
-.candela-classico-window .charname input,
-.candela-classico-window input[name="name"] {
+.candela-classico-window .charname input[name="name"] {
   font-family: 'Cinzel', serif !important;
   font-size: 22px !important;
   font-weight: 700 !important;
@@ -146,16 +197,13 @@
   width: 100% !important;
   box-sizing: border-box !important;
 }
-.candela-classico-window .charname input:focus,
-.candela-classico-window input[name="name"]:focus {
+.candela-classico-window .charname input[name="name"]:focus {
   border-bottom-color: var(--co-border) !important;
   outline: none !important;
 }
 
 /* Pronomes */
-.candela-classico-window input[name*="pronoun"],
-.candela-classico-window input[placeholder*="pronome"],
-.candela-classico-window .sheet-header input[type="text"]:not([name="name"]) {
+.candela-classico-window .pronouns input {
   font-family: 'Crimson Text', serif !important;
   font-size: 14px !important;
   font-style: italic !important;
@@ -166,33 +214,71 @@
   width: 100% !important;
 }
 
+/* Link do Círculo */
+.candela-classico-window .circle-link .circle {
+  font-family: 'Cinzel', serif !important;
+  font-size: 12px !important;
+  color: var(--co-gold-dim) !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.08em !important;
+  min-height: 14px !important;
+}
+
 /* Recursos CORPO / MENTE / SANGRIA */
-.candela-classico-window .resources,
-.candela-classico-window .vitals,
-.candela-classico-window .sheet-header .resources {
+.candela-classico-window .resources.grid-3col {
   display: flex !important;
   flex-direction: row !important;
   align-items: center !important;
-  gap: 24px !important;
+  justify-content: space-between !important;
+  gap: 16px !important;
   padding-top: 10px !important;
   border-top: 1px solid var(--co-border-dim) !important;
   flex-shrink: 0 !important;
 }
-.candela-classico-window .resource,
-.candela-classico-window .vital {
+.candela-classico-window .mark.flex-group-center {
   display: flex !important;
   flex-direction: column !important;
   align-items: center !important;
   gap: 4px !important;
+  flex: 1 !important;
 }
-.candela-classico-window .resource label,
-.candela-classico-window .vital-label,
-.candela-classico-window .resource-label {
+.candela-classico-window .mark .resource-label {
   font-family: 'Cinzel', serif !important;
   font-size: 9px !important;
   letter-spacing: 0.14em !important;
   color: var(--co-gold-dim) !important;
   text-transform: uppercase !important;
+}
+.candela-classico-window .mark-content {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  gap: 4px !important;
+}
+.candela-classico-window .mark-content input[type="number"] {
+  font-family: 'Cinzel', serif !important;
+  font-size: 15px !important;
+  font-weight: 600 !important;
+  color: var(--co-gold) !important;
+  background: var(--co-bg) !important;
+  border: 1.5px solid var(--co-border) !important;
+  border-radius: 3px !important;
+  text-align: center !important;
+  padding: 0 !important;
+  width: 30px !important;
+  height: 26px !important;
+  flex-shrink: 0 !important;
+  -moz-appearance: textfield !important;
+}
+.candela-classico-window .mark-content > span {
+  color: var(--co-border-dim) !important;
+  font-size: 13px !important;
+}
+.candela-classico-window .mark-content span[name$=".max"] {
+  font-family: 'Cinzel', serif !important;
+  font-size: 15px !important;
+  font-weight: 600 !important;
+  color: var(--co-gold-dim) !important;
 }
 
 /* ══════════════════════════════════════════════
@@ -219,30 +305,15 @@
   color: var(--co-muted) !important;
   font-style: italic !important;
 }
-
-/* Inputs numéricos (Corpo, Mente, Sangria) */
-.candela-classico-window input[type="number"],
-.candela-classico-window .resource input {
-  font-family: 'Cinzel', serif !important;
-  font-size: 15px !important;
-  font-weight: 600 !important;
-  color: var(--co-gold) !important;
-  background: var(--co-bg) !important;
-  border: 1.5px solid var(--co-border) !important;
-  border-radius: 3px !important;
-  text-align: center !important;
-  padding: 0 !important;
-  width: 34px !important;
-  height: 28px !important;
-  flex-shrink: 0 !important;
+.candela-classico-window input[type="number"]::-webkit-inner-spin-button,
+.candela-classico-window input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none !important;
 }
 
 /* ══════════════════════════════════════════════
    ABAS
 ══════════════════════════════════════════════ */
-.candela-classico-window .sheet-tabs,
-.candela-classico-window nav.sheet-tabs,
-.candela-classico-window .tabs {
+.candela-classico-window nav.sheet-tabs.tabs {
   display: flex !important;
   background: #0a0810 !important;
   border-bottom: 1px solid var(--co-border-dim) !important;
@@ -251,9 +322,7 @@
   flex-shrink: 0 !important;
   overflow: hidden !important;
 }
-.candela-classico-window .sheet-tabs .item,
-.candela-classico-window nav.sheet-tabs a,
-.candela-classico-window .tabs .item {
+.candela-classico-window nav.sheet-tabs.tabs a.item {
   flex: 1 !important;
   padding: 11px 6px !important;
   text-align: center !important;
@@ -269,10 +338,8 @@
   transition: color 0.15s !important;
   white-space: nowrap !important;
 }
-.candela-classico-window .sheet-tabs .item:hover,
-.candela-classico-window nav.sheet-tabs a:hover { color: var(--co-text) !important; }
-.candela-classico-window .sheet-tabs .item.active,
-.candela-classico-window nav.sheet-tabs a.active {
+.candela-classico-window nav.sheet-tabs.tabs a.item:hover { color: var(--co-text) !important; }
+.candela-classico-window nav.sheet-tabs.tabs a.item.active {
   color: var(--co-gold) !important;
   border-bottom-color: var(--co-gold) !important;
 }
@@ -280,8 +347,6 @@
 /* ══════════════════════════════════════════════
    CORPO DAS ABAS
 ══════════════════════════════════════════════ */
-.candela-classico-window .sheet-body,
-.candela-classico-window .tab-content,
 .candela-classico-window section.sheet-body {
   background: var(--co-bg) !important;
   padding: 0 !important;
@@ -291,69 +356,47 @@
   min-height: 0 !important;
   box-sizing: border-box !important;
 }
-.candela-classico-window .sheet-body::-webkit-scrollbar { width: 3px !important; }
-.candela-classico-window .sheet-body::-webkit-scrollbar-track { background: transparent !important; }
-.candela-classico-window .sheet-body::-webkit-scrollbar-thumb {
+.candela-classico-window section.sheet-body::-webkit-scrollbar { width: 3px !important; }
+.candela-classico-window section.sheet-body::-webkit-scrollbar-track { background: transparent !important; }
+.candela-classico-window section.sheet-body::-webkit-scrollbar-thumb {
   background: var(--co-border-dim) !important;
   border-radius: 2px !important;
 }
 
 /* ══════════════════════════════════════════════
-   BLOCO DE ATRIBUTO (Coragem / Astúcia / Intuição)
+   CABEÇALHO DE CATEGORIA (Coragem/Astúcia/Intuição)
+   Estrutura real:
+   <div class="actioncategory grid grid-8col items-header">
+     <span grid-span-1>NOME</span>
+     <span grid-span-2>Impulsos</span>
+     <span grid-span-1><input/> / <input/></span>
+     <span grid-span-2 grid-start-6>Resistências</span>
+     <span grid-span-1><input/><span>/ max</span></span>
+   </div>
 ══════════════════════════════════════════════ */
-.candela-classico-window .attribute-block,
-.candela-classico-window .action-group,
-.candela-classico-window .skill-group {
-  width: 100% !important;
-  box-sizing: border-box !important;
-  border-bottom: 2px solid var(--co-border-dim) !important;
-  overflow: visible !important;
-}
-
-/* ─────────────────────────────────────────────
-   CABEÇALHO DO BLOCO
-   Estrutura esperada do Foundry:
-   [nome atributo] [label Impulsos] [input] [/] [input] [spacer] [label Resist.] [input] [/] [input]
-   Usamos grid com colunas nomeadas para fixar cada peça no lugar
-───────────────────────────────────────────── */
-.candela-classico-window .attribute-header,
-.candela-classico-window .action-group-header,
-.candela-classico-window .skill-group-header {
-  /* Reset completo de qualquer float/flex anterior do sistema */
+.candela-classico-window .actioncategory.grid.grid-8col {
   display: grid !important;
-  grid-template-columns:
-    110px        /* nome do atributo */
-    auto         /* label "Impulsos" */
-    34px         /* input impulso atual */
-    12px         /* "/" */
-    34px         /* input impulso max */
-    1fr          /* espaço flexível */
-    auto         /* label "Resistências" */
-    34px         /* input resist atual */
-    12px         /* "/" */
-    34px !important; /* input resist max */
-  grid-template-rows: 38px !important;
+  grid-template-columns: 100px 1fr auto 1fr auto !important;
+  grid-template-areas: "name impulsos-label impulsos-val resist-label resist-val" !important;
   align-items: center !important;
+  column-gap: 8px !important;
   padding: 0 12px !important;
   background: var(--co-card) !important;
   border-bottom: 1px solid var(--co-border-dim) !important;
-  gap: 0 6px !important;
+  border-top: 2px solid var(--co-border-dim) !important;
+  height: 38px !important;
+  min-height: 38px !important;
+  max-height: 38px !important;
   box-sizing: border-box !important;
-  overflow: hidden !important;
   width: 100% !important;
 }
+.candela-classico-window .actioncategory.grid.grid-8col:first-child {
+  border-top: none !important;
+}
 
-/* Acentos laterais */
-.candela-classico-window .attribute-block.courage   .attribute-header,
-.candela-classico-window .action-group.courage      .action-group-header { border-left: 3px solid #c06010 !important; }
-.candela-classico-window .attribute-block.cunning   .attribute-header,
-.candela-classico-window .action-group.cunning      .action-group-header { border-left: 3px solid #2a7a34 !important; }
-.candela-classico-window .attribute-block.intuition .attribute-header,
-.candela-classico-window .action-group.intuition    .action-group-header { border-left: 3px solid #3838a8 !important; }
-
-/* Nome do atributo — coluna 1 */
-.candela-classico-window .attribute-name,
-.candela-classico-window .action-group-name {
+/* Nome da categoria — 1ª coluna */
+.candela-classico-window .actioncategory-label.grid-span-1 {
+  grid-area: name !important;
   font-family: 'Cinzel', serif !important;
   font-size: 12px !important;
   font-weight: 700 !important;
@@ -362,28 +405,57 @@
   text-transform: uppercase !important;
   white-space: nowrap !important;
   overflow: hidden !important;
-  grid-column: 1 !important;
+  text-overflow: ellipsis !important;
 }
 
-/* Labels "Impulsos" e "Resistências" — colunas 2 e 7 */
-.candela-classico-window .attribute-header label,
-.candela-classico-window .action-group-header label,
-.candela-classico-window .impulsos-label,
-.candela-classico-window .resist-label {
+/* Label "Impulsos" — 2ª coluna (o primeiro grid-span-2 sem grid-start) */
+.candela-classico-window .actioncategory.grid.grid-8col > span.grid-span-2.align-center:not([class*="grid-start"]) {
+  grid-area: impulsos-label !important;
   font-family: 'Cinzel', serif !important;
   font-size: 8px !important;
   letter-spacing: 0.1em !important;
   color: var(--co-muted) !important;
   text-transform: uppercase !important;
   white-space: nowrap !important;
-  line-height: 1 !important;
+  text-align: center !important;
 }
 
-/* Todos os inputs dentro do header — forçados a caber na linha */
-.candela-classico-window .attribute-header input[type="number"],
-.candela-classico-window .action-group-header input[type="number"] {
-  width: 34px !important;
-  height: 26px !important;
+/* Bloco de inputs de Impulsos — 3ª coluna */
+.candela-classico-window .actioncategory.grid.grid-8col > span.grid-span-1.align-center:nth-of-type(1) {
+  grid-area: impulsos-val !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 4px !important;
+  text-align: initial !important;
+}
+
+/* Label "Resistências" — 4ª coluna (tem grid-start-6) */
+.candela-classico-window .actioncategory.grid.grid-8col > span.grid-span-2.grid-start-6 {
+  grid-area: resist-label !important;
+  font-family: 'Cinzel', serif !important;
+  font-size: 8px !important;
+  letter-spacing: 0.1em !important;
+  color: var(--co-muted) !important;
+  text-transform: uppercase !important;
+  white-space: nowrap !important;
+  text-align: center !important;
+}
+
+/* Bloco de inputs de Resistências — 5ª coluna (último span.grid-span-1) */
+.candela-classico-window .actioncategory.grid.grid-8col > span.grid-span-1.align-center:last-of-type {
+  grid-area: resist-val !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 4px !important;
+  text-align: initial !important;
+}
+
+/* Inputs numéricos dentro do cabeçalho de categoria */
+.candela-classico-window .actioncategory-value {
+  width: 30px !important;
+  height: 24px !important;
   font-family: 'Cinzel', serif !important;
   font-size: 13px !important;
   font-weight: 700 !important;
@@ -394,101 +466,105 @@
   text-align: center !important;
   padding: 0 !important;
   flex-shrink: 0 !important;
-  box-sizing: border-box !important;
   -moz-appearance: textfield !important;
 }
-.candela-classico-window .attribute-header input[type="number"]::-webkit-inner-spin-button,
-.candela-classico-window .action-group-header input[type="number"]::-webkit-inner-spin-button {
-  display: none !important;
-}
 
-/* Separador "/" */
-.candela-classico-window .attribute-header .sep,
-.candela-classico-window .action-group-header .sep,
-.candela-classico-window .attribute-header > span,
-.candela-classico-window .action-group-header > span {
-  color: var(--co-border-dim) !important;
-  font-size: 14px !important;
-  text-align: center !important;
-  padding: 0 !important;
-  margin: 0 !important;
+/* texto "/ 0" das resistências (span ao invés de input) —
+   estilizado como uma caixinha, igual aos inputs, para consistência visual */
+.candela-classico-window .actioncategory-label[name$=".max"] {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  height: 24px !important;
+  min-width: 30px !important;
+  padding: 0 6px !important;
+  font-family: 'Cinzel', serif !important;
+  font-size: 13px !important;
+  font-weight: 700 !important;
+  color: var(--co-gold-dim) !important;
+  background: var(--co-bg) !important;
+  border: 1.5px solid var(--co-border-dim) !important;
+  border-radius: 3px !important;
+  letter-spacing: 0 !important;
+  text-transform: none !important;
 }
 
 /* ══════════════════════════════════════════════
-   LINHAS DE AÇÃO
+   LISTA DE AÇÕES
+   <li class="action grid grid-8col">
+     <div class="action-checkbox-icon grid-span-1"><input type="checkbox"></div>
+     <a class="rollable grid-span-2"><span class="action-label">Mover</span></a>
+     <span class="action-description grid-span-4">correr, desviar...</span>
+     <div class="action-editbox grid-span-1"><input class="action-value"></div>
+   </li>
 ══════════════════════════════════════════════ */
-.candela-classico-window .list-row,
-.candela-classico-window .action-row,
-.candela-classico-window .item-row {
+.candela-classico-window ol.actions-list {
+  list-style: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+.candela-classico-window li.action.grid.grid-8col {
   display: grid !important;
-  grid-template-columns: 36px 120px 1fr 42px !important;
+  grid-template-columns: 36px 110px 1fr 42px !important;
   align-items: center !important;
   padding: 0 12px !important;
-  border-bottom: 1px solid rgba(74,58,16,0.35) !important;
-  gap: 10px !important;
+  border-bottom: 1px solid rgba(74,58,16,0.4) !important;
+  column-gap: 10px !important;
   cursor: pointer !important;
   transition: background 0.12s !important;
   background: transparent !important;
   width: 100% !important;
   box-sizing: border-box !important;
-  overflow: hidden !important;
-  min-height: 44px !important;
   height: 44px !important;
+  min-height: 44px !important;
 }
-.candela-classico-window .list-row:hover,
-.candela-classico-window .action-row:hover,
-.candela-classico-window .item-row:hover { background: var(--co-row-hover) !important; }
-.candela-classico-window .list-row:last-child,
-.candela-classico-window .action-row:last-child { border-bottom: none !important; }
+.candela-classico-window li.action.grid.grid-8col:hover { background: var(--co-row-hover) !important; }
+.candela-classico-window ol.actions-list li.action:last-child { border-bottom: none !important; }
 
-/* ── DIAMANTE / DADO — ícone clicável ── */
-.candela-classico-window .action-icon,
-.candela-classico-window .item-icon,
-.candela-classico-window .pip,
-.candela-classico-window [class*="diamond"],
-.candela-classico-window [class*="die-icon"],
-.candela-classico-window .list-row img:first-child,
-.candela-classico-window .action-row img:first-child {
-  width: 28px !important;
-  height: 28px !important;
-  min-width: 28px !important;
-  flex-shrink: 0 !important;
+/* Checkbox "dourado" (gilded) — funciona como o diamante/brilho */
+.candela-classico-window .action-checkbox-icon {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+.candela-classico-window .action-checkbox-icon input[type="checkbox"] {
+  appearance: none !important;
+  -webkit-appearance: none !important;
+  width: 24px !important;
+  height: 24px !important;
+  min-width: 24px !important;
+  margin: 0 !important;
   border: 1.5px solid var(--co-border-dim) !important;
   border-radius: 4px !important;
-  object-fit: contain !important;
   background: var(--co-card) !important;
   cursor: pointer !important;
-  transition: border-color 0.15s, box-shadow 0.2s, filter 0.15s !important;
-  display: block !important;
+  position: relative !important;
+  transition: border-color 0.15s, box-shadow 0.2s, background 0.15s !important;
 }
-
-/* Brilho ao selecionar */
-.candela-classico-window .action-icon.active,
-.candela-classico-window .item-icon.active,
-.candela-classico-window .pip.active,
-.candela-classico-window [class*="diamond"].active,
-.candela-classico-window [class*="die-icon"].active,
-.candela-classico-window .list-row.active .action-icon,
-.candela-classico-window .action-row.active img,
-.candela-classico-window img.active {
-  border-color: var(--co-gold-bright) !important;
-  box-shadow:
-    0 0 0 1px rgba(240,201,58,0.4),
-    0 0 10px 3px rgba(212,168,32,0.5),
-    0 0 22px 8px rgba(212,168,32,0.15) !important;
-  filter: brightness(1.4) drop-shadow(0 0 5px rgba(240,201,58,0.7)) !important;
-}
-.candela-classico-window .action-icon:hover,
-.candela-classico-window .item-icon:hover,
-.candela-classico-window [class*="diamond"]:hover {
+.candela-classico-window .action-checkbox-icon input[type="checkbox"]:hover {
   border-color: var(--co-border) !important;
   box-shadow: 0 0 8px rgba(212,168,32,0.25) !important;
 }
+/* Brilho ao marcar (checked = "gilded" = dourado) */
+.candela-classico-window .action-checkbox-icon input[type="checkbox"]:checked {
+  border-color: var(--co-gold-bright) !important;
+  background: radial-gradient(circle, #3a2f0e 0%, var(--co-card) 75%) !important;
+  box-shadow:
+    0 0 0 1px rgba(240,201,58,0.4),
+    0 0 10px 3px rgba(212,168,32,0.55),
+    0 0 22px 8px rgba(212,168,32,0.18) !important;
+}
+.candela-classico-window .action-checkbox-icon input[type="checkbox"]:checked::after {
+  content: "" !important;
+  position: absolute !important;
+  inset: 4px !important;
+  background: var(--co-gold-bright) !important;
+  border-radius: 2px !important;
+  box-shadow: 0 0 6px 2px rgba(240,201,58,0.9) !important;
+}
 
-/* Nome da ação */
-.candela-classico-window .action-name,
-.candela-classico-window .item-name,
-.candela-classico-window .list-row .name {
+/* Nome da ação (Mover, Atacar...) — agora visível de fato */
+.candela-classico-window a.rollable .action-label {
   font-family: 'Cinzel', serif !important;
   font-size: 13px !important;
   font-weight: 600 !important;
@@ -496,29 +572,37 @@
   white-space: nowrap !important;
   overflow: hidden !important;
   text-overflow: ellipsis !important;
+  text-decoration: none !important;
+}
+.candela-classico-window a.rollable {
+  text-decoration: none !important;
+  display: block !important;
+  overflow: hidden !important;
+}
+.candela-classico-window a.rollable:hover .action-label {
+  color: var(--co-gold) !important;
 }
 
-/* Descrição da ação — FONTE MAIOR E LEGÍVEL */
-.candela-classico-window .action-description,
-.candela-classico-window .action-desc,
-.candela-classico-window .item-desc,
-.candela-classico-window .list-row .description {
+/* Descrição da ação — legível */
+.candela-classico-window span.action-description {
   font-family: 'Crimson Text', Georgia, serif !important;
   font-style: italic !important;
-  font-size: 15px !important;          /* era 12px — agora legível */
-  color: var(--co-muted) !important;
-  line-height: 1.25 !important;
+  font-size: 14px !important;
+  color: #b0a070 !important;
+  line-height: 1.2 !important;
   overflow: hidden !important;
   text-overflow: ellipsis !important;
   white-space: nowrap !important;
   min-width: 0 !important;
 }
 
-/* Score — input à direita */
-.candela-classico-window .action-score,
-.candela-classico-window .action-rating,
-.candela-classico-window .list-row input[type="number"],
-.candela-classico-window .action-row input[type="number"] {
+/* Score (input à direita de cada ação) */
+.candela-classico-window .action-editbox {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+.candela-classico-window .action-editbox input.action-value {
   width: 34px !important;
   height: 28px !important;
   border: 1.5px solid var(--co-border-dim) !important;
@@ -527,25 +611,20 @@
   font-family: 'Cinzel', serif !important;
   font-size: 14px !important;
   font-weight: 700 !important;
-  color: var(--co-gold-dim) !important;
+  color: var(--co-gold) !important;
   text-align: center !important;
   padding: 0 !important;
-  transition: border-color 0.15s, color 0.15s !important;
   -moz-appearance: textfield !important;
+  transition: border-color 0.15s, color 0.15s !important;
 }
-.candela-classico-window .action-score:hover,
-.candela-classico-window .list-row input[type="number"]:hover,
-.candela-classico-window .action-row input[type="number"]:hover {
+.candela-classico-window .action-editbox input.action-value:hover {
   border-color: var(--co-border) !important;
-  color: var(--co-gold) !important;
 }
 
 /* ══════════════════════════════════════════════
-   CABEÇALHOS DE SEÇÃO
+   CABEÇALHOS DE LISTA (Habilidades, Equipamento)
 ══════════════════════════════════════════════ */
-.candela-classico-window .section-header,
-.candela-classico-window .items-header,
-.candela-classico-window table thead th {
+.candela-classico-window li.items-header {
   font-family: 'Cinzel', serif !important;
   font-size: 10px !important;
   letter-spacing: 0.12em !important;
@@ -553,11 +632,59 @@
   text-transform: uppercase !important;
   background: var(--co-card) !important;
   border-bottom: 1px solid var(--co-border-dim) !important;
-  padding: 5px 12px !important;
+  padding: 8px 12px !important;
+  list-style: none !important;
+}
+.candela-classico-window .item-control {
+  color: var(--co-gold) !important;
+  text-decoration: none !important;
+}
+.candela-classico-window .item-control:hover {
+  color: var(--co-gold-bright) !important;
 }
 
 /* ══════════════════════════════════════════════
-   TEXTAREA (Biografia)
+   BIOGRAFIA — sub-abas
+══════════════════════════════════════════════ */
+.candela-classico-window nav.bio-tabs.tabs {
+  display: flex !important;
+  background: #0a0810 !important;
+  border-bottom: 1px solid var(--co-border-dim) !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  flex-wrap: wrap !important;
+}
+.candela-classico-window nav.bio-tabs.tabs a.item {
+  flex: 1 1 auto !important;
+  padding: 8px 6px !important;
+  text-align: center !important;
+  font-family: 'Cinzel', serif !important;
+  font-size: 10px !important;
+  letter-spacing: 0.1em !important;
+  color: var(--co-muted) !important;
+  border-bottom: 2px solid transparent !important;
+  cursor: pointer !important;
+  text-decoration: none !important;
+  text-transform: uppercase !important;
+  white-space: nowrap !important;
+}
+.candela-classico-window nav.bio-tabs.tabs a.item:hover { color: var(--co-text) !important; }
+.candela-classico-window nav.bio-tabs.tabs a.item.active {
+  color: var(--co-gold) !important;
+  border-bottom-color: var(--co-gold) !important;
+}
+.candela-classico-window section.bio-body {
+  padding: 12px !important;
+}
+.candela-classico-window .editor-content.prosemirror-editor {
+  min-height: 140px !important;
+  color: var(--co-text) !important;
+  font-size: 15px !important;
+  line-height: 1.6 !important;
+}
+
+/* ══════════════════════════════════════════════
+   TEXTAREA
 ══════════════════════════════════════════════ */
 .candela-classico-window textarea {
   min-height: 80px !important;
@@ -569,10 +696,9 @@
 }
 
 /* ══════════════════════════════════════════════
-   BOTÕES
+   BOTÕES GERAIS DO CORPO DA FICHA (não confundir com header)
 ══════════════════════════════════════════════ */
-.candela-classico-window button,
-.candela-classico-window .control-btn {
+.candela-classico-window section.sheet-body button {
   font-family: 'Cinzel', serif !important;
   font-size: 10px !important;
   letter-spacing: 0.1em !important;
@@ -585,16 +711,15 @@
   transition: all 0.15s !important;
   text-transform: uppercase !important;
 }
-.candela-classico-window button:hover,
-.candela-classico-window .control-btn:hover {
+.candela-classico-window section.sheet-body button:hover {
   border-color: var(--co-border) !important;
   background: #1a1530 !important;
 }
 
 /* ══════════════════════════════════════════════
-   SCROLLBAR — vertical fina, zero horizontal
+   SCROLLBAR
 ══════════════════════════════════════════════ */
-.candela-classico-window ::-webkit-scrollbar        { width: 3px !important; height: 0 !important; }
-.candela-classico-window ::-webkit-scrollbar-track  { background: transparent !important; }
-.candela-classico-window ::-webkit-scrollbar-thumb  { background: var(--co-border-dim) !important; border-radius: 2px !important; }
+.candela-classico-window ::-webkit-scrollbar { width: 3px !important; height: 0 !important; }
+.candela-classico-window ::-webkit-scrollbar-track { background: transparent !important; }
+.candela-classico-window ::-webkit-scrollbar-thumb { background: var(--co-border-dim) !important; border-radius: 2px !important; }
 .candela-classico-window ::-webkit-scrollbar-thumb:hover { background: var(--co-border) !important; }
