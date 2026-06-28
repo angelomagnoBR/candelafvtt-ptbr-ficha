@@ -1,7 +1,7 @@
 {
   "id": "candelafvtt-ptbr-ficha",
   "title": "Candela Obscura PT-BR - Ficha",
-  "description": "Tradução em português brasileiro da interface da ficha do sistema candelafvtt, usando termos do módulo básico de Candela Obscura.",
+  "description": "Tradução em português brasileiro da interface da ficha do sistema candelafvtt, usando termos do módulo básico de Candela Obscura e suporte a dados dourados.",
   "version": "1.0.0",
   "authors": [
     {
@@ -9,7 +9,7 @@
     }
   ],
   "compatibility": {
-    "minimum": "13",
+    "minimum": "12",
     "verified": "13.351"
   },
   "relationships": {
@@ -36,5 +36,7 @@
   ],
   "esmodules": [
     "main.js"
-  ]
+  ],
+  "manifest": "https://raw.githubusercontent.com/angelomagnoBR/candelafvtt-ptbr-ficha/main/module.json",
+  "download": "https://github.com/angelomagnoBR/candelafvtt-ptbr-ficha/archive/refs/heads/main.zip"
 }
