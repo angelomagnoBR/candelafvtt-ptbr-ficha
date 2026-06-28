@@ -79,48 +79,61 @@ Hooks.on("renderApplicationV2", (app, element) => {
 });
 
 // =====================================================================
-// INTEGRAÇÃO COM DICE SO NICE (VERSÃO COMPATÍVEL POR CHAT RENDER)
+// INTEGRAÇÃO FINAL E CIRÚRGICA COM DICE SO NICE (BASEADO NA FÓRMULA)
 // =====================================================================
 
-// 1. Garante o registro da cor dourada no Dice So Nice
+// 1. Registra o set de cores douradas
 Hooks.on('diceSoNiceReady', (dice3d) => {
     dice3d.addColorset({
         name: 'candela_gilded',
         description: 'Candela Obscura - Dado Dourado',
         category: 'Candela Obscura',
-        foreground: '#FFFFFF', // Números Brancos
-        background: '#D4AF37', // Corpo do dado Dourado
-        outline: '#8B6508',    // Contorno do número
-        edge: '#AA7C11',       // Bordas do dado
+        foreground: '#FFFFFF', // Números brancos
+        background: '#D4AF37', // Corpo dourado
+        outline: '#8B6508',    // Contorno
+        edge: '#AA7C11',       // Bordas
         texture: 'none'
     }, "preferred");
 });
 
-// 2. Intercepta no momento em que a mensagem de chat é renderizada
-Hooks.on('renderChatMessage', (message, html, data) => {
-    // Se a mensagem não tiver dados de rolagem associados, ignora
-    if (!message.rolls || message.rolls.length === 0) return;
+// 2. Intercepta no início da animação 3D usando os dados da fórmula real
+Hooks.on('diceSoNiceRollStart', (messageId, diceData) => {
+    const chatMessage = game.messages.get(messageId);
+    if (!chatMessage || !chatMessage.rolls) return;
 
-    const flavorText = message.flavor || "";
-    const contentText = message.content || "";
-    const textToSearch = (flavorText + " " + contentText).toLowerCase();
+    // Varre as rolagens reais da mensagem
+    chatMessage.rolls.forEach((roll, rollIndex) => {
+        // Varre cada termo (Die, OperatorTerm, etc.) de dentro da fórmula
+        roll.terms.forEach((term, termIndex) => {
+            // Verifica se o termo é um dado, se tem 6 faces e se a marcação dele indica dado dourado
+            const isGildedTerm = term.faces === 6 && 
+                                 term.options && 
+                                 term.options.flavor && 
+                                 term.options.flavor.toLowerCase().includes("dourado");
 
-    // Se identificarmos que é uma jogada dourada
-    if (textToSearch.includes("dado dourado") || textToSearch.includes("dados dourados") || textToSearch.includes("gilded")) {
-        
-        // Passa por todas as rolagens contidas nesta mensagem específica
-        message.rolls.forEach(roll => {
-            roll.dice.forEach(dice => {
-                if (dice.faces === 6) {
-                    // Atualiza o colorset nos dados da rolagem interna
-                    dice.options.colorset = 'candela_gilded';
+            if (isGildedTerm) {
+                // Achamos o termo dourado! Agora mapeamos isso para os dados físicos do 3D
+                if (diceData.throws && diceData.throws[rollIndex]) {
+                    const currentThrow = diceData.throws[rollIndex];
                     
-                    // Se o Dice So Nice já anexou dados 3D na propriedade da mensagem, força neles também
-                    if (dice.options.dsnValues) {
-                        dice.options.dsnValues.colorset = 'candela_gilded';
+                    // O Dice So Nice junta todos os dados sequencialmente. 
+                    // Vamos encontrar o índice inicial dos dados deste termo específico
+                    let dieOffset = 0;
+                    for (let i = 0; i < termIndex; i++) {
+                        if (roll.terms[i].results) {
+                            dieOffset += roll.terms[i].results.length;
+                        }
+                    }
+
+                    // Pinta de dourado apenas a quantidade exata de dados que pertencem a este termo!
+                    for (let d = 0; d < term.results.length; d++) {
+                        const targetDie = currentThrow.dice[dieOffset + d];
+                        if (targetDie) {
+                            targetDie.colorset = 'candela_gilded';
+                        }
                     }
                 }
-            });
+            }
         });
-    }
+    });
 });
