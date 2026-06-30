@@ -1,11 +1,8 @@
 /* ============================================================
-   CANDELA OBSCURA PT-BR — v8
+   CANDELA OBSCURA PT-BR — v9
    Correções:
-   · "Sentir" agora aparece (header mais compacto)
-   · Campo pronomes expandido + placeholder "bio / história"
-   · Nome sem aparência de box
-   · Abas funcionando corretamente
-   · Espaços do header reduzidos
+   · Texto pronomes/bio visível (cor clara)
+   · "/" das Resistências removido (text-indent corrigido)
    ============================================================ */
 
 @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap');
@@ -103,18 +100,13 @@
 .candela-classico-window .window-header a.header-button i {
   font-size: 13px !important;
 }
-.candela-classico-window .window-header button.header-control > *:not(i),
-.candela-classico-window .window-header a.header-button > *:not(i) {
-  display: none !important;
-}
 .candela-classico-window .window-header button.header-control:hover,
 .candela-classico-window .window-header a.header-button:hover {
   color: var(--co-gold) !important;
 }
 
 /* ══════════════════════════════════════════════
-   CABEÇALHO — COMPACTO (reduzido para caber "Sentir")
-   Altura reduzida de 200px → 160px
+   CABEÇALHO
 ══════════════════════════════════════════════ */
 .candela-classico-window .sheet-header {
   display: flex !important;
@@ -133,7 +125,6 @@
   overflow: hidden !important;
 }
 
-/* Coluna esquerda (foto) */
 .candela-classico-window .actor-header-left {
   display: flex !important;
   flex-direction: column !important;
@@ -151,7 +142,6 @@
   min-height: 10px !important;
 }
 
-/* Foto — proporção reduzida */
 .candela-classico-window img.profile-img {
   width: 106px !important;
   height: 130px !important;
@@ -164,7 +154,6 @@
   box-shadow: 0 0 0 1px var(--co-border-dim), 0 6px 20px rgba(0,0,0,0.8) !important;
 }
 
-/* Coluna direita — grid de 2 sub-colunas */
 .candela-classico-window .header-fields {
   flex: 1 !important;
   display: grid !important;
@@ -177,20 +166,7 @@
   height: 100% !important;
 }
 
-.candela-classico-window .header-fields .name {
-  grid-column: 1 !important;
-  grid-row: 1 !important;
-}
-.candela-classico-window .header-fields .circle-link {
-  grid-column: 1 !important;
-  grid-row: 2 !important;
-  align-self: start !important;
-}
-
-/* ──────────────────────────────────────────
-   NOME — sem aparência de box/input,
-   texto limpo com só uma linha fina embaixo
-────────────────────────────────────────── */
+/* ── NOME ── */
 .candela-classico-window .charname {
   margin: 0 !important;
   padding: 0 !important;
@@ -201,7 +177,6 @@
   font-weight: 700 !important;
   color: var(--co-gold) !important;
   letter-spacing: 0.06em !important;
-  /* Sem fundo, sem borda, sem borda-radius — parece texto solto */
   background: transparent !important;
   border: none !important;
   border-bottom: 1px solid transparent !important;
@@ -220,10 +195,7 @@
   outline: none !important;
 }
 
-/* ──────────────────────────────────────────
-   PRONOMES → igual ao nome, sem box, sem cor
-   Totalmente transparente, parece texto solto
-────────────────────────────────────────── */
+/* ── PRONOMES — FIX: cor visível ── */
 .candela-classico-window .pronouns {
   grid-column: 1 !important;
   display: flex !important;
@@ -233,66 +205,24 @@
 }
 .candela-classico-window .pronouns input,
 .candela-classico-window input[name="system.pronouns"] {
-  font-family: 'Cinzel', serif !important;
-  font-size: 13px !important;
-  font-style: normal !important;
+  font-family: 'Crimson Text', Georgia, serif !important;
+  font-size: 14px !important;
+  font-style: italic !important;
   font-weight: 400 !important;
-  color: var(--co-text) !important;
+  color: var(--co-text) !important;        /* ← FIX: era transparente/escuro */
   background: transparent !important;
   border: none !important;
   border-bottom: 1px solid transparent !important;
   border-radius: 0 !important;
   box-shadow: none !important;
   padding: 4px 0 0 0 !important;
-  height: 100% !important;
   width: 100% !important;
-  max-width: 100% !important;
   box-sizing: border-box !important;
   outline: none !important;
-  letter-spacing: 0.04em !important;
-  /* <input> é single-line por natureza do HTML — não dá word-wrap real.
-     Para ter quebra de linha, o campo precisaria ser <textarea> no HTML do Foundry.
-     Aqui mostramos o texto com ellipsis quando excede a largura. */
+  letter-spacing: 0.02em !important;
   white-space: nowrap !important;
   overflow: hidden !important;
   text-overflow: ellipsis !important;
-  align-self: flex-start !important;
-}
-
-/* ── MACRO SUGERIDO no Foundry para quebra real de linha ──
-   Cole num macro JS do Foundry (uma vez por sessão):
-   document.querySelectorAll('input[name="system.pronouns"]').forEach(el => {
-     const ta = document.createElement('textarea');
-     ta.name = el.name; ta.value = el.value;
-     ta.className = el.className; ta.rows = 3;
-     el.replaceWith(ta);
-     ta.addEventListener('change', () => el.dispatchEvent(new Event('change')));
-   });
-── */
-
-/* Caso o Foundry já use textarea em alguma versão futura */
-.candela-classico-window .pronouns textarea,
-.candela-classico-window textarea[name="system.pronouns"] {
-  font-family: 'Cinzel', serif !important;
-  font-size: 13px !important;
-  font-style: normal !important;
-  font-weight: 400 !important;
-  color: var(--co-text) !important;
-  background: transparent !important;
-  border: none !important;
-  border-radius: 0 !important;
-  box-shadow: none !important;
-  padding: 4px 0 0 0 !important;
-  height: 100% !important;
-  width: 100% !important;
-  box-sizing: border-box !important;
-  outline: none !important;
-  letter-spacing: 0.04em !important;
-  resize: none !important;
-  line-height: 1.5 !important;
-  overflow: hidden !important;
-  word-wrap: break-word !important;
-  white-space: pre-wrap !important;
 }
 .candela-classico-window .pronouns input:hover,
 .candela-classico-window input[name="system.pronouns"]:hover {
@@ -303,27 +233,14 @@
   border-bottom-color: var(--co-border) !important;
   outline: none !important;
 }
-/* Placeholder invisível — campo parece vazio/livre */
 .candela-classico-window input[name="system.pronouns"]::placeholder {
-  color: transparent !important;
-  font-size: 0 !important;
-}
-
-/* Link do Círculo */
-.candela-classico-window .circle-link .circle {
-  font-family: 'Cinzel', serif !important;
-  font-size: 10px !important;
-  color: var(--co-gold-dim) !important;
-  text-transform: uppercase !important;
-  letter-spacing: 0.08em !important;
-  min-height: 12px !important;
-  margin-top: 4px !important;
-  display: block !important;
+  color: var(--co-muted) !important;
+  font-style: italic !important;
+  font-size: 13px !important;
 }
 
 /* ══════════════════════════════════════════════
    MARCAS — CORPO / MENTE / SANGRIA
-   Coluna direita do header, empilhadas
 ══════════════════════════════════════════════ */
 .candela-classico-window .resources.grid-3col {
   grid-column: 2 !important;
@@ -347,7 +264,6 @@
   border: 1px solid var(--co-border-dim) !important;
   border-radius: 4px !important;
   padding: 6px 8px !important;
-  overflow: visible !important;
 }
 .candela-classico-window .mark .resource-label {
   font-family: 'Cinzel', serif !important;
@@ -357,8 +273,6 @@
   text-transform: uppercase !important;
   white-space: nowrap !important;
   flex-shrink: 1 !important;
-  overflow: hidden !important;
-  text-overflow: ellipsis !important;
 }
 .candela-classico-window .mark-content {
   display: flex !important;
@@ -426,9 +340,6 @@
 
 /* ══════════════════════════════════════════════
    ABAS PRINCIPAIS
-   FIX: abas precisam mostrar/esconder conteúdo
-   O Foundry usa JS para alternar .active —
-   garantimos que só o .active aparece
 ══════════════════════════════════════════════ */
 .candela-classico-window nav.sheet-tabs.tabs {
   display: flex !important;
@@ -462,10 +373,7 @@
 }
 
 /* ══════════════════════════════════════════════
-   CORPO DAS ABAS — FIX PRINCIPAL
-   Abas inativas ficam ocultas; só .active aparece.
-   O Foundry adiciona/remove .active via JS —
-   garantimos que o CSS respeita isso.
+   CORPO DAS ABAS
 ══════════════════════════════════════════════ */
 .candela-classico-window section.sheet-body {
   background: var(--co-bg) !important;
@@ -475,25 +383,10 @@
   flex: 1 1 auto !important;
   min-height: 0 !important;
   box-sizing: border-box !important;
-  position: relative !important;
 }
-
-/* Todas as abas ocultas por padrão */
-.candela-classico-window section.sheet-body .tab {
-  display: none !important;
-}
-
-/* Só a aba ativa aparece */
-.candela-classico-window section.sheet-body .tab.active {
-  display: block !important;
-}
-
-.candela-classico-window .tab.actions {
-  padding-bottom: 40px !important;
-}
-.candela-classico-window ol.actions-list:last-of-type {
-  margin-bottom: 24px !important;
-}
+.candela-classico-window section.sheet-body .tab { display: none !important; }
+.candela-classico-window section.sheet-body .tab.active { display: block !important; }
+.candela-classico-window .tab.actions { padding-bottom: 40px !important; }
 .candela-classico-window section.sheet-body::-webkit-scrollbar { width: 3px !important; }
 .candela-classico-window section.sheet-body::-webkit-scrollbar-track { background: transparent !important; }
 .candela-classico-window section.sheet-body::-webkit-scrollbar-thumb {
@@ -503,14 +396,11 @@
 
 /* ══════════════════════════════════════════════
    CABEÇALHO DE CATEGORIA (Coragem/Astúcia/Intuição)
-   Grid explícito de 5 colunas numa linha só.
-   Nada pode quebrar para a linha de baixo.
 ══════════════════════════════════════════════ */
 .candela-classico-window .actioncategory.grid.grid-8col {
   display: grid !important;
-  /* [nome] [label-impulsos] [val-impulsos] [label-resist] [val-resist] */
   grid-template-columns: minmax(80px,110px) auto auto auto auto !important;
-  grid-template-rows: 36px !important; /* linha única — sem wrap */
+  grid-template-rows: 36px !important;
   align-items: center !important;
   column-gap: 8px !important;
   padding: 0 12px !important;
@@ -521,17 +411,14 @@
   min-height: 36px !important;
   max-height: 36px !important;
   box-sizing: border-box !important;
-  width: 100% !important;
   overflow: hidden !important;
 }
 .candela-classico-window .actioncategory.grid.grid-8col:first-child {
   border-top: none !important;
 }
 
-/* Col 1 — Nome da categoria: mesmo tamanho que o texto das ações */
 .candela-classico-window .actioncategory-label.grid-span-1 {
   grid-column: 1 !important;
-  grid-row: 1 !important;
   font-family: 'Cinzel', serif !important;
   font-size: 12px !important;
   font-weight: 700 !important;
@@ -539,14 +426,10 @@
   letter-spacing: 0.1em !important;
   text-transform: uppercase !important;
   white-space: nowrap !important;
-  overflow: hidden !important;
-  text-overflow: ellipsis !important;
 }
 
-/* Col 2 — Label "Impulsos" */
 .candela-classico-window .actioncategory.grid.grid-8col > span.grid-span-2.align-center:not([class*="grid-start"]) {
   grid-column: 2 !important;
-  grid-row: 1 !important;
   font-family: 'Cinzel', serif !important;
   font-size: 10px !important;
   letter-spacing: 0.1em !important;
@@ -556,21 +439,16 @@
   text-align: center !important;
 }
 
-/* Col 3 — Valores de Impulsos (dois inputs + barra) */
 .candela-classico-window .actioncategory.grid.grid-8col > span.grid-span-1.align-center:nth-of-type(1) {
   grid-column: 3 !important;
-  grid-row: 1 !important;
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
   gap: 3px !important;
-  white-space: nowrap !important;
 }
 
-/* Col 4 — Label "Resistências" */
 .candela-classico-window .actioncategory.grid.grid-8col > span.grid-span-2.grid-start-6 {
   grid-column: 4 !important;
-  grid-row: 1 !important;
   font-family: 'Cinzel', serif !important;
   font-size: 10px !important;
   letter-spacing: 0.1em !important;
@@ -580,18 +458,15 @@
   text-align: center !important;
 }
 
-/* Col 5 — Valores de Resistências (input + "/max") */
 .candela-classico-window .actioncategory.grid.grid-8col > span.grid-span-1.align-center:last-of-type {
   grid-column: 5 !important;
-  grid-row: 1 !important;
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
   gap: 3px !important;
-  white-space: nowrap !important;
 }
 
-/* Inputs numéricos nas categorias */
+/* Inputs numéricos das categorias */
 .candela-classico-window .actioncategory-value {
   width: 30px !important;
   height: 24px !important;
@@ -608,41 +483,35 @@
   -moz-appearance: textfield !important;
 }
 
-/* Valor de resistência — input maior */
-.candela-classico-window .actioncategory.grid.grid-8col > span.grid-span-1.align-center:last-of-type input.actioncategory-value {
-  width: 34px !important;
-  height: 28px !important;
-  font-size: 15px !important;
-}
-
-/* "/ 2" max das resistências — box visual igual ao input, sem "/" ───
-   O HTML renderiza: <span class="actioncategory-label" name="...resistance.max">/ 2</span>
-   Escondemos o conteúdo real via font-size 0 e mostramos o número via attr() não funciona
-   então usamos outro truque: width fixo, overflow hidden, text-indent para sumir com o "/"  */
+/* ── FIX: esconde o "/" e mostra só o número ── */
 .candela-classico-window .actioncategory-label[name$=".max"] {
   display: inline-flex !important;
   align-items: center !important;
   justify-content: center !important;
-  width: 34px !important;
-  height: 28px !important;
+  width: 30px !important;
+  height: 24px !important;
   padding: 0 !important;
   font-family: 'Cinzel', serif !important;
-  font-size: 15px !important;
+  font-size: 13px !important;
   font-weight: 700 !important;
   color: var(--co-gold-dim) !important;
-  /* Box igual ao input ao lado — fundo escuro, borda dourada dim */
   background: var(--co-bg) !important;
   border: 1.5px solid var(--co-border-dim) !important;
   border-radius: 3px !important;
-  letter-spacing: 0 !important;
-  text-transform: none !important;
   white-space: nowrap !important;
   overflow: hidden !important;
-  /* "/ 2" → o "/" tem ~0.5em; indent negativo corta ele, centraliza o número */
-  text-indent: 0.6em !important;
+  /* O HTML renderiza "/ 2" — escondemos o "/" com text-indent */
+  direction: rtl !important;          /* inverte: "/ 2" vira "2 /" */
+  text-indent: 0 !important;
+  /* clip no lado direito esconde o " /" que ficou no final */
+  padding-right: 0 !important;
+  text-overflow: clip !important;
+  /* Largura suficiente só para 1 dígito */
+  max-width: 30px !important;
+  flex-shrink: 0 !important;
+  letter-spacing: 0 !important;
   cursor: default !important;
   pointer-events: none !important;
-  flex-shrink: 0 !important;
 }
 
 /* ══════════════════════════════════════════════
@@ -661,36 +530,19 @@
   padding: 0 12px !important;
   border-bottom: 1px solid rgba(74,58,16,0.4) !important;
   column-gap: 10px !important;
-  row-gap: 0 !important;
   cursor: pointer !important;
   transition: background 0.12s !important;
   background: transparent !important;
-  width: 100% !important;
-  box-sizing: border-box !important;
   height: 42px !important;
-  min-height: 42px !important;
-  max-height: 42px !important;
   overflow: hidden !important;
 }
 .candela-classico-window li.action.grid.grid-8col:hover { background: var(--co-row-hover) !important; }
 .candela-classico-window ol.actions-list li.action:last-child { border-bottom: none !important; }
 
-.candela-classico-window li.action.grid.grid-8col > .action-checkbox-icon {
-  grid-column: 1 !important;
-  grid-row: 1 !important;
-}
-.candela-classico-window li.action.grid.grid-8col > a.rollable {
-  grid-column: 2 !important;
-  grid-row: 1 !important;
-}
-.candela-classico-window li.action.grid.grid-8col > span.action-description {
-  grid-column: 3 !important;
-  grid-row: 1 !important;
-}
-.candela-classico-window li.action.grid.grid-8col > .action-editbox {
-  grid-column: 4 !important;
-  grid-row: 1 !important;
-}
+.candela-classico-window li.action.grid.grid-8col > .action-checkbox-icon { grid-column: 1 !important; }
+.candela-classico-window li.action.grid.grid-8col > a.rollable { grid-column: 2 !important; }
+.candela-classico-window li.action.grid.grid-8col > span.action-description { grid-column: 3 !important; }
+.candela-classico-window li.action.grid.grid-8col > .action-editbox { grid-column: 4 !important; }
 
 /* Checkbox gilded */
 .candela-classico-window .action-checkbox-icon {
@@ -712,7 +564,7 @@
   background: var(--co-card) !important;
   cursor: pointer !important;
   position: relative !important;
-  transition: border-color 0.15s, box-shadow 0.2s, background 0.15s !important;
+  transition: border-color 0.15s, box-shadow 0.2s !important;
 }
 .candela-classico-window .action-checkbox-icon input[type="checkbox"]:hover {
   border-color: var(--co-border) !important;
@@ -736,14 +588,10 @@
 }
 
 /* Nome da ação */
-.candela-classico-window a.rollable.align-center,
 .candela-classico-window a.rollable {
   text-decoration: none !important;
   display: flex !important;
   align-items: center !important;
-  justify-content: flex-start !important;
-  text-align: left !important;
-  overflow: hidden !important;
   height: 100% !important;
 }
 .candela-classico-window a.rollable .action-label {
@@ -755,9 +603,7 @@
   overflow: hidden !important;
   text-overflow: ellipsis !important;
 }
-.candela-classico-window a.rollable:hover .action-label {
-  color: var(--co-gold) !important;
-}
+.candela-classico-window a.rollable:hover .action-label { color: var(--co-gold) !important; }
 
 /* Descrição */
 .candela-classico-window span.action-description {
@@ -765,11 +611,9 @@
   font-style: italic !important;
   font-size: 13px !important;
   color: #b0a070 !important;
-  line-height: 1.2 !important;
   overflow: hidden !important;
   text-overflow: ellipsis !important;
   white-space: nowrap !important;
-  min-width: 0 !important;
   display: flex !important;
   align-items: center !important;
   height: 100% !important;
@@ -780,8 +624,6 @@
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
-  width: 42px !important;
-  height: 100% !important;
 }
 .candela-classico-window .action-editbox input.action-value {
   width: 32px !important;
@@ -802,7 +644,7 @@
 }
 
 /* ══════════════════════════════════════════════
-   CABEÇALHOS DE LISTA (Habilidades, Equipamento)
+   HABILIDADES
 ══════════════════════════════════════════════ */
 .candela-classico-window li.items-header {
   font-family: 'Cinzel', serif !important;
@@ -818,23 +660,10 @@
   align-items: center !important;
   justify-content: space-between !important;
 }
-.candela-classico-window .item-controls {
-  display: flex !important;
-  gap: 8px !important;
-  align-items: center !important;
-}
-.candela-classico-window .item-control {
-  color: var(--co-gold) !important;
-  text-decoration: none !important;
-  font-size: 13px !important;
-}
-.candela-classico-window .item-control:hover {
-  color: var(--co-gold-bright) !important;
-}
+.candela-classico-window .item-controls { display: flex !important; gap: 8px !important; align-items: center !important; }
+.candela-classico-window .item-control { color: var(--co-gold) !important; text-decoration: none !important; font-size: 13px !important; }
+.candela-classico-window .item-control:hover { color: var(--co-gold-bright) !important; }
 
-/* ══════════════════════════════════════════════
-   HABILIDADES — itens da lista
-══════════════════════════════════════════════ */
 .candela-classico-window .tab.abilities .item.flexrow,
 .candela-classico-window .tab.abilities li.item {
   display: flex !important;
@@ -845,51 +674,26 @@
   background: transparent !important;
   transition: background 0.12s !important;
 }
-.candela-classico-window .tab.abilities .item.flexrow:hover,
-.candela-classico-window .tab.abilities li.item:hover {
-  background: var(--co-row-hover) !important;
-}
-/* Nome da habilidade */
-.candela-classico-window .circle-ability-label,
-.candela-classico-window .resource-label.circle-ability-label {
+.candela-classico-window .tab.abilities .item.flexrow:hover { background: var(--co-row-hover) !important; }
+
+.candela-classico-window .circle-ability-label {
   font-family: 'Cinzel', serif !important;
   font-size: 13px !important;
   font-weight: 600 !important;
   color: var(--co-text) !important;
-  letter-spacing: 0.05em !important;
 }
-/* Descrição da habilidade */
-.candela-classico-window .gear-description span,
-.candela-classico-window .circle-ability-description span {
-  font-family: 'Crimson Text', Georgia, serif !important;
-  font-size: 14px !important;
-  font-style: italic !important;
-  color: #c8b880 !important;
-  line-height: 1.4 !important;
-}
-/* Qualquer texto dentro de item de habilidade */
+.candela-classico-window .circle-abilities { flex: 1 !important; min-width: 0 !important; }
+.candela-classico-window .circle-abilities a.rollable:hover .circle-ability-label { color: var(--co-gold) !important; }
+
+/* FIX: texto das habilidades visível */
 .candela-classico-window .tab.abilities .item.flexrow,
 .candela-classico-window .tab.abilities .item.flexrow * {
   color: var(--co-text) !important;
 }
-.candela-classico-window .tab.abilities .item.flexrow .item-control {
-  color: var(--co-gold) !important;
-}
-.candela-classico-window .circle-abilities {
-  flex: 1 !important;
-  min-width: 0 !important;
-}
-/* Link rollable de habilidade */
-.candela-classico-window .circle-abilities a.rollable {
-  display: block !important;
-  height: auto !important;
-}
-.candela-classico-window .circle-abilities a.rollable:hover .circle-ability-label {
-  color: var(--co-gold) !important;
-}
+.candela-classico-window .tab.abilities .item.flexrow .item-control { color: var(--co-gold) !important; }
 
 /* ══════════════════════════════════════════════
-   EQUIPAMENTO — itens da lista
+   EQUIPAMENTO
 ══════════════════════════════════════════════ */
 .candela-classico-window .tab.gear .item.flexrow,
 .candela-classico-window .tab.gear li.item {
@@ -901,72 +705,17 @@
   background: transparent !important;
   transition: background 0.12s !important;
 }
-.candela-classico-window .tab.gear .item.flexrow:hover,
-.candela-classico-window .tab.gear li.item:hover {
-  background: var(--co-row-hover) !important;
-}
-/* Cabeçalho de colunas do equipamento */
-.candela-classico-window .items-header-equipped,
-.candela-classico-window .items-header-name {
-  font-family: 'Cinzel', serif !important;
-  font-size: 10px !important;
-  letter-spacing: 0.1em !important;
-  color: var(--co-gold-dim) !important;
-  text-transform: uppercase !important;
-}
-/* Nome do item de equipamento e todo conteúdo de linha */
-.candela-classico-window .tab.gear .item-name,
-.candela-classico-window .tab.gear li.item > *:not(.item-controls),
+.candela-classico-window .tab.gear .item.flexrow:hover { background: var(--co-row-hover) !important; }
 .candela-classico-window .tab.gear .item.flexrow,
-.candela-classico-window .tab.gear .item.flexrow span,
-.candela-classico-window .tab.gear .item.flexrow a {
+.candela-classico-window .tab.gear .item.flexrow * {
   font-family: 'Crimson Text', Georgia, serif !important;
   font-size: 14px !important;
   color: var(--co-text) !important;
-  flex: 1 !important;
-  min-width: 0 !important;
 }
-.candela-classico-window .tab.gear .item-control {
-  color: var(--co-gold) !important;
-  flex: 0 !important;
-}
+.candela-classico-window .tab.gear .item-control { color: var(--co-gold) !important; flex: 0 !important; }
 
 /* ══════════════════════════════════════════════
-   CHAVES DE ILUMINAÇÃO — itens
-══════════════════════════════════════════════ */
-.candela-classico-window .tab.biography .items-list .item.flexrow,
-.candela-classico-window .tab.biography li.item {
-  display: flex !important;
-  align-items: center !important;
-  padding: 9px 14px !important;
-  border-bottom: 1px solid rgba(74,58,16,0.35) !important;
-  gap: 10px !important;
-  background: transparent !important;
-  transition: background 0.12s !important;
-}
-.candela-classico-window .tab.biography .items-list .item.flexrow:hover {
-  background: var(--co-row-hover) !important;
-}
-/* Nome da chave de iluminação — forçar cor clara legível */
-.candela-classico-window .tab.biography .items-list .item a,
-.candela-classico-window .tab.biography .items-list .item span,
-.candela-classico-window .tab.biography .items-list li {
-  font-family: 'Crimson Text', Georgia, serif !important;
-  font-size: 15px !important;
-  color: var(--co-text) !important;
-  text-decoration: none !important;
-  flex: 1 !important;
-}
-/* Ícone de vela/candle não perde sua cor */
-.candela-classico-window .tab.biography .items-list .item img {
-  flex: 0 !important;
-  width: 20px !important;
-  height: 20px !important;
-  opacity: 0.8 !important;
-}
-
-/* ══════════════════════════════════════════════
-   BIOGRAFIA — sub-abas (mesmo fix de visibilidade)
+   BIOGRAFIA
 ══════════════════════════════════════════════ */
 .candela-classico-window nav.bio-tabs.tabs {
   display: flex !important;
@@ -996,38 +745,46 @@
   border-bottom-color: var(--co-gold) !important;
 }
 
-/* Sub-abas de biografia — mesmo padrão de visibilidade */
-.candela-classico-window section.bio-body .tab.biography {
-  display: none !important;
-}
-.candela-classico-window section.bio-body .tab.biography.active {
-  display: block !important;
-}
+.candela-classico-window section.bio-body .tab.biography { display: none !important; }
+.candela-classico-window section.bio-body .tab.biography.active { display: block !important; }
 
-.candela-classico-window section.bio-body {
-  padding: 12px !important;
+.candela-classico-window section.bio-body { padding: 12px !important; }
+
+/* FIX: texto da biografia visível */
+.candela-classico-window section.bio-body,
+.candela-classico-window section.bio-body *,
+.candela-classico-window .editor-content,
+.candela-classico-window .editor-content * {
+  color: var(--co-text) !important;
 }
 .candela-classico-window .editor-content.prosemirror-editor {
   min-height: 140px !important;
+  font-size: 15px !important;
+  line-height: 1.6 !important;
+}
+
+/* FIX: chaves de iluminação — texto visível */
+.candela-classico-window .tab.biography .items-list .item,
+.candela-classico-window .tab.biography .items-list .item *,
+.candela-classico-window .tab.biography .items-list li {
   color: var(--co-text) !important;
-  font-size: 15px !important;
-  line-height: 1.6 !important;
-}
-
-/* ══════════════════════════════════════════════
-   TEXTAREA
-══════════════════════════════════════════════ */
-.candela-classico-window textarea {
-  min-height: 80px !important;
-  resize: vertical !important;
-  padding: 8px 12px !important;
-  line-height: 1.6 !important;
-  width: 100% !important;
+  font-family: 'Crimson Text', Georgia, serif !important;
   font-size: 15px !important;
 }
+.candela-classico-window .tab.biography .items-list .item {
+  display: flex !important;
+  align-items: center !important;
+  padding: 9px 14px !important;
+  border-bottom: 1px solid rgba(74,58,16,0.35) !important;
+  gap: 10px !important;
+  background: transparent !important;
+  transition: background 0.12s !important;
+}
+.candela-classico-window .tab.biography .items-list .item:hover { background: var(--co-row-hover) !important; }
+.candela-classico-window .tab.biography .items-list .item .item-control { color: var(--co-gold) !important; }
 
 /* ══════════════════════════════════════════════
-   BOTÕES DO CORPO
+   BOTÕES / TEXTAREA / SCROLLBAR
 ══════════════════════════════════════════════ */
 .candela-classico-window section.sheet-body button {
   font-family: 'Cinzel', serif !important;
@@ -1046,10 +803,14 @@
   border-color: var(--co-border) !important;
   background: #1a1530 !important;
 }
-
-/* ══════════════════════════════════════════════
-   SCROLLBAR
-══════════════════════════════════════════════ */
+.candela-classico-window textarea {
+  min-height: 80px !important;
+  resize: vertical !important;
+  padding: 8px 12px !important;
+  line-height: 1.6 !important;
+  width: 100% !important;
+  color: var(--co-text) !important;
+}
 .candela-classico-window ::-webkit-scrollbar { width: 3px !important; height: 0 !important; }
 .candela-classico-window ::-webkit-scrollbar-track { background: transparent !important; }
 .candela-classico-window ::-webkit-scrollbar-thumb { background: var(--co-border-dim) !important; border-radius: 2px !important; }
