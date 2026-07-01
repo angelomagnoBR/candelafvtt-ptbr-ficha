@@ -863,3 +863,246 @@
 .candela-classico-window ::-webkit-scrollbar-track { background: transparent !important; }
 .candela-classico-window ::-webkit-scrollbar-thumb { background: var(--co-border-dim) !important; border-radius: 2px !important; }
 .candela-classico-window ::-webkit-scrollbar-thumb:hover { background: var(--co-border) !important; }
+
+/* ══════════════════════════════════════════════
+   FICHA DE CÍRCULO — HEADER
+   Estrutura real:
+   .sheet-header
+     img.profile-img
+     .header-fields
+       h1.charname
+       .grid.grid-8col  (chapter house)
+       .resources.grid-3col (Curar/Descansar/Treinar)
+══════════════════════════════════════════════ */
+
+/* Header do Círculo — layout correto */
+.candela-classico-window .sheet-header {
+  height: auto !important;
+  min-height: 170px !important;
+  max-height: none !important;
+  align-items: flex-start !important;
+}
+
+/* Foto do Círculo — mesma altura do conteúdo */
+.candela-classico-window .sheet-header img.profile-img {
+  width: 110px !important;
+  height: 140px !important;
+  min-width: 110px !important;
+  min-height: 140px !important;
+  flex: 0 0 110px !important;
+}
+
+/* Coluna direita do Círculo */
+.candela-classico-window .sheet-header .header-fields {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 8px !important;
+  justify-content: flex-start !important;
+  grid-template-columns: unset !important;
+  grid-template-rows: unset !important;
+}
+
+/* Chapter House — linha com label + input + color picker */
+.candela-classico-window .sheet-header .grid.grid-8col {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  gap: 8px !important;
+  width: 100% !important;
+  height: auto !important;
+}
+
+.candela-classico-window .sheet-header .chapterhouse {
+  font-family: 'Cinzel', serif !important;
+  font-size: 11px !important;
+  letter-spacing: 0.08em !important;
+  color: var(--co-gold-dim) !important;
+  text-transform: uppercase !important;
+  white-space: nowrap !important;
+  flex-shrink: 0 !important;
+}
+
+.candela-classico-window .sheet-header .grid.grid-8col span.grid-span-5 {
+  flex: 1 !important;
+}
+
+.candela-classico-window .sheet-header .grid.grid-8col input[name="system.chapterHouse"] {
+  width: 100% !important;
+  font-family: 'Crimson Text', Georgia, serif !important;
+  font-size: 14px !important;
+  font-style: italic !important;
+  color: var(--co-text) !important;
+  background: transparent !important;
+  border: none !important;
+  border-bottom: 1px solid var(--co-border-dim) !important;
+  border-radius: 0 !important;
+  padding: 2px 0 !important;
+}
+.candela-classico-window .sheet-header .grid.grid-8col input[name="system.chapterHouse"]:focus {
+  border-bottom-color: var(--co-border) !important;
+  outline: none !important;
+}
+.candela-classico-window .sheet-header .grid.grid-8col input[name="system.chapterHouse"]::placeholder {
+  color: var(--co-muted) !important;
+  font-style: italic !important;
+}
+
+/* Color picker — pequeno, alinhado */
+.candela-classico-window .circle-color-wrapper {
+  flex-shrink: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 4px !important;
+}
+.candela-classico-window .circle-color-wrapper input[type="text"] {
+  width: 58px !important;
+  font-size: 11px !important;
+  padding: 2px 4px !important;
+  height: 24px !important;
+}
+.candela-classico-window .circle-color-wrapper input[type="color"] {
+  width: 24px !important;
+  height: 24px !important;
+  padding: 0 !important;
+  border: 1px solid var(--co-border-dim) !important;
+  border-radius: 3px !important;
+  cursor: pointer !important;
+}
+
+/* Recursos do Círculo (Curar / Descansar / Treinar) */
+.candela-classico-window .resources.grid-3col {
+  display: flex !important;
+  flex-direction: row !important;
+  gap: 8px !important;
+  width: 100% !important;
+  border-left: none !important;
+  padding-left: 0 !important;
+  grid-column: unset !important;
+  grid-row: unset !important;
+  height: auto !important;
+}
+
+.candela-classico-window .resource.flex-group-center {
+  flex: 1 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  gap: 4px !important;
+  background: var(--co-card) !important;
+  border: 1px solid var(--co-border-dim) !important;
+  border-radius: 4px !important;
+  padding: 6px 8px !important;
+}
+
+.candela-classico-window .resource .resource-label {
+  font-family: 'Cinzel', serif !important;
+  font-size: 9px !important;
+  letter-spacing: 0.1em !important;
+  color: var(--co-gold-dim) !important;
+  text-transform: uppercase !important;
+  white-space: nowrap !important;
+}
+
+.candela-classico-window .resource .resource-content {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 4px !important;
+}
+
+.candela-classico-window .resource .resource-content input[type="number"] {
+  width: 30px !important;
+  height: 26px !important;
+  font-family: 'Cinzel', serif !important;
+  font-size: 14px !important;
+  font-weight: 700 !important;
+  color: var(--co-gold) !important;
+  background: var(--co-bg) !important;
+  border: 1.5px solid var(--co-border) !important;
+  border-radius: 3px !important;
+  text-align: center !important;
+  padding: 0 !important;
+}
+
+.candela-classico-window .resource .resource-content > span:not(.flexrow) {
+  color: var(--co-muted) !important;
+  font-size: 13px !important;
+}
+
+.candela-classico-window .resource .resource-content span.flexrow {
+  font-family: 'Cinzel', serif !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  color: var(--co-gold-dim) !important;
+}
+
+/* ══════════════════════════════════════════════
+   CHECKBOX DADO DOURADO — EFEITO BRILHO
+   Igual ao efeito dos pips de iluminação do Círculo
+   quando o jogador ativa o dado dourado na ação
+══════════════════════════════════════════════ */
+.candela-classico-window .action-checkbox-icon input[type="checkbox"] {
+  appearance: none !important;
+  -webkit-appearance: none !important;
+  width: 24px !important;
+  height: 24px !important;
+  min-width: 24px !important;
+  margin: 0 !important;
+  border: 1.5px solid var(--co-border-dim) !important;
+  border-radius: 4px !important;
+  background: var(--co-card) !important;
+  cursor: pointer !important;
+  position: relative !important;
+  transition: all 0.2s ease !important;
+}
+
+.candela-classico-window .action-checkbox-icon input[type="checkbox"]:hover {
+  border-color: var(--co-border) !important;
+  box-shadow: 0 0 6px rgba(212,168,32,0.3) !important;
+}
+
+/* Estado desmarcado — diamante/losango sutil no centro */
+.candela-classico-window .action-checkbox-icon input[type="checkbox"]::after {
+  content: "" !important;
+  position: absolute !important;
+  inset: 6px !important;
+  background: var(--co-border-dim) !important;
+  border-radius: 1px !important;
+  transform: rotate(45deg) !important;
+  opacity: 0.4 !important;
+  transition: all 0.2s ease !important;
+}
+
+/* Estado MARCADO — brilho dourado intenso igual aos pips de iluminação */
+.candela-classico-window .action-checkbox-icon input[type="checkbox"]:checked {
+  border-color: var(--co-gold-bright) !important;
+  background: radial-gradient(circle at center,
+    #2a1f00 0%,
+    #1a1200 40%,
+    var(--co-card) 100%) !important;
+  box-shadow:
+    0 0 0 1px rgba(240,201,58,0.6),
+    0 0 8px 2px rgba(212,168,32,0.7),
+    0 0 16px 6px rgba(212,168,32,0.35),
+    0 0 28px 10px rgba(212,168,32,0.15),
+    inset 0 0 6px rgba(240,201,58,0.2) !important;
+  animation: co-pulse-gold 2s ease-in-out infinite !important;
+}
+
+/* Diamante dourado brilhante no centro quando marcado */
+.candela-classico-window .action-checkbox-icon input[type="checkbox"]:checked::after {
+  background: var(--co-gold-bright) !important;
+  box-shadow:
+    0 0 4px 2px rgba(240,201,58,0.9),
+    0 0 10px 4px rgba(212,168,32,0.6) !important;
+  opacity: 1 !important;
+  inset: 5px !important;
+}
+
+/* Animação de pulso suave — igual ao efeito de vela */
+@keyframes co-pulse-gold {
+  0%   { box-shadow: 0 0 0 1px rgba(240,201,58,0.6), 0 0 8px 2px rgba(212,168,32,0.7), 0 0 16px 6px rgba(212,168,32,0.35), 0 0 28px 10px rgba(212,168,32,0.15); }
+  50%  { box-shadow: 0 0 0 1px rgba(240,201,58,0.8), 0 0 12px 4px rgba(212,168,32,0.9), 0 0 22px 8px rgba(212,168,32,0.45), 0 0 36px 14px rgba(212,168,32,0.2); }
+  100% { box-shadow: 0 0 0 1px rgba(240,201,58,0.6), 0 0 8px 2px rgba(212,168,32,0.7), 0 0 16px 6px rgba(212,168,32,0.35), 0 0 28px 10px rgba(212,168,32,0.15); }
+}
