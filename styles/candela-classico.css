@@ -21,6 +21,54 @@
 }
 
 /* ══════════════════════════════════════════════
+   FIX THEME-LIGHT
+   O Foundry injeta .theme-light na ficha de Círculo
+   que sobrescreve as cores. Forçamos o tema escuro.
+══════════════════════════════════════════════ */
+.candela-classico-window.theme-light,
+.candela-classico-window.theme-light * {
+  --color-text-primary: var(--co-text) !important;
+  --color-text-secondary: var(--co-muted) !important;
+  --color-bg-primary: var(--co-bg) !important;
+  color: var(--co-text) !important;
+  background-color: transparent !important;
+}
+.candela-classico-window.theme-light .window-content,
+.candela-classico-window.theme-light form,
+.candela-classico-window.theme-light section {
+  background: var(--co-bg) !important;
+  color: var(--co-text) !important;
+}
+/* Garante que inputs e textos dentro do tema-light ficam legíveis */
+.candela-classico-window.theme-light input,
+.candela-classico-window.theme-light textarea,
+.candela-classico-window.theme-light select,
+.candela-classico-window.theme-light label,
+.candela-classico-window.theme-light span,
+.candela-classico-window.theme-light p,
+.candela-classico-window.theme-light a,
+.candela-classico-window.theme-light h1,
+.candela-classico-window.theme-light h2,
+.candela-classico-window.theme-light h3,
+.candela-classico-window.theme-light li,
+.candela-classico-window.theme-light div {
+  color: var(--co-text) !important;
+}
+/* Círculo de iluminação — fundo dos quadrados */
+.candela-classico-window.theme-light .illumination-track .pip,
+.candela-classico-window.theme-light .illumination-pip,
+.candela-classico-window.theme-light [class*="pip"] {
+  background: var(--co-card) !important;
+  border-color: var(--co-border-dim) !important;
+}
+.candela-classico-window.theme-light .illumination-track .pip.active,
+.candela-classico-window.theme-light .illumination-pip.active,
+.candela-classico-window.theme-light [class*="pip"].active {
+  background: var(--co-gold) !important;
+  border-color: var(--co-border) !important;
+}
+
+/* ══════════════════════════════════════════════
    JANELA
 ══════════════════════════════════════════════ */
 .candela-classico-window {
