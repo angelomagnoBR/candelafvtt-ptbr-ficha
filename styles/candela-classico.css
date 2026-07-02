@@ -1,8 +1,10 @@
 /* ============================================================
-   CANDELA OBSCURA PT-BR — v9
+   CANDELA OBSCURA PT-BR — v10
    Correções:
    · Texto pronomes/bio visível (cor clara)
    · "/" das Resistências removido (text-indent corrigido)
+   · Cabeçalho reestruturado via JS (foto | nome+papel | recursos)
+   · Regra de abas menos agressiva (não força display:block)
    ============================================================ */
 
 @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap');
@@ -154,7 +156,9 @@
 }
 
 /* ══════════════════════════════════════════════
-   CABEÇALHO — FICHA DE PERSONAGEM
+   CABEÇALHO — BASE (antes da reestruturação)
+   Mantido como fallback caso o JS não encontre a
+   foto (.profile-img) e não consiga reestruturar.
 ══════════════════════════════════════════════ */
 .candela-classico-window .sheet-header {
   display: flex !important;
@@ -163,9 +167,6 @@
   padding: 10px 14px !important;
   margin: 0 !important;
   gap: 14px !important;
-  height: 175px !important;
-  min-height: 175px !important;
-  max-height: 175px !important;
   background: #100d15 !important;
   border-bottom: 2px solid var(--co-border-dim) !important;
   box-sizing: border-box !important;
@@ -173,88 +174,7 @@
   overflow: hidden !important;
 }
 
-/* Coluna esquerda: role + foto + specialty */
-.candela-classico-window .actor-header-left {
-  display: flex !important;
-  flex-direction: column !important;
-  align-items: center !important;
-  flex: 0 0 110px !important;
-  gap: 3px !important;
-}
-
-/* Role (Estranho) e Specialty (Ocultista) embaixo da foto */
-.candela-classico-window .actor-header-left .role {
-  font-family: 'Cinzel', serif !important;
-  font-size: 9px !important;
-  color: var(--co-gold-dim) !important;
-  text-transform: uppercase !important;
-  letter-spacing: 0.1em !important;
-  order: 2 !important;
-  margin-top: 3px !important;
-}
-.candela-classico-window .actor-header-left .specialty {
-  font-family: 'Cinzel', serif !important;
-  font-size: 9px !important;
-  color: var(--co-muted) !important;
-  text-transform: uppercase !important;
-  letter-spacing: 0.08em !important;
-  order: 3 !important;
-}
-.candela-classico-window img.profile-img {
-  order: 1 !important;
-  width: 110px !important;
-  height: 120px !important;
-  min-width: 110px !important;
-  min-height: 120px !important;
-  flex: 0 0 120px !important;
-  object-fit: cover !important;
-  object-position: top center !important;
-  border: 2px solid var(--co-border) !important;
-  border-radius: 3px !important;
-  box-shadow: 0 0 0 1px var(--co-border-dim), 0 6px 20px rgba(0,0,0,0.8) !important;
-}
-
-/* Coluna direita: nome + pronomes + recursos */
-.candela-classico-window .header-fields {
-  flex: 1 !important;
-  display: grid !important;
-  grid-template-columns: 1fr 148px !important;
-  grid-template-rows: auto auto 1fr !important;
-  column-gap: 14px !important;
-  align-items: start !important;
-  min-width: 0 !important;
-  overflow: hidden !important;
-  height: 100% !important;
-}
-
-/* Nome ocupa col 1 linha 1 */
-.candela-classico-window .header-fields .name {
-  grid-column: 1 !important;
-  grid-row: 1 !important;
-  min-width: 0 !important;
-}
-
-/* Circle link ocupa col 1 linha 2 */
-.candela-classico-window .header-fields .circle-link {
-  grid-column: 1 !important;
-  grid-row: 2 !important;
-}
-
-/* Recursos ocupa col 2 linhas 1-3 — coluna direita */
-.candela-classico-window .header-fields .resources.grid-3col {
-  grid-column: 2 !important;
-  grid-row: 1 / 4 !important;
-  display: flex !important;
-  flex-direction: column !important;
-  gap: 7px !important;
-  border-left: 1px solid var(--co-border-dim) !important;
-  padding-left: 14px !important;
-  height: 100% !important;
-  justify-content: center !important;
-}
-
 /* ── CADEADO DE TRAVAMENTO ── */
-/* Botão injetado via JS no header */
 .co-lock-btn {
   position: absolute !important;
   bottom: 8px !important;
@@ -292,8 +212,6 @@
   opacity: 0.6 !important;
   cursor: not-allowed !important;
 }
-
-/* Quando travado: inputs editáveis (impulsos/resistências gastas) ficam normais */
 .candela-classico-window.co-locked .actioncategory-value,
 .candela-classico-window.co-locked .mark-content input[type="number"],
 .candela-classico-window.co-locked input[name$=".value"] {
@@ -302,8 +220,6 @@
   cursor: text !important;
   border-color: var(--co-border) !important;
 }
-
-/* Quando travado: scores das ações ficam bloqueados */
 .candela-classico-window.co-locked input.action-value {
   pointer-events: none !important;
   opacity: 0.5 !important;
@@ -315,7 +231,8 @@
   margin: 0 !important;
   padding: 0 !important;
 }
-.candela-classico-window .charname input[name="name"] {
+.candela-classico-window .charname input[name="name"],
+.candela-classico-window input[name="name"] {
   font-family: 'Cinzel', serif !important;
   font-size: 20px !important;
   font-weight: 700 !important;
@@ -331,20 +248,20 @@
   box-shadow: none !important;
   outline: none !important;
 }
-.candela-classico-window .charname input[name="name"]:hover {
+.candela-classico-window .charname input[name="name"]:hover,
+.candela-classico-window input[name="name"]:hover {
   border-bottom-color: var(--co-border-dim) !important;
 }
-.candela-classico-window .charname input[name="name"]:focus {
+.candela-classico-window .charname input[name="name"]:focus,
+.candela-classico-window input[name="name"]:focus {
   border-bottom-color: var(--co-border) !important;
   outline: none !important;
 }
 
 /* ── PRONOMES — FIX: cor visível ── */
 .candela-classico-window .pronouns {
-  grid-column: 1 !important;
   display: flex !important;
   flex-direction: column !important;
-  flex: 1 !important;
   margin-top: 2px !important;
 }
 .candela-classico-window .pronouns input,
@@ -353,7 +270,7 @@
   font-size: 14px !important;
   font-style: italic !important;
   font-weight: 400 !important;
-  color: var(--co-text) !important;        /* ← FIX: era transparente/escuro */
+  color: var(--co-text) !important;
   background: transparent !important;
   border: none !important;
   border-bottom: 1px solid transparent !important;
@@ -384,21 +301,11 @@
 }
 
 /* ══════════════════════════════════════════════
-   MARCAS — CORPO / MENTE / SANGRIA
+   MARCAS — CORPO / MENTE / SANGRIA (Personagem)
+   CURAR / DESCANSAR / TREINAR (Círculo)
 ══════════════════════════════════════════════ */
-.candela-classico-window .resources.grid-3col {
-  grid-column: 2 !important;
-  grid-row: 1 / 3 !important;
-  display: flex !important;
-  flex-direction: column !important;
-  align-items: stretch !important;
-  justify-content: flex-start !important;
-  gap: 7px !important;
-  height: 100% !important;
-  padding-left: 14px !important;
-  border-left: 1px solid var(--co-border-dim) !important;
-}
-.candela-classico-window .mark.flex-group-center {
+.candela-classico-window .mark.flex-group-center,
+.candela-classico-window .resource.flex-group-center {
   display: flex !important;
   flex-direction: row !important;
   align-items: center !important;
@@ -408,8 +315,11 @@
   border: 1px solid var(--co-border-dim) !important;
   border-radius: 4px !important;
   padding: 6px 8px !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
 }
-.candela-classico-window .mark .resource-label {
+.candela-classico-window .mark .resource-label,
+.candela-classico-window .resource .resource-label {
   font-family: 'Cinzel', serif !important;
   font-size: 9px !important;
   letter-spacing: 0.08em !important;
@@ -418,14 +328,16 @@
   white-space: nowrap !important;
   flex-shrink: 1 !important;
 }
-.candela-classico-window .mark-content {
+.candela-classico-window .mark-content,
+.candela-classico-window .resource-content {
   display: flex !important;
   flex-direction: row !important;
   align-items: center !important;
   gap: 3px !important;
   flex-shrink: 0 !important;
 }
-.candela-classico-window .mark-content input[type="number"] {
+.candela-classico-window .mark-content input[type="number"],
+.candela-classico-window .resource-content input[type="number"] {
   font-family: 'Cinzel', serif !important;
   font-size: 15px !important;
   font-weight: 700 !important;
@@ -440,12 +352,14 @@
   flex-shrink: 0 !important;
   -moz-appearance: textfield !important;
 }
-.candela-classico-window .mark-content > span {
+.candela-classico-window .mark-content > span,
+.candela-classico-window .resource-content > span:not(.flexrow) {
   color: var(--co-muted) !important;
   font-size: 12px !important;
   flex-shrink: 0 !important;
 }
-.candela-classico-window .mark-content span[name$=".max"] {
+.candela-classico-window .mark-content span[name$=".max"],
+.candela-classico-window .resource-content span.flexrow {
   font-family: 'Cinzel', serif !important;
   font-size: 12px !important;
   font-weight: 600 !important;
@@ -485,7 +399,8 @@
 /* ══════════════════════════════════════════════
    ABAS PRINCIPAIS
 ══════════════════════════════════════════════ */
-.candela-classico-window nav.sheet-tabs.tabs {
+.candela-classico-window nav.sheet-tabs.tabs,
+.candela-classico-window nav.bio-tabs.tabs {
   display: flex !important;
   background: #0a0810 !important;
   border-bottom: 1px solid var(--co-border-dim) !important;
@@ -493,9 +408,11 @@
   margin: 0 !important;
   flex-shrink: 0 !important;
   overflow: hidden !important;
+  flex-wrap: wrap !important;
 }
-.candela-classico-window nav.sheet-tabs.tabs a.item {
-  flex: 1 !important;
+.candela-classico-window nav.sheet-tabs.tabs a.item,
+.candela-classico-window nav.bio-tabs.tabs a.item {
+  flex: 1 1 auto !important;
   padding: 10px 6px !important;
   text-align: center !important;
   font-family: 'Cinzel', serif !important;
@@ -510,14 +427,20 @@
   transition: color 0.15s !important;
   white-space: nowrap !important;
 }
-.candela-classico-window nav.sheet-tabs.tabs a.item:hover { color: var(--co-text) !important; }
-.candela-classico-window nav.sheet-tabs.tabs a.item.active {
+.candela-classico-window nav.sheet-tabs.tabs a.item:hover,
+.candela-classico-window nav.bio-tabs.tabs a.item:hover { color: var(--co-text) !important; }
+.candela-classico-window nav.sheet-tabs.tabs a.item.active,
+.candela-classico-window nav.bio-tabs.tabs a.item.active {
   color: var(--co-gold) !important;
   border-bottom-color: var(--co-gold) !important;
 }
 
 /* ══════════════════════════════════════════════
    CORPO DAS ABAS
+   FIX: só escondemos a aba INATIVA. A aba ativa
+   mantém o display que o próprio Foundry define
+   (evita conflito com ApplicationV2 e sumiço de
+   conteúdo, como estava acontecendo com Habilidades).
 ══════════════════════════════════════════════ */
 .candela-classico-window section.sheet-body {
   background: var(--co-bg) !important;
@@ -528,8 +451,7 @@
   min-height: 0 !important;
   box-sizing: border-box !important;
 }
-.candela-classico-window section.sheet-body .tab { display: none !important; }
-.candela-classico-window section.sheet-body .tab.active { display: block !important; }
+.candela-classico-window section.sheet-body .tab:not(.active) { display: none !important; }
 .candela-classico-window .tab.actions { padding-bottom: 40px !important; }
 .candela-classico-window section.sheet-body::-webkit-scrollbar { width: 3px !important; }
 .candela-classico-window section.sheet-body::-webkit-scrollbar-track { background: transparent !important; }
@@ -644,13 +566,10 @@
   border-radius: 3px !important;
   white-space: nowrap !important;
   overflow: hidden !important;
-  /* O HTML renderiza "/ 2" — escondemos o "/" com text-indent */
-  direction: rtl !important;          /* inverte: "/ 2" vira "2 /" */
+  direction: rtl !important;
   text-indent: 0 !important;
-  /* clip no lado direito esconde o " /" que ficou no final */
   padding-right: 0 !important;
   text-overflow: clip !important;
-  /* Largura suficiente só para 1 dígito */
   max-width: 30px !important;
   flex-shrink: 0 !important;
   letter-spacing: 0 !important;
@@ -699,36 +618,54 @@
 .candela-classico-window .action-checkbox-icon input[type="checkbox"] {
   appearance: none !important;
   -webkit-appearance: none !important;
-  width: 22px !important;
-  height: 22px !important;
-  min-width: 22px !important;
+  width: 24px !important;
+  height: 24px !important;
+  min-width: 24px !important;
   margin: 0 !important;
   border: 1.5px solid var(--co-border-dim) !important;
   border-radius: 4px !important;
   background: var(--co-card) !important;
   cursor: pointer !important;
   position: relative !important;
-  transition: border-color 0.15s, box-shadow 0.2s !important;
+  transition: all 0.2s ease !important;
 }
 .candela-classico-window .action-checkbox-icon input[type="checkbox"]:hover {
   border-color: var(--co-border) !important;
-  box-shadow: 0 0 8px rgba(212,168,32,0.25) !important;
+  box-shadow: 0 0 6px rgba(212,168,32,0.3) !important;
+}
+.candela-classico-window .action-checkbox-icon input[type="checkbox"]::after {
+  content: "" !important;
+  position: absolute !important;
+  inset: 6px !important;
+  background: var(--co-border-dim) !important;
+  border-radius: 1px !important;
+  transform: rotate(45deg) !important;
+  opacity: 0.4 !important;
+  transition: all 0.2s ease !important;
 }
 .candela-classico-window .action-checkbox-icon input[type="checkbox"]:checked {
   border-color: var(--co-gold-bright) !important;
-  background: radial-gradient(circle, #3a2f0e 0%, var(--co-card) 75%) !important;
+  background: radial-gradient(circle at center, #2a1f00 0%, #1a1200 40%, var(--co-card) 100%) !important;
   box-shadow:
-    0 0 0 1px rgba(240,201,58,0.4),
-    0 0 10px 3px rgba(212,168,32,0.55),
-    0 0 22px 8px rgba(212,168,32,0.18) !important;
+    0 0 0 1px rgba(240,201,58,0.6),
+    0 0 8px 2px rgba(212,168,32,0.7),
+    0 0 16px 6px rgba(212,168,32,0.35),
+    0 0 28px 10px rgba(212,168,32,0.15),
+    inset 0 0 6px rgba(240,201,58,0.2) !important;
+  animation: co-pulse-gold 2s ease-in-out infinite !important;
 }
 .candela-classico-window .action-checkbox-icon input[type="checkbox"]:checked::after {
-  content: "" !important;
-  position: absolute !important;
-  inset: 4px !important;
   background: var(--co-gold-bright) !important;
-  border-radius: 2px !important;
-  box-shadow: 0 0 6px 2px rgba(240,201,58,0.9) !important;
+  box-shadow:
+    0 0 4px 2px rgba(240,201,58,0.9),
+    0 0 10px 4px rgba(212,168,32,0.6) !important;
+  opacity: 1 !important;
+  inset: 5px !important;
+}
+@keyframes co-pulse-gold {
+  0%   { box-shadow: 0 0 0 1px rgba(240,201,58,0.6), 0 0 8px 2px rgba(212,168,32,0.7), 0 0 16px 6px rgba(212,168,32,0.35), 0 0 28px 10px rgba(212,168,32,0.15); }
+  50%  { box-shadow: 0 0 0 1px rgba(240,201,58,0.8), 0 0 12px 4px rgba(212,168,32,0.9), 0 0 22px 8px rgba(212,168,32,0.45), 0 0 36px 14px rgba(212,168,32,0.2); }
+  100% { box-shadow: 0 0 0 1px rgba(240,201,58,0.6), 0 0 8px 2px rgba(212,168,32,0.7), 0 0 16px 6px rgba(212,168,32,0.35), 0 0 28px 10px rgba(212,168,32,0.15); }
 }
 
 /* Nome da ação */
@@ -861,37 +798,6 @@
 /* ══════════════════════════════════════════════
    BIOGRAFIA
 ══════════════════════════════════════════════ */
-.candela-classico-window nav.bio-tabs.tabs {
-  display: flex !important;
-  background: #0a0810 !important;
-  border-bottom: 1px solid var(--co-border-dim) !important;
-  padding: 0 !important;
-  margin: 0 !important;
-  flex-wrap: wrap !important;
-}
-.candela-classico-window nav.bio-tabs.tabs a.item {
-  flex: 1 1 auto !important;
-  padding: 8px 6px !important;
-  text-align: center !important;
-  font-family: 'Cinzel', serif !important;
-  font-size: 10px !important;
-  letter-spacing: 0.1em !important;
-  color: var(--co-muted) !important;
-  border-bottom: 2px solid transparent !important;
-  cursor: pointer !important;
-  text-decoration: none !important;
-  text-transform: uppercase !important;
-  white-space: nowrap !important;
-}
-.candela-classico-window nav.bio-tabs.tabs a.item:hover { color: var(--co-text) !important; }
-.candela-classico-window nav.bio-tabs.tabs a.item.active {
-  color: var(--co-gold) !important;
-  border-bottom-color: var(--co-gold) !important;
-}
-
-.candela-classico-window section.bio-body .tab.biography { display: none !important; }
-.candela-classico-window section.bio-body .tab.biography.active { display: block !important; }
-
 .candela-classico-window section.bio-body { padding: 12px !important; }
 
 /* FIX: texto da biografia visível */
@@ -960,46 +866,8 @@
 .candela-classico-window ::-webkit-scrollbar-thumb { background: var(--co-border-dim) !important; border-radius: 2px !important; }
 .candela-classico-window ::-webkit-scrollbar-thumb:hover { background: var(--co-border) !important; }
 
-/* ══════════════════════════════════════════════
-   FICHA DE CÍRCULO — HEADER
-   Estrutura real:
-   .sheet-header
-     img.profile-img
-     .header-fields
-       h1.charname
-       .grid.grid-8col  (chapter house)
-       .resources.grid-3col (Curar/Descansar/Treinar)
-══════════════════════════════════════════════ */
-
-/* Header do Círculo — layout correto */
-.candela-classico-window .sheet-header {
-  height: auto !important;
-  min-height: 170px !important;
-  max-height: none !important;
-  align-items: flex-start !important;
-}
-
-/* Foto do Círculo — mesma altura do conteúdo */
-.candela-classico-window .sheet-header img.profile-img {
-  width: 110px !important;
-  height: 140px !important;
-  min-width: 110px !important;
-  min-height: 140px !important;
-  flex: 0 0 110px !important;
-}
-
-/* Coluna direita do Círculo */
-.candela-classico-window .sheet-header .header-fields {
-  display: flex !important;
-  flex-direction: column !important;
-  gap: 8px !important;
-  justify-content: flex-start !important;
-  grid-template-columns: unset !important;
-  grid-template-rows: unset !important;
-}
-
-/* Chapter House — linha com label + input + color picker */
-.candela-classico-window .sheet-header .grid.grid-8col {
+/* Chapter House — linha com label + input + color picker (Círculo) */
+.candela-classico-window .co-header-mid .grid.grid-8col {
   display: flex !important;
   flex-direction: row !important;
   align-items: center !important;
@@ -1007,8 +875,7 @@
   width: 100% !important;
   height: auto !important;
 }
-
-.candela-classico-window .sheet-header .chapterhouse {
+.candela-classico-window .chapterhouse {
   font-family: 'Cinzel', serif !important;
   font-size: 11px !important;
   letter-spacing: 0.08em !important;
@@ -1017,12 +884,8 @@
   white-space: nowrap !important;
   flex-shrink: 0 !important;
 }
-
-.candela-classico-window .sheet-header .grid.grid-8col span.grid-span-5 {
-  flex: 1 !important;
-}
-
-.candela-classico-window .sheet-header .grid.grid-8col input[name="system.chapterHouse"] {
+.candela-classico-window .co-header-mid .grid.grid-8col span.grid-span-5 { flex: 1 !important; }
+.candela-classico-window input[name="system.chapterHouse"] {
   width: 100% !important;
   font-family: 'Crimson Text', Georgia, serif !important;
   font-size: 14px !important;
@@ -1034,16 +897,14 @@
   border-radius: 0 !important;
   padding: 2px 0 !important;
 }
-.candela-classico-window .sheet-header .grid.grid-8col input[name="system.chapterHouse"]:focus {
+.candela-classico-window input[name="system.chapterHouse"]:focus {
   border-bottom-color: var(--co-border) !important;
   outline: none !important;
 }
-.candela-classico-window .sheet-header .grid.grid-8col input[name="system.chapterHouse"]::placeholder {
+.candela-classico-window input[name="system.chapterHouse"]::placeholder {
   color: var(--co-muted) !important;
   font-style: italic !important;
 }
-
-/* Color picker — pequeno, alinhado */
 .candela-classico-window .circle-color-wrapper {
   flex-shrink: 0 !important;
   display: flex !important;
@@ -1065,140 +926,101 @@
   cursor: pointer !important;
 }
 
-/* Recursos do Círculo (Curar / Descansar / Treinar) */
-.candela-classico-window .resources.grid-3col {
+/* ══════════════════════════════════════════════
+   CABEÇALHO REESTRUTURADO (v10)
+   O JS monta 3 blocos dentro de .sheet-header:
+     .co-header-photo  — a foto
+     .co-header-mid    — nome / pronomes (ou chapter house) / papel+especialidade
+     .co-header-right  — recursos (Corpo·Mente·Sangria / Curar·Descansar·Treinar)
+   Estas regras vêm por último de propósito, para vencer
+   qualquer resquício de estilo antigo baseado em grid.
+══════════════════════════════════════════════ */
+.candela-classico-window .sheet-header.co-header-restructured {
   display: flex !important;
   flex-direction: row !important;
-  gap: 8px !important;
-  width: 100% !important;
-  border-left: none !important;
-  padding-left: 0 !important;
-  grid-column: unset !important;
-  grid-row: unset !important;
+  align-items: stretch !important;
+  gap: 14px !important;
+  padding: 12px 14px !important;
+  background: #100d15 !important;
+  border-bottom: 2px solid var(--co-border-dim) !important;
+  box-sizing: border-box !important;
   height: auto !important;
+  min-height: 150px !important;
+  max-height: none !important;
+  overflow: visible !important;
+  position: relative !important;
 }
 
-.candela-classico-window .resource.flex-group-center {
-  flex: 1 !important;
+.candela-classico-window .co-header-photo {
+  flex: 0 0 110px !important;
+  display: flex !important;
+}
+.candela-classico-window .co-header-photo img.profile-img {
+  width: 110px !important;
+  height: 100% !important;
+  min-height: 130px !important;
+  object-fit: cover !important;
+  object-position: top center !important;
+  border: 2px solid var(--co-border) !important;
+  border-radius: 3px !important;
+  box-shadow: 0 0 0 1px var(--co-border-dim), 0 6px 20px rgba(0,0,0,0.8) !important;
+}
+
+.candela-classico-window .co-header-mid {
+  flex: 1 1 auto !important;
+  min-width: 0 !important;
   display: flex !important;
   flex-direction: column !important;
-  align-items: center !important;
-  gap: 4px !important;
-  background: var(--co-card) !important;
-  border: 1px solid var(--co-border-dim) !important;
-  border-radius: 4px !important;
-  padding: 6px 8px !important;
+  gap: 6px !important;
+  justify-content: flex-start !important;
+}
+.candela-classico-window .co-header-mid > * {
+  width: 100% !important;
+  flex-shrink: 0 !important;
 }
 
-.candela-classico-window .resource .resource-label {
+.candela-classico-window .co-header-subtitle {
+  display: flex !important;
+  flex-direction: row !important;
+  gap: 10px !important;
+  align-items: center !important;
+  margin-top: 2px !important;
+}
+.candela-classico-window .co-header-subtitle .role,
+.candela-classico-window .co-header-subtitle .specialty {
   font-family: 'Cinzel', serif !important;
   font-size: 9px !important;
   letter-spacing: 0.1em !important;
-  color: var(--co-gold-dim) !important;
   text-transform: uppercase !important;
   white-space: nowrap !important;
 }
+.candela-classico-window .co-header-subtitle .role { color: var(--co-gold-dim) !important; }
+.candela-classico-window .co-header-subtitle .specialty { color: var(--co-muted) !important; }
 
-.candela-classico-window .resource .resource-content {
+.candela-classico-window .co-header-right {
+  flex: 0 0 148px !important;
   display: flex !important;
-  flex-direction: row !important;
-  align-items: center !important;
+  flex-direction: column !important;
+  gap: 7px !important;
   justify-content: center !important;
-  gap: 4px !important;
+  border-left: 1px solid var(--co-border-dim) !important;
+  padding-left: 14px !important;
+  box-sizing: border-box !important;
+}
+.candela-classico-window .co-header-right .resources {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 7px !important;
+  width: 100% !important;
+}
+.candela-classico-window .co-header-right .mark.flex-group-center,
+.candela-classico-window .co-header-right .resource.flex-group-center {
+  width: 100% !important;
 }
 
-.candela-classico-window .resource .resource-content input[type="number"] {
-  width: 30px !important;
-  height: 26px !important;
-  font-family: 'Cinzel', serif !important;
-  font-size: 14px !important;
-  font-weight: 700 !important;
-  color: var(--co-gold) !important;
-  background: var(--co-bg) !important;
-  border: 1.5px solid var(--co-border) !important;
-  border-radius: 3px !important;
-  text-align: center !important;
-  padding: 0 !important;
-}
-
-.candela-classico-window .resource .resource-content > span:not(.flexrow) {
-  color: var(--co-muted) !important;
-  font-size: 13px !important;
-}
-
-.candela-classico-window .resource .resource-content span.flexrow {
-  font-family: 'Cinzel', serif !important;
-  font-size: 13px !important;
-  font-weight: 600 !important;
-  color: var(--co-gold-dim) !important;
-}
-
-/* ══════════════════════════════════════════════
-   CHECKBOX DADO DOURADO — EFEITO BRILHO
-   Igual ao efeito dos pips de iluminação do Círculo
-   quando o jogador ativa o dado dourado na ação
-══════════════════════════════════════════════ */
-.candela-classico-window .action-checkbox-icon input[type="checkbox"] {
-  appearance: none !important;
-  -webkit-appearance: none !important;
-  width: 24px !important;
-  height: 24px !important;
-  min-width: 24px !important;
-  margin: 0 !important;
-  border: 1.5px solid var(--co-border-dim) !important;
-  border-radius: 4px !important;
-  background: var(--co-card) !important;
-  cursor: pointer !important;
-  position: relative !important;
-  transition: all 0.2s ease !important;
-}
-
-.candela-classico-window .action-checkbox-icon input[type="checkbox"]:hover {
-  border-color: var(--co-border) !important;
-  box-shadow: 0 0 6px rgba(212,168,32,0.3) !important;
-}
-
-/* Estado desmarcado — diamante/losango sutil no centro */
-.candela-classico-window .action-checkbox-icon input[type="checkbox"]::after {
-  content: "" !important;
-  position: absolute !important;
-  inset: 6px !important;
-  background: var(--co-border-dim) !important;
-  border-radius: 1px !important;
-  transform: rotate(45deg) !important;
-  opacity: 0.4 !important;
-  transition: all 0.2s ease !important;
-}
-
-/* Estado MARCADO — brilho dourado intenso igual aos pips de iluminação */
-.candela-classico-window .action-checkbox-icon input[type="checkbox"]:checked {
-  border-color: var(--co-gold-bright) !important;
-  background: radial-gradient(circle at center,
-    #2a1f00 0%,
-    #1a1200 40%,
-    var(--co-card) 100%) !important;
-  box-shadow:
-    0 0 0 1px rgba(240,201,58,0.6),
-    0 0 8px 2px rgba(212,168,32,0.7),
-    0 0 16px 6px rgba(212,168,32,0.35),
-    0 0 28px 10px rgba(212,168,32,0.15),
-    inset 0 0 6px rgba(240,201,58,0.2) !important;
-  animation: co-pulse-gold 2s ease-in-out infinite !important;
-}
-
-/* Diamante dourado brilhante no centro quando marcado */
-.candela-classico-window .action-checkbox-icon input[type="checkbox"]:checked::after {
-  background: var(--co-gold-bright) !important;
-  box-shadow:
-    0 0 4px 2px rgba(240,201,58,0.9),
-    0 0 10px 4px rgba(212,168,32,0.6) !important;
-  opacity: 1 !important;
-  inset: 5px !important;
-}
-
-/* Animação de pulso suave — igual ao efeito de vela */
-@keyframes co-pulse-gold {
-  0%   { box-shadow: 0 0 0 1px rgba(240,201,58,0.6), 0 0 8px 2px rgba(212,168,32,0.7), 0 0 16px 6px rgba(212,168,32,0.35), 0 0 28px 10px rgba(212,168,32,0.15); }
-  50%  { box-shadow: 0 0 0 1px rgba(240,201,58,0.8), 0 0 12px 4px rgba(212,168,32,0.9), 0 0 22px 8px rgba(212,168,32,0.45), 0 0 36px 14px rgba(212,168,32,0.2); }
-  100% { box-shadow: 0 0 0 1px rgba(240,201,58,0.6), 0 0 8px 2px rgba(212,168,32,0.7), 0 0 16px 6px rgba(212,168,32,0.35), 0 0 28px 10px rgba(212,168,32,0.15); }
+/* Botão do cadeado reposicionado dentro do bloco central */
+.candela-classico-window .co-header-mid .co-lock-btn {
+  position: static !important;
+  align-self: flex-start !important;
+  margin-top: 4px !important;
 }
