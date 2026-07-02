@@ -615,6 +615,20 @@
   width: 36px !important;
   height: 100% !important;
 }
+/* FIX v11: o ícone/imagem original (o "quadradinho") continua visível
+   sempre. Quando marcado, ele apenas GANHA UM BRILHO dourado (drop-shadow),
+   em vez de ser coberto por um bloco de cor sólida como estava antes.
+   Cobrimos os formatos mais comuns que o Foundry pode usar para esse
+   ícone: input[type=checkbox] nativo, <img>, <i> (ícone de fonte) ou
+   um elemento genérico com classe indicando estado marcado. */
+.candela-classico-window .action-checkbox-icon {
+  --co-glow-off: drop-shadow(0 0 0 rgba(0,0,0,0));
+  --co-glow-on:
+    drop-shadow(0 0 3px rgba(240,201,58,0.95))
+    drop-shadow(0 0 7px rgba(212,168,32,0.75))
+    drop-shadow(0 0 14px rgba(212,168,32,0.4));
+}
+
 .candela-classico-window .action-checkbox-icon input[type="checkbox"] {
   appearance: none !important;
   -webkit-appearance: none !important;
@@ -622,50 +636,46 @@
   height: 24px !important;
   min-width: 24px !important;
   margin: 0 !important;
-  border: 1.5px solid var(--co-border-dim) !important;
-  border-radius: 4px !important;
-  background: var(--co-card) !important;
+  background: transparent !important;
+  border: none !important;
   cursor: pointer !important;
   position: relative !important;
-  transition: all 0.2s ease !important;
+  filter: var(--co-glow-off) !important;
+  transition: filter 0.25s ease !important;
 }
 .candela-classico-window .action-checkbox-icon input[type="checkbox"]:hover {
-  border-color: var(--co-border) !important;
-  box-shadow: 0 0 6px rgba(212,168,32,0.3) !important;
-}
-.candela-classico-window .action-checkbox-icon input[type="checkbox"]::after {
-  content: "" !important;
-  position: absolute !important;
-  inset: 6px !important;
-  background: var(--co-border-dim) !important;
-  border-radius: 1px !important;
-  transform: rotate(45deg) !important;
-  opacity: 0.4 !important;
-  transition: all 0.2s ease !important;
+  filter: drop-shadow(0 0 5px rgba(212,168,32,0.5)) !important;
 }
 .candela-classico-window .action-checkbox-icon input[type="checkbox"]:checked {
-  border-color: var(--co-gold-bright) !important;
-  background: radial-gradient(circle at center, #2a1f00 0%, #1a1200 40%, var(--co-card) 100%) !important;
-  box-shadow:
-    0 0 0 1px rgba(240,201,58,0.6),
-    0 0 8px 2px rgba(212,168,32,0.7),
-    0 0 16px 6px rgba(212,168,32,0.35),
-    0 0 28px 10px rgba(212,168,32,0.15),
-    inset 0 0 6px rgba(240,201,58,0.2) !important;
+  filter: var(--co-glow-on) !important;
   animation: co-pulse-gold 2s ease-in-out infinite !important;
 }
-.candela-classico-window .action-checkbox-icon input[type="checkbox"]:checked::after {
-  background: var(--co-gold-bright) !important;
-  box-shadow:
-    0 0 4px 2px rgba(240,201,58,0.9),
-    0 0 10px 4px rgba(212,168,32,0.6) !important;
-  opacity: 1 !important;
-  inset: 5px !important;
+
+/* Caso o ícone seja uma <img>, <i> ou <svg> dentro do wrapper, controlado
+   por uma classe (ex.: .checked/.active/.selected) em vez de :checked */
+.candela-classico-window .action-checkbox-icon img,
+.candela-classico-window .action-checkbox-icon svg,
+.candela-classico-window .action-checkbox-icon i {
+  filter: var(--co-glow-off) !important;
+  transition: filter 0.25s ease !important;
 }
+.candela-classico-window .action-checkbox-icon.checked img,
+.candela-classico-window .action-checkbox-icon.active img,
+.candela-classico-window .action-checkbox-icon.selected img,
+.candela-classico-window .action-checkbox-icon.checked svg,
+.candela-classico-window .action-checkbox-icon.active svg,
+.candela-classico-window .action-checkbox-icon.selected svg,
+.candela-classico-window .action-checkbox-icon.checked i,
+.candela-classico-window .action-checkbox-icon.active i,
+.candela-classico-window .action-checkbox-icon.selected i {
+  filter: var(--co-glow-on) !important;
+  animation: co-pulse-gold 2s ease-in-out infinite !important;
+}
+
 @keyframes co-pulse-gold {
-  0%   { box-shadow: 0 0 0 1px rgba(240,201,58,0.6), 0 0 8px 2px rgba(212,168,32,0.7), 0 0 16px 6px rgba(212,168,32,0.35), 0 0 28px 10px rgba(212,168,32,0.15); }
-  50%  { box-shadow: 0 0 0 1px rgba(240,201,58,0.8), 0 0 12px 4px rgba(212,168,32,0.9), 0 0 22px 8px rgba(212,168,32,0.45), 0 0 36px 14px rgba(212,168,32,0.2); }
-  100% { box-shadow: 0 0 0 1px rgba(240,201,58,0.6), 0 0 8px 2px rgba(212,168,32,0.7), 0 0 16px 6px rgba(212,168,32,0.35), 0 0 28px 10px rgba(212,168,32,0.15); }
+  0%   { filter: drop-shadow(0 0 3px rgba(240,201,58,0.95)) drop-shadow(0 0 7px rgba(212,168,32,0.75)) drop-shadow(0 0 14px rgba(212,168,32,0.4)); }
+  50%  { filter: drop-shadow(0 0 5px rgba(240,201,58,1)) drop-shadow(0 0 11px rgba(212,168,32,0.9)) drop-shadow(0 0 20px rgba(212,168,32,0.55)); }
+  100% { filter: drop-shadow(0 0 3px rgba(240,201,58,0.95)) drop-shadow(0 0 7px rgba(212,168,32,0.75)) drop-shadow(0 0 14px rgba(212,168,32,0.4)); }
 }
 
 /* Nome da ação */
@@ -979,23 +989,61 @@
   flex-shrink: 0 !important;
 }
 
-.candela-classico-window .co-header-subtitle {
+/* Linha do nome: nome à esquerda, papel/especialidade à direita */
+.candela-classico-window .co-header-namerow {
   display: flex !important;
   flex-direction: row !important;
-  gap: 10px !important;
+  align-items: baseline !important;
+  justify-content: space-between !important;
+  gap: 12px !important;
+  width: 100% !important;
+}
+.candela-classico-window .co-header-namerow .charname,
+.candela-classico-window .co-header-namerow input[name="name"] {
+  flex: 1 1 auto !important;
+  min-width: 0 !important;
+}
+
+.candela-classico-window .co-header-subtitle {
+  /* Anula qualquer position:absolute herdado do sistema — é isso que
+     estava prendendo Estranho/Ocultista em cima da foto. */
+  position: static !important;
+  top: auto !important;
+  left: auto !important;
+  right: auto !important;
+  bottom: auto !important;
+  display: flex !important;
+  flex-direction: row !important;
+  gap: 8px !important;
   align-items: center !important;
-  margin-top: 2px !important;
+  flex: 0 0 auto !important;
+  white-space: nowrap !important;
 }
 .candela-classico-window .co-header-subtitle .role,
 .candela-classico-window .co-header-subtitle .specialty {
+  position: static !important;
+  top: auto !important;
+  left: auto !important;
+  right: auto !important;
+  bottom: auto !important;
+  order: initial !important;
+  margin: 0 !important;
+  /* Mesma fonte "bonita" usada nas ações (Atacar, Mover...) */
   font-family: 'Cinzel', serif !important;
-  font-size: 9px !important;
-  letter-spacing: 0.1em !important;
-  text-transform: uppercase !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.04em !important;
+  text-transform: none !important;
+  color: var(--co-text) !important;
   white-space: nowrap !important;
 }
-.candela-classico-window .co-header-subtitle .role { color: var(--co-gold-dim) !important; }
-.candela-classico-window .co-header-subtitle .specialty { color: var(--co-muted) !important; }
+.candela-classico-window .co-header-subtitle .specialty {
+  color: var(--co-gold) !important;
+}
+.candela-classico-window .co-header-subtitle .specialty::before {
+  content: "· " !important;
+  color: var(--co-muted) !important;
+}
 
 .candela-classico-window .co-header-right {
   flex: 0 0 148px !important;
