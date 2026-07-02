@@ -962,18 +962,70 @@
 }
 
 .candela-classico-window .co-header-photo {
-  flex: 0 0 110px !important;
+  flex: 0 0 128px !important;
+  width: 128px !important;
   display: flex !important;
+  flex-direction: column !important;
+  align-items: stretch !important;
+  gap: 4px !important;
 }
 .candela-classico-window .co-header-photo img.profile-img {
-  width: 110px !important;
+  flex: 1 1 auto !important;
+  width: 100% !important;
   height: 100% !important;
-  min-height: 130px !important;
+  min-height: 0 !important;
   object-fit: cover !important;
-  object-position: top center !important;
+  object-position: center !important;
   border: 2px solid var(--co-border) !important;
   border-radius: 3px !important;
   box-shadow: 0 0 0 1px var(--co-border-dim), 0 6px 20px rgba(0,0,0,0.8) !important;
+}
+
+/* Papel (Estranho) e Especialidade (Ocultista) — editáveis pelo jogador */
+.candela-classico-window .co-header-photo .role,
+.candela-classico-window .co-header-photo .specialty {
+  /* Anula qualquer position:absolute herdado do sistema */
+  position: static !important;
+  top: auto !important; left: auto !important; right: auto !important; bottom: auto !important;
+  order: initial !important;
+  flex: 0 0 auto !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+  margin: 0 !important;
+  text-align: center !important;
+  font-family: 'Cinzel', serif !important;
+  font-size: 10px !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.08em !important;
+  text-transform: uppercase !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  background: transparent !important;
+  border: none !important;
+  border-bottom: 1px solid transparent !important;
+  border-radius: 0 !important;
+  padding: 2px 0 !important;
+  cursor: text !important;
+  outline: none !important;
+  transition: border-color 0.15s !important;
+}
+.candela-classico-window .co-header-photo .role { color: var(--co-gold-dim) !important; }
+.candela-classico-window .co-header-photo .specialty { color: var(--co-muted) !important; }
+.candela-classico-window .co-header-photo .role:hover,
+.candela-classico-window .co-header-photo .specialty:hover {
+  border-bottom-color: var(--co-border-dim) !important;
+}
+.candela-classico-window .co-header-photo .role:focus,
+.candela-classico-window .co-header-photo .specialty:focus {
+  border-bottom-color: var(--co-border) !important;
+  color: var(--co-gold) !important;
+}
+.candela-classico-window .co-header-photo .role::placeholder,
+.candela-classico-window .co-header-photo .specialty::placeholder {
+  color: var(--co-muted) !important;
+  text-transform: none !important;
+  font-style: italic !important;
 }
 
 .candela-classico-window .co-header-mid {
