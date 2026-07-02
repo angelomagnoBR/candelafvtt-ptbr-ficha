@@ -32,7 +32,7 @@ const CANDELA_PTBR_REPLACEMENTS = new Map([
   ["attune, channel, reveal", "sintonizar, canalizar, revelar"]
 ]);
 
-const CANDELA_CLASSICO_SIZE = Object.freeze({ width: 840, height: 580 });
+const CANDELA_CLASSICO_SIZE = Object.freeze({ width: 680, height: 920 });
 const LOCKED_WINDOWS = new WeakSet();
 let lockTimer = null;
 
@@ -289,10 +289,12 @@ function applyCandelaClassic(app, element) {
 // ══════════════════════════════════════════════
 
 function coAplicarTravamento(html, travar) {
-  // Inputs FIXOS — bloqueados quando travado (scores das ações)
+  // Inputs FIXOS — definidos na criação da ficha, bloqueados quando travado
+  // (score de cada ação, valores máximos dos recursos, nome do personagem)
   const fixos = html.querySelectorAll([
     "input.action-value",
     "input[name$='.max']",
+    "input[name='name']",
   ].join(","));
 
   fixos.forEach(el => {
@@ -302,11 +304,20 @@ function coAplicarTravamento(html, travar) {
     el.style.cursor = travar ? "not-allowed" : "";
   });
 
+  // Checkbox do dado dourado (marca em qual ação ele fica) — checkbox não
+  // respeita "readOnly", então usamos "disabled" para travar de verdade.
+  const dadoDourado = html.querySelectorAll(".action-checkbox-icon input[type='checkbox']");
+  dadoDourado.forEach(el => {
+    el.disabled = travar;
+    el.style.pointerEvents = travar ? "none" : "";
+    el.style.opacity = travar ? "0.5" : "";
+    el.style.cursor = travar ? "not-allowed" : "";
+  });
+
   // Inputs EDITÁVEIS — sempre liberados (impulsos, resistências gastas, marks)
   const editaveis = html.querySelectorAll([
     "input.actioncategory-value",
     "input[name$='.value']",
-    "input[name='name']",
     "input[name='system.pronouns']",
   ].join(","));
 
@@ -326,6 +337,8 @@ function coInjetarCadeado(app, html) {
   if (!header) return;
   if (html.querySelector(".co-lock-btn")) return; // já existe
 
+  const win = getAppWindow(app, html);
+  const right = header.querySelector(".co-header-right");
   const actorId = app?.actor?.id;
   const locked = coLockState[actorId] ?? false;
 
@@ -335,10 +348,17 @@ function coInjetarCadeado(app, html) {
   btn.title = locked ? "Ficha travada — clique para destravar" : "Clique para travar os valores fixos";
   btn.innerHTML = `<i class="fa-solid ${locked ? "fa-lock" : "fa-lock-open"}"></i>`;
 
-  header.style.position = "relative";
-  header.appendChild(btn);
+  // Botão vai no topo do bloco de recursos (direita), acima de Corpo/Mente/Sangria.
+  // Se por algum motivo o cabeçalho não foi reestruturado ainda, cai no fallback antigo.
+  if (right) {
+    right.insertBefore(btn, right.firstChild);
+  } else {
+    header.style.position = "relative";
+    header.appendChild(btn);
+  }
 
   // Aplica estado inicial
+  win?.classList.toggle("co-locked", locked);
   if (locked) coAplicarTravamento(html, true);
 
   btn.addEventListener("click", (e) => {
@@ -356,6 +376,7 @@ function coInjetarCadeado(app, html) {
     const icon = btn.querySelector("i");
     icon.className = `fa-solid ${novoEstado ? "fa-lock" : "fa-lock-open"}`;
 
+    win?.classList.toggle("co-locked", novoEstado);
     coAplicarTravamento(html, novoEstado);
   });
 }
@@ -364,7 +385,7 @@ function coInjetarCadeado(app, html) {
 function coFixSentir(html) {
   const lista = html.querySelectorAll("ol.actions-list");
   if (lista.length) {
-    lista[lista.length - 1].style.marginBottom = "48px";
+    lista[lista.length - 1].style.marginBottom = "12px";
   }
 }
 
