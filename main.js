@@ -205,17 +205,22 @@ function restructureCandelaHeader(app, root, kind) {
     const specialty = header.querySelector(".specialty");
     const resources = header.querySelector(".resources");
 
-    moveIfExists(nameField, mid);
-    moveIfExists(pronounsField, mid);
+    // Nome e Papel/Especialidade ficam na MESMA linha (nome à esquerda,
+    // papel/especialidade à direita, dentro do bloco central).
+    const nameRow = document.createElement("div");
+    nameRow.className = "co-header-namerow";
+    moveIfExists(nameField, nameRow);
 
     if (role || specialty) {
       const subtitle = document.createElement("div");
       subtitle.className = "co-header-subtitle";
       moveIfExists(role, subtitle);
       moveIfExists(specialty, subtitle);
-      mid.appendChild(subtitle);
+      nameRow.appendChild(subtitle);
     }
 
+    mid.appendChild(nameRow);
+    moveIfExists(pronounsField, mid);
     moveIfExists(resources, right);
   } else if (kind === "circle") {
     const nameField = header.querySelector(".charname") ?? header.querySelector("input[name='name']");
