@@ -164,9 +164,9 @@
   display: flex !important;
   flex-direction: row !important;
   align-items: stretch !important;
-  padding: 10px 14px !important;
+  padding: 8px 12px !important;
   margin: 0 !important;
-  gap: 14px !important;
+  gap: 10px !important;
   background: #100d15 !important;
   border-bottom: 2px solid var(--co-border-dim) !important;
   box-sizing: border-box !important;
@@ -174,13 +174,15 @@
   overflow: hidden !important;
 }
 
-/* ── CADEADO DE TRAVAMENTO ── */
+/* ── CADEADO DE TRAVAMENTO ──
+   Fica encaixado no topo do bloco de recursos (.co-header-right),
+   bem no alto à direita, acima de Corpo/Mente/Sangria. */
 .co-lock-btn {
   position: absolute !important;
-  bottom: 8px !important;
-  right: 8px !important;
-  width: 28px !important;
-  height: 28px !important;
+  top: 0 !important;
+  right: 0 !important;
+  width: 26px !important;
+  height: 26px !important;
   border: 1.5px solid var(--co-border-dim) !important;
   border-radius: 4px !important;
   background: var(--co-card) !important;
@@ -224,6 +226,11 @@
   pointer-events: none !important;
   opacity: 0.5 !important;
   border-color: var(--co-border-dim) !important;
+}
+.candela-classico-window.co-locked .action-checkbox-icon input[type="checkbox"] {
+  pointer-events: none !important;
+  opacity: 0.5 !important;
+  cursor: not-allowed !important;
 }
 
 /* ── NOME ── */
@@ -453,7 +460,7 @@
   box-sizing: border-box !important;
 }
 .candela-classico-window section.sheet-body .tab:not(.active) { display: none !important; }
-.candela-classico-window .tab.actions { padding-bottom: 40px !important; }
+.candela-classico-window .tab.actions { padding-bottom: 16px !important; }
 .candela-classico-window section.sheet-body::-webkit-scrollbar { width: 3px !important; }
 .candela-classico-window section.sheet-body::-webkit-scrollbar-track { background: transparent !important; }
 .candela-classico-window section.sheet-body::-webkit-scrollbar-thumb {
@@ -467,16 +474,16 @@
 .candela-classico-window .actioncategory.grid.grid-8col {
   display: grid !important;
   grid-template-columns: minmax(80px,110px) auto auto auto auto !important;
-  grid-template-rows: 36px !important;
+  grid-template-rows: 30px !important;
   align-items: center !important;
   column-gap: 8px !important;
   padding: 0 12px !important;
   background: var(--co-card) !important;
   border-bottom: 1px solid var(--co-border-dim) !important;
   border-top: 2px solid var(--co-border-dim) !important;
-  height: 36px !important;
-  min-height: 36px !important;
-  max-height: 36px !important;
+  height: 30px !important;
+  min-height: 30px !important;
+  max-height: 30px !important;
   box-sizing: border-box !important;
   overflow: hidden !important;
 }
@@ -589,7 +596,7 @@
 .candela-classico-window li.action.grid.grid-8col {
   display: grid !important;
   grid-template-columns: 36px 110px 1fr 42px !important;
-  grid-template-rows: 42px !important;
+  grid-template-rows: 34px !important;
   align-items: center !important;
   padding: 0 12px !important;
   border-bottom: 1px solid rgba(74,58,16,0.4) !important;
@@ -597,7 +604,7 @@
   cursor: pointer !important;
   transition: background 0.12s !important;
   background: transparent !important;
-  height: 42px !important;
+  height: 34px !important;
   overflow: hidden !important;
 }
 .candela-classico-window li.action.grid.grid-8col:hover { background: var(--co-row-hover) !important; }
@@ -1113,6 +1120,7 @@
 }
 
 .candela-classico-window .co-header-right {
+  position: relative !important;
   flex: 0 0 158px !important;
   display: flex !important;
   flex-direction: column !important;
@@ -1120,6 +1128,7 @@
   justify-content: center !important;
   border-left: 1px solid var(--co-border-dim) !important;
   padding-left: 14px !important;
+  padding-top: 26px !important;
   box-sizing: border-box !important;
 }
 .candela-classico-window .co-header-right .resources {
@@ -1131,11 +1140,4 @@
 .candela-classico-window .co-header-right .mark.flex-group-center,
 .candela-classico-window .co-header-right .resource.flex-group-center {
   width: 100% !important;
-}
-
-/* Botão do cadeado reposicionado dentro do bloco central */
-.candela-classico-window .co-header-mid .co-lock-btn {
-  position: static !important;
-  align-self: flex-start !important;
-  margin-top: 4px !important;
 }
