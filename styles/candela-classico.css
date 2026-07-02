@@ -77,8 +77,8 @@
   width: 680px !important;
   min-width: 680px !important;
   max-width: 680px !important;
-  height: 920px !important;
-  min-height: 600px !important;
+  height: 730px !important;
+  min-height: 500px !important;
   max-height: 92vh !important;
   resize: vertical !important;
   overflow: hidden !important;
@@ -1140,4 +1140,91 @@
 .candela-classico-window .co-header-right .mark.flex-group-center,
 .candela-classico-window .co-header-right .resource.flex-group-center {
   width: 100% !important;
+}
+
+/* ══════════════════════════════════════════════
+   DIÁLOGOS DO SISTEMA (ex: popup de rolagem
+   "Mover" / "Teste sua sorte!") — estilo genérico
+   para bater com o resto da ficha. Como não temos
+   as classes exatas do sistema pra cada elemento,
+   usamos seletores de tag (label, input, button)
+   dentro do escopo do diálogo.
+══════════════════════════════════════════════ */
+.candela-classico-dialog {
+  border: 1px solid var(--co-border-dim) !important;
+  border-radius: 6px !important;
+  box-shadow:
+    0 0 0 1px rgba(184,150,12,0.25),
+    0 0 50px rgba(0,0,0,0.95) !important;
+  background: var(--co-bg) !important;
+  font-family: 'Crimson Text', Georgia, serif !important;
+  color: var(--co-text) !important;
+}
+.candela-classico-dialog .window-header {
+  background: #07050a !important;
+  border-bottom: 1px solid var(--co-border-dim) !important;
+  font-family: 'Cinzel', serif !important;
+}
+.candela-classico-dialog .window-header .window-title {
+  font-family: 'Cinzel', serif !important;
+  font-size: 13px !important;
+  color: var(--co-gold) !important;
+  letter-spacing: 0.08em !important;
+}
+.candela-classico-dialog .window-content {
+  background: var(--co-bg) !important;
+  padding: 16px !important;
+}
+.candela-classico-dialog label {
+  font-family: 'Cinzel', serif !important;
+  font-size: 12px !important;
+  font-weight: 700 !important;
+  color: var(--co-gold) !important;
+  letter-spacing: 0.04em !important;
+  text-transform: uppercase !important;
+}
+.candela-classico-dialog p,
+.candela-classico-dialog .hint,
+.candela-classico-dialog .notes {
+  font-family: 'Crimson Text', Georgia, serif !important;
+  font-style: italic !important;
+  font-size: 12px !important;
+  color: var(--co-muted) !important;
+}
+.candela-classico-dialog input[type="text"],
+.candela-classico-dialog input[type="number"] {
+  background: var(--co-card) !important;
+  border: 1.5px solid var(--co-border-dim) !important;
+  border-radius: 3px !important;
+  color: var(--co-gold) !important;
+  font-family: 'Cinzel', serif !important;
+  font-weight: 700 !important;
+  text-align: center !important;
+  padding: 4px !important;
+}
+.candela-classico-dialog input[type="text"]:hover,
+.candela-classico-dialog input[type="number"]:hover,
+.candela-classico-dialog input[type="text"]:focus,
+.candela-classico-dialog input[type="number"]:focus {
+  border-color: var(--co-border) !important;
+  outline: none !important;
+}
+.candela-classico-dialog button,
+.candela-classico-dialog button[type="submit"] {
+  background: var(--co-card) !important;
+  border: 1.5px solid var(--co-border) !important;
+  border-radius: 4px !important;
+  color: var(--co-gold) !important;
+  font-family: 'Cinzel', serif !important;
+  font-size: 13px !important;
+  letter-spacing: 0.06em !important;
+  text-transform: uppercase !important;
+  padding: 8px !important;
+  cursor: pointer !important;
+  transition: all 0.2s !important;
+}
+.candela-classico-dialog button:hover {
+  background: #1a1200 !important;
+  border-color: var(--co-gold) !important;
+  box-shadow: 0 0 6px rgba(212,168,32,0.3) !important;
 }
