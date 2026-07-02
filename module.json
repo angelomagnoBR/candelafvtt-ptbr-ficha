@@ -2,7 +2,7 @@
   "id": "candelafvtt-ptbr-ficha",
   "title": "Candela Obscura PT-BR - Ficha Clássica",
   "description": "Tradução em português brasileiro da ficha do sistema candelafvtt com tema visual Candela Clássico e tamanho fixo para manter o layout estável.",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "socket": true,
   "authors": [
     {
