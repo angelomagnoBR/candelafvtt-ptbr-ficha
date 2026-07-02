@@ -32,7 +32,7 @@ const CANDELA_PTBR_REPLACEMENTS = new Map([
   ["attune, channel, reveal", "sintonizar, canalizar, revelar"]
 ]);
 
-const CANDELA_CLASSICO_SIZE = Object.freeze({ width: 680, height: 920 });
+const CANDELA_CLASSICO_SIZE = Object.freeze({ width: 680, height: 730 });
 const LOCKED_WINDOWS = new WeakSet();
 let lockTimer = null;
 
@@ -277,6 +277,12 @@ function applyCandelaClassic(app, element) {
     root.classList.add("candela-classico-sheet-root");
     restructureCandelaHeader(app, root, isCircleSheet ? "circle" : "character");
     coLimparBarraMaximo(root);
+  } else {
+    // Qualquer outra janela do sistema (diálogo de rolagem, ex: "Mover",
+    // "Teste sua sorte!") também recebe o tema visual — só não é uma
+    // ficha, então não passa pela reestruturação de cabeçalho nem pelo
+    // tamanho travado.
+    win.classList.add("candela-classico-dialog");
   }
 
   if (isCharacterSheet) {
@@ -314,9 +320,12 @@ function coAplicarTravamento(html, travar) {
     el.style.cursor = travar ? "not-allowed" : "";
   });
 
-  // Inputs EDITÁVEIS — sempre liberados (impulsos, resistências gastas, marks)
+  // Inputs EDITÁVEIS — sempre liberados (impulsos gastos, resistências gastas, marks).
+  // IMPORTANTE: aqui usamos só o final do "name" (.value), nunca a classe
+  // .actioncategory-value — essa classe é IGUAL tanto na caixa "usado" quanto
+  // na caixa "máximo" de Impulsos/Resistências, então usá-la aqui desfazia o
+  // travamento da caixa de máximo (que deveria ficar travada).
   const editaveis = html.querySelectorAll([
-    "input.actioncategory-value",
     "input[name$='.value']",
     "input[name='system.pronouns']",
   ].join(","));
@@ -408,6 +417,9 @@ Hooks.on("renderActorSheet", (app, html) => {
 
 Hooks.on("renderItemSheet", (app, html) => applyCandelaClassic(app, html));
 Hooks.on("renderApplicationV2", (app, element) => applyCandelaClassic(app, element));
+Hooks.on("renderApplication", (app, html) => applyCandelaClassic(app, html));
+Hooks.on("renderDialogV2", (app, element) => applyCandelaClassic(app, element));
+Hooks.on("renderDialog", (app, html) => applyCandelaClassic(app, html));
 
 // ══════════════════════════════════════════════
 //  DADO DOURADO — DSN
