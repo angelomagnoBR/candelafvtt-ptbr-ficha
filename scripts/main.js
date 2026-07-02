@@ -277,11 +277,12 @@ function applyCandelaClassic(app, element) {
     root.classList.add("candela-classico-sheet-root");
     restructureCandelaHeader(app, root, isCircleSheet ? "circle" : "character");
     coLimparBarraMaximo(root);
-  } else {
-    // Qualquer outra janela do sistema (diálogo de rolagem, ex: "Mover",
-    // "Teste sua sorte!") também recebe o tema visual — só não é uma
-    // ficha, então não passa pela reestruturação de cabeçalho nem pelo
-    // tamanho travado.
+  } else if (app?.actor?.type === "character" || app?.actor?.type === "circle") {
+    // Só temos certeza de que é seguro temar se a janela está claramente
+    // ligada a um ator de personagem/círculo da Candela (ex: diálogo de
+    // rolagem aberto a partir da ficha). Qualquer outra janela do sistema
+    // (compêndio, chat, configurações, diretórios...) NUNCA recebe o tema,
+    // mesmo estando dentro de um mundo com o sistema candelafvtt ativo.
     win.classList.add("candela-classico-dialog");
   }
 
@@ -417,9 +418,6 @@ Hooks.on("renderActorSheet", (app, html) => {
 
 Hooks.on("renderItemSheet", (app, html) => applyCandelaClassic(app, html));
 Hooks.on("renderApplicationV2", (app, element) => applyCandelaClassic(app, element));
-Hooks.on("renderApplication", (app, html) => applyCandelaClassic(app, html));
-Hooks.on("renderDialogV2", (app, element) => applyCandelaClassic(app, element));
-Hooks.on("renderDialog", (app, html) => applyCandelaClassic(app, html));
 
 // ══════════════════════════════════════════════
 //  DADO DOURADO — DSN
