@@ -68,13 +68,21 @@ function isCandelaApplication(app, element) {
     || docName === "actor"
     || docName === "item"
     || actorType === "character"
+    || actorType === "circle"
     || !!root?.querySelector?.("[data-action], .sheet-tabs, .tabs, input[name^='system.']");
 }
 
 function isCandelaActorSheet(app) {
   const docName = String(app?.object?.documentName ?? app?.actor?.documentName ?? "").toLowerCase();
   const actorType = String(app?.actor?.type ?? app?.object?.type ?? "").toLowerCase();
-  return game?.system?.id === "candelafvtt" && (docName === "actor" || actorType === "character");
+  return game?.system?.id === "candelafvtt" && (docName === "actor" || docName === "item") && actorType === "character";
+}
+
+// Ficha de Círculo (grupo) — mesma família de sheets, tipo de ator diferente
+function isCandelaCircleSheet(app) {
+  const docName = String(app?.object?.documentName ?? app?.actor?.documentName ?? "").toLowerCase();
+  const actorType = String(app?.actor?.type ?? app?.object?.type ?? "").toLowerCase();
+  return game?.system?.id === "candelafvtt" && docName === "actor" && actorType === "circle";
 }
 
 function translateCandelaSheet(element) {
@@ -155,6 +163,86 @@ function applyLockedSize(app, windowElement) {
   observer.observe(windowElement, { attributes: true, attributeFilter: ["style", "class"] });
 }
 
+// ══════════════════════════════════════════════
+//  REESTRUTURAÇÃO DO CABEÇALHO (robusta a mudanças de HTML)
+//
+//  Em vez de confiar em grid-template-columns fixo (que quebra
+//  se a ordem/estrutura do HTML gerado pelo sistema mudar), o
+//  cabeçalho é remontado fisicamente em 3 blocos:
+//    .co-header-photo  -> a foto
+//    .co-header-mid    -> nome, pronomes/chapter house, papel/especialidade
+//    .co-header-right  -> recursos (Corpo/Mente/Sangria ou Curar/Descansar/Treinar)
+//  O CSS só precisa estilizar esses 3 blocos com flexbox simples.
+// ══════════════════════════════════════════════
+
+function moveIfExists(el, target) {
+  if (el) target.appendChild(el);
+}
+
+function restructureCandelaHeader(app, root, kind) {
+  const header = root.querySelector(".sheet-header");
+  if (!header) return;
+  if (header.dataset.coRestructured === "true") return;
+
+  const photo = header.querySelector("img.profile-img");
+  if (!photo) return; // estrutura desconhecida — não mexe para não quebrar mais
+
+  const left = document.createElement("div");
+  left.className = "co-header-photo";
+
+  const mid = document.createElement("div");
+  mid.className = "co-header-mid";
+
+  const right = document.createElement("div");
+  right.className = "co-header-right";
+
+  moveIfExists(photo, left);
+
+  if (kind === "character") {
+    const nameField = header.querySelector(".charname") ?? header.querySelector("input[name='name']");
+    const pronounsField = header.querySelector(".pronouns") ?? header.querySelector("input[name='system.pronouns']");
+    const role = header.querySelector(".role");
+    const specialty = header.querySelector(".specialty");
+    const resources = header.querySelector(".resources");
+
+    moveIfExists(nameField, mid);
+    moveIfExists(pronounsField, mid);
+
+    if (role || specialty) {
+      const subtitle = document.createElement("div");
+      subtitle.className = "co-header-subtitle";
+      moveIfExists(role, subtitle);
+      moveIfExists(specialty, subtitle);
+      mid.appendChild(subtitle);
+    }
+
+    moveIfExists(resources, right);
+  } else if (kind === "circle") {
+    const nameField = header.querySelector(".charname") ?? header.querySelector("input[name='name']");
+    const chapterRow = header.querySelector(".grid.grid-8col")
+      ?? header.querySelector(".chapterhouse")?.closest("div")
+      ?? header.querySelector("input[name='system.chapterHouse']")?.closest("div");
+    const resources = header.querySelector(".resources");
+
+    moveIfExists(nameField, mid);
+    moveIfExists(chapterRow, mid);
+    moveIfExists(resources, right);
+  }
+
+  // Qualquer coisa que tenha sobrado no header (wrappers vazios, elementos
+  // não previstos) é preservada dentro de .co-header-mid em vez de perdida.
+  Array.from(header.children).forEach((child) => {
+    mid.appendChild(child);
+  });
+
+  header.innerHTML = "";
+  header.appendChild(left);
+  header.appendChild(mid);
+  header.appendChild(right);
+  header.classList.add("co-header-restructured");
+  header.dataset.coRestructured = "true";
+}
+
 function applyCandelaClassic(app, element) {
   if (!isCandelaApplication(app, element)) return;
 
@@ -164,8 +252,16 @@ function applyCandelaClassic(app, element) {
 
   translateCandelaSheet(root);
 
-  if (isCandelaActorSheet(app)) {
+  const isCharacterSheet = isCandelaActorSheet(app);
+  const isCircleSheet = isCandelaCircleSheet(app);
+
+  if (isCharacterSheet || isCircleSheet) {
+    win.classList.add("candela-classico-window");
     root.classList.add("candela-classico-sheet-root");
+    restructureCandelaHeader(app, root, isCircleSheet ? "circle" : "character");
+  }
+
+  if (isCharacterSheet) {
     applyLockedSize(app, win);
   }
 }
