@@ -1,420 +1,1126 @@
-const CANDELA_PTBR_REPLACEMENTS = new Map([
-  ["pronouns", "pronomes"],
-  ["Body", "Corpo"],
-  ["Brain", "Mente"],
-  ["Bleed", "Sangria"],
-  ["Actions", "Ações"],
-  ["Abilities", "Habilidades"],
-  ["Biography", "Biografia"],
-  ["Gear", "Equipamento"],
-  ["Nerve", "Coragem"],
-  ["Cunning", "Astúcia"],
-  ["Intuition", "Intuição"],
-  ["Drives", "Impulsos"],
-  ["Resistances", "Resistências"],
-  ["Move", "Mover"],
-  ["Strike", "Atacar"],
-  ["Control", "Controlar"],
-  ["Sway", "Persuadir"],
-  ["Read", "Ler"],
-  ["Hide", "Esconder"],
-  ["Survey", "Investigar"],
-  ["Focus", "Focar"],
-  ["Sense", "Sentir"],
-  ["run, dodge, navigate", "correr, desviar, navegar"],
-  ["punch, break, knock down", "socar, quebrar, derrubar"],
-  ["drive, shoot, finesse", "dirigir, atirar, manusear"],
-  ["convince, command, consort", "convencer, comandar, socializar"],
-  ["interpret body language, spot lies, gather motive", "interpretar linguagem corporal, detectar mentiras, reconhecer motivos"],
-  ["sneak, distract, sleight of hand", "esgueirar, distrair, prestidigitar"],
-  ["search, track, spot", "pesquisar, rastrear, localizar"],
-  ["inspect, analyze, remember", "inspecionar, analisar, lembrar"],
-  ["attune, channel, reveal", "sintonizar, canalizar, revelar"]
-]);
+/* ============================================================
+   CANDELA OBSCURA PT-BR — v10
+   Correções:
+   · Texto pronomes/bio visível (cor clara)
+   · "/" das Resistências removido (text-indent corrigido)
+   · Cabeçalho reestruturado via JS (foto | nome+papel | recursos)
+   · Regra de abas menos agressiva (não força display:block)
+   ============================================================ */
 
-const CANDELA_CLASSICO_SIZE = Object.freeze({ width: 840, height: 580 });
-const LOCKED_WINDOWS = new WeakSet();
-let lockTimer = null;
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap');
 
-// Estado do cadeado por ator
-const coLockState = {};
-
-function getRoot(element) {
-  if (!element) return null;
-  if (element instanceof HTMLElement) return element;
-  if (Array.isArray(element)) return element[0] ?? null;
-  if (element[0] instanceof HTMLElement) return element[0];
-  return null;
+:root {
+  --co-bg:          #0e0b10;
+  --co-card:        #1b1624;
+  --co-border:      #b8960c;
+  --co-border-dim:  #4a3a10;
+  --co-gold:        #d4a820;
+  --co-gold-bright: #f0c93a;
+  --co-gold-dim:    #7a6010;
+  --co-text:        #e8dfc0;
+  --co-muted:       #9a8a60;
+  --co-row-hover:   #1f1830;
 }
 
-function getAppWindow(app, element) {
-  const root = getRoot(element) ?? getRoot(app?.element);
-  if (!root) return getRoot(app?.element);
-  return root.closest?.(".app, .application, .window-app") ?? root;
+/* ══════════════════════════════════════════════
+   FIX THEME-LIGHT
+   O Foundry injeta .theme-light na ficha de Círculo
+   que sobrescreve as cores. Forçamos o tema escuro.
+══════════════════════════════════════════════ */
+.candela-classico-window.theme-light,
+.candela-classico-window.theme-light * {
+  --color-text-primary: var(--co-text) !important;
+  --color-text-secondary: var(--co-muted) !important;
+  --color-bg-primary: var(--co-bg) !important;
+  color: var(--co-text) !important;
+  background-color: transparent !important;
+}
+.candela-classico-window.theme-light .window-content,
+.candela-classico-window.theme-light form,
+.candela-classico-window.theme-light section {
+  background: var(--co-bg) !important;
+  color: var(--co-text) !important;
+}
+/* Garante que inputs e textos dentro do tema-light ficam legíveis */
+.candela-classico-window.theme-light input,
+.candela-classico-window.theme-light textarea,
+.candela-classico-window.theme-light select,
+.candela-classico-window.theme-light label,
+.candela-classico-window.theme-light span,
+.candela-classico-window.theme-light p,
+.candela-classico-window.theme-light a,
+.candela-classico-window.theme-light h1,
+.candela-classico-window.theme-light h2,
+.candela-classico-window.theme-light h3,
+.candela-classico-window.theme-light li,
+.candela-classico-window.theme-light div {
+  color: var(--co-text) !important;
+}
+/* Círculo de iluminação — fundo dos quadrados */
+.candela-classico-window.theme-light .illumination-track .pip,
+.candela-classico-window.theme-light .illumination-pip,
+.candela-classico-window.theme-light [class*="pip"] {
+  background: var(--co-card) !important;
+  border-color: var(--co-border-dim) !important;
+}
+.candela-classico-window.theme-light .illumination-track .pip.active,
+.candela-classico-window.theme-light .illumination-pip.active,
+.candela-classico-window.theme-light [class*="pip"].active {
+  background: var(--co-gold) !important;
+  border-color: var(--co-border) !important;
 }
 
-function isCandelaApplication(app, element) {
-  const systemId = game?.system?.id;
-  if (systemId !== "candelafvtt") return false;
-
-  const root = getRoot(element) ?? getRoot(app?.element);
-  const appName = String(app?.constructor?.name ?? "").toLowerCase();
-  const actorType = String(app?.actor?.type ?? app?.object?.type ?? "").toLowerCase();
-  const docName = String(app?.object?.documentName ?? app?.actor?.documentName ?? "").toLowerCase();
-
-  return appName.includes("candela")
-    || appName.includes("actor")
-    || appName.includes("item")
-    || docName === "actor"
-    || docName === "item"
-    || actorType === "character"
-    || actorType === "circle"
-    || !!root?.querySelector?.("[data-action], .sheet-tabs, .tabs, input[name^='system.']");
+/* ══════════════════════════════════════════════
+   JANELA
+══════════════════════════════════════════════ */
+.candela-classico-window {
+  width: 680px !important;
+  min-width: 680px !important;
+  max-width: 680px !important;
+  height: 920px !important;
+  min-height: 600px !important;
+  max-height: 92vh !important;
+  resize: vertical !important;
+  overflow: hidden !important;
+  border: 1px solid var(--co-border-dim) !important;
+  border-radius: 6px !important;
+  box-shadow:
+    0 0 0 1px rgba(184,150,12,0.25),
+    0 0 50px rgba(0,0,0,0.95) !important;
+  background: var(--co-bg) !important;
+  font-family: 'Crimson Text', Georgia, serif !important;
+  color: var(--co-text) !important;
+  box-sizing: border-box !important;
 }
 
-function isCandelaActorSheet(app) {
-  const docName = String(app?.object?.documentName ?? app?.actor?.documentName ?? "").toLowerCase();
-  const actorType = String(app?.actor?.type ?? app?.object?.type ?? "").toLowerCase();
-  return game?.system?.id === "candelafvtt" && (docName === "actor" || docName === "item") && actorType === "character";
+.candela-classico-window .window-content {
+  overflow: hidden !important;
+  padding: 0 !important;
+  background: var(--co-bg) !important;
+  border: none !important;
+  box-shadow: none !important;
+  display: flex !important;
+  flex-direction: column !important;
+  height: 100% !important;
+  min-height: 0 !important;
+  box-sizing: border-box !important;
 }
 
-// Ficha de Círculo (grupo) — mesma família de sheets, tipo de ator diferente
-function isCandelaCircleSheet(app) {
-  const docName = String(app?.object?.documentName ?? app?.actor?.documentName ?? "").toLowerCase();
-  const actorType = String(app?.actor?.type ?? app?.object?.type ?? "").toLowerCase();
-  return game?.system?.id === "candelafvtt" && docName === "actor" && actorType === "circle";
+/* ══════════════════════════════════════════════
+   BARRA DE TÍTULO
+══════════════════════════════════════════════ */
+.candela-classico-window .window-header {
+  background: #07050a !important;
+  border-bottom: 1px solid var(--co-border-dim) !important;
+  font-family: 'Cinzel', serif !important;
+  flex-shrink: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  padding: 0 8px !important;
+  height: 32px !important;
+  box-sizing: border-box !important;
+  gap: 4px !important;
+}
+.candela-classico-window .window-header .window-title {
+  font-family: 'Cinzel', serif !important;
+  font-size: 12px !important;
+  color: var(--co-gold) !important;
+  letter-spacing: 0.1em !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+.candela-classico-window .window-header button.header-control,
+.candela-classico-window .window-header a.header-button {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 24px !important;
+  height: 24px !important;
+  min-width: 24px !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  color: var(--co-muted) !important;
+  background: transparent !important;
+  border: none !important;
+  font-size: 0 !important;
+  overflow: hidden !important;
+  white-space: nowrap !important;
+}
+.candela-classico-window .window-header button.header-control i,
+.candela-classico-window .window-header a.header-button i {
+  font-size: 13px !important;
+}
+.candela-classico-window .window-header button.header-control:hover,
+.candela-classico-window .window-header a.header-button:hover {
+  color: var(--co-gold) !important;
 }
 
-function translateCandelaSheet(element) {
-  const root = getRoot(element);
-  if (!root) return;
-
-  root.querySelectorAll("input[placeholder], textarea[placeholder]").forEach((input) => {
-    const replacement = CANDELA_PTBR_REPLACEMENTS.get(input.getAttribute("placeholder"));
-    if (replacement) input.setAttribute("placeholder", replacement);
-  });
-
-  const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
-    acceptNode(node) {
-      const parent = node.parentElement;
-      if (!parent || parent.closest("script, style, textarea")) return NodeFilter.FILTER_REJECT;
-      return node.nodeValue.trim() ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT;
-    }
-  });
-
-  const nodes = [];
-  while (walker.nextNode()) nodes.push(walker.currentNode);
-
-  for (const node of nodes) {
-    const original = node.nodeValue;
-    const trimmed = original.replace(/\s+/g, " ").trim();
-    const replacement = CANDELA_PTBR_REPLACEMENTS.get(trimmed);
-    if (!replacement) continue;
-    node.nodeValue = original.replace(original.trim(), replacement);
-  }
+/* ══════════════════════════════════════════════
+   CABEÇALHO — BASE (antes da reestruturação)
+   Mantido como fallback caso o JS não encontre a
+   foto (.profile-img) e não consiga reestruturar.
+══════════════════════════════════════════════ */
+.candela-classico-window .sheet-header {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: stretch !important;
+  padding: 10px 14px !important;
+  margin: 0 !important;
+  gap: 14px !important;
+  background: #100d15 !important;
+  border-bottom: 2px solid var(--co-border-dim) !important;
+  box-sizing: border-box !important;
+  flex-shrink: 0 !important;
+  overflow: hidden !important;
 }
 
-function applyLockedSize(app, windowElement) {
-  if (!windowElement || !isCandelaActorSheet(app)) return;
-
-  const { width, height } = CANDELA_CLASSICO_SIZE;
-  windowElement.classList.add("candela-classico-window", "candela-classico-locked");
-  windowElement.dataset.candelaLockedWidth = String(width);
-  windowElement.dataset.candelaLockedHeight = String(height);
-
-  try {
-    if (app?.options) app.options.resizable = false;
-    if (typeof app?.setPosition === "function") app.setPosition({ width, height });
-  } catch (err) {
-    console.warn("Candela Clássico | Não foi possível aplicar setPosition.", err);
-  }
-
-  Object.assign(windowElement.style, {
-    width: `${width}px`,
-    minWidth: `${width}px`,
-    maxWidth: `${width}px`,
-    height: `${height}px`,
-    minHeight: `${height}px`,
-    maxHeight: `${height}px`,
-    resize: "none"
-  });
-
-  windowElement.querySelectorAll(".window-resizable-handle, .resize-handle, [data-resize-handle]").forEach((handle) => {
-    handle.remove();
-  });
-
-  if (LOCKED_WINDOWS.has(windowElement)) return;
-  LOCKED_WINDOWS.add(windowElement);
-
-  const observer = new MutationObserver(() => {
-    if (lockTimer) return;
-    lockTimer = window.setTimeout(() => {
-      lockTimer = null;
-      if (!document.body.contains(windowElement)) {
-        observer.disconnect();
-        return;
-      }
-      if (windowElement.offsetWidth !== width || windowElement.offsetHeight !== height) {
-        applyLockedSize(app, windowElement);
-      }
-    }, 80);
-  });
-
-  observer.observe(windowElement, { attributes: true, attributeFilter: ["style", "class"] });
+/* ── CADEADO DE TRAVAMENTO ── */
+.co-lock-btn {
+  position: absolute !important;
+  bottom: 8px !important;
+  right: 8px !important;
+  width: 28px !important;
+  height: 28px !important;
+  border: 1.5px solid var(--co-border-dim) !important;
+  border-radius: 4px !important;
+  background: var(--co-card) !important;
+  color: var(--co-muted) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  cursor: pointer !important;
+  font-size: 13px !important;
+  transition: all 0.2s !important;
+  z-index: 10 !important;
+}
+.co-lock-btn:hover {
+  border-color: var(--co-border) !important;
+  color: var(--co-gold) !important;
+}
+.co-lock-btn.locked {
+  border-color: var(--co-border) !important;
+  color: var(--co-gold) !important;
+  background: #1a1200 !important;
+  box-shadow: 0 0 6px rgba(212,168,32,0.3) !important;
 }
 
-// ══════════════════════════════════════════════
-//  REESTRUTURAÇÃO DO CABEÇALHO (robusta a mudanças de HTML)
-//
-//  Em vez de confiar em grid-template-columns fixo (que quebra
-//  se a ordem/estrutura do HTML gerado pelo sistema mudar), o
-//  cabeçalho é remontado fisicamente em 3 blocos:
-//    .co-header-photo  -> a foto
-//    .co-header-mid    -> nome, pronomes/chapter house, papel/especialidade
-//    .co-header-right  -> recursos (Corpo/Mente/Sangria ou Curar/Descansar/Treinar)
-//  O CSS só precisa estilizar esses 3 blocos com flexbox simples.
-// ══════════════════════════════════════════════
-
-function moveIfExists(el, target) {
-  if (el) target.appendChild(el);
+/* Quando travado: inputs fixos ficam readonly visualmente */
+.candela-classico-window.co-locked .action-value,
+.candela-classico-window.co-locked .actioncategory-label[name$=".max"],
+.candela-classico-window.co-locked .mark-content span[name$=".max"] {
+  pointer-events: none !important;
+  opacity: 0.6 !important;
+  cursor: not-allowed !important;
+}
+.candela-classico-window.co-locked .actioncategory-value,
+.candela-classico-window.co-locked .mark-content input[type="number"],
+.candela-classico-window.co-locked input[name$=".value"] {
+  pointer-events: auto !important;
+  opacity: 1 !important;
+  cursor: text !important;
+  border-color: var(--co-border) !important;
+}
+.candela-classico-window.co-locked input.action-value {
+  pointer-events: none !important;
+  opacity: 0.5 !important;
+  border-color: var(--co-border-dim) !important;
 }
 
-function restructureCandelaHeader(app, root, kind) {
-  const header = root.querySelector(".sheet-header");
-  if (!header) return;
-  if (header.dataset.coRestructured === "true") return;
-
-  const photo = header.querySelector("img.profile-img");
-  if (!photo) return; // estrutura desconhecida — não mexe para não quebrar mais
-
-  const left = document.createElement("div");
-  left.className = "co-header-photo";
-
-  const mid = document.createElement("div");
-  mid.className = "co-header-mid";
-
-  const right = document.createElement("div");
-  right.className = "co-header-right";
-
-  moveIfExists(photo, left);
-
-  if (kind === "character") {
-    const nameField = header.querySelector(".charname") ?? header.querySelector("input[name='name']");
-    const pronounsField = header.querySelector(".pronouns") ?? header.querySelector("input[name='system.pronouns']");
-    const role = header.querySelector(".role");
-    const specialty = header.querySelector(".specialty");
-    const resources = header.querySelector(".resources");
-
-    // Nome e Papel/Especialidade ficam na MESMA linha (nome à esquerda,
-    // papel/especialidade à direita, dentro do bloco central).
-    const nameRow = document.createElement("div");
-    nameRow.className = "co-header-namerow";
-    moveIfExists(nameField, nameRow);
-
-    if (role || specialty) {
-      const subtitle = document.createElement("div");
-      subtitle.className = "co-header-subtitle";
-      moveIfExists(role, subtitle);
-      moveIfExists(specialty, subtitle);
-      nameRow.appendChild(subtitle);
-    }
-
-    mid.appendChild(nameRow);
-    moveIfExists(pronounsField, mid);
-    moveIfExists(resources, right);
-  } else if (kind === "circle") {
-    const nameField = header.querySelector(".charname") ?? header.querySelector("input[name='name']");
-    const chapterRow = header.querySelector(".grid.grid-8col")
-      ?? header.querySelector(".chapterhouse")?.closest("div")
-      ?? header.querySelector("input[name='system.chapterHouse']")?.closest("div");
-    const resources = header.querySelector(".resources");
-
-    moveIfExists(nameField, mid);
-    moveIfExists(chapterRow, mid);
-    moveIfExists(resources, right);
-  }
-
-  // Qualquer coisa que tenha sobrado no header (wrappers vazios, elementos
-  // não previstos) é preservada dentro de .co-header-mid em vez de perdida.
-  Array.from(header.children).forEach((child) => {
-    mid.appendChild(child);
-  });
-
-  header.innerHTML = "";
-  header.appendChild(left);
-  header.appendChild(mid);
-  header.appendChild(right);
-  header.classList.add("co-header-restructured");
-  header.dataset.coRestructured = "true";
+/* ── NOME ── */
+.candela-classico-window .charname {
+  margin: 0 !important;
+  padding: 0 !important;
+}
+.candela-classico-window .charname input[name="name"],
+.candela-classico-window input[name="name"] {
+  font-family: 'Cinzel', serif !important;
+  font-size: 20px !important;
+  font-weight: 700 !important;
+  color: var(--co-gold) !important;
+  letter-spacing: 0.06em !important;
+  background: transparent !important;
+  border: none !important;
+  border-bottom: 1px solid transparent !important;
+  border-radius: 0 !important;
+  padding: 0 0 4px 0 !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+.candela-classico-window .charname input[name="name"]:hover,
+.candela-classico-window input[name="name"]:hover {
+  border-bottom-color: var(--co-border-dim) !important;
+}
+.candela-classico-window .charname input[name="name"]:focus,
+.candela-classico-window input[name="name"]:focus {
+  border-bottom-color: var(--co-border) !important;
+  outline: none !important;
 }
 
-function applyCandelaClassic(app, element) {
-  if (!isCandelaApplication(app, element)) return;
-
-  const root = getRoot(element) ?? getRoot(app?.element);
-  const win = getAppWindow(app, root);
-  if (!root || !win) return;
-
-  translateCandelaSheet(root);
-
-  const isCharacterSheet = isCandelaActorSheet(app);
-  const isCircleSheet = isCandelaCircleSheet(app);
-
-  if (isCharacterSheet || isCircleSheet) {
-    win.classList.add("candela-classico-window");
-    root.classList.add("candela-classico-sheet-root");
-    restructureCandelaHeader(app, root, isCircleSheet ? "circle" : "character");
-  }
-
-  if (isCharacterSheet) {
-    applyLockedSize(app, win);
-  }
+/* ── PRONOMES — FIX: cor visível ── */
+.candela-classico-window .pronouns {
+  display: flex !important;
+  flex-direction: column !important;
+  margin-top: 2px !important;
+}
+.candela-classico-window .pronouns input,
+.candela-classico-window input[name="system.pronouns"] {
+  font-family: 'Crimson Text', Georgia, serif !important;
+  font-size: 14px !important;
+  font-style: italic !important;
+  font-weight: 400 !important;
+  color: var(--co-text) !important;
+  background: transparent !important;
+  border: none !important;
+  border-bottom: 1px solid transparent !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  padding: 4px 0 0 0 !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+  outline: none !important;
+  letter-spacing: 0.02em !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+.candela-classico-window .pronouns input:hover,
+.candela-classico-window input[name="system.pronouns"]:hover {
+  border-bottom-color: var(--co-border-dim) !important;
+}
+.candela-classico-window .pronouns input:focus,
+.candela-classico-window input[name="system.pronouns"]:focus {
+  border-bottom-color: var(--co-border) !important;
+  outline: none !important;
+}
+.candela-classico-window input[name="system.pronouns"]::placeholder {
+  color: var(--co-muted) !important;
+  font-style: italic !important;
+  font-size: 13px !important;
 }
 
-// ══════════════════════════════════════════════
-//  CADEADO DE TRAVAMENTO DA FICHA
-// ══════════════════════════════════════════════
-
-function coAplicarTravamento(html, travar) {
-  // Inputs FIXOS — bloqueados quando travado (scores das ações)
-  const fixos = html.querySelectorAll([
-    "input.action-value",
-    "input[name$='.max']",
-  ].join(","));
-
-  fixos.forEach(el => {
-    el.readOnly = travar;
-    el.style.pointerEvents = travar ? "none" : "";
-    el.style.opacity = travar ? "0.5" : "";
-    el.style.cursor = travar ? "not-allowed" : "";
-  });
-
-  // Inputs EDITÁVEIS — sempre liberados (impulsos, resistências gastas, marks)
-  const editaveis = html.querySelectorAll([
-    "input.actioncategory-value",
-    "input[name$='.value']",
-    "input[name='name']",
-    "input[name='system.pronouns']",
-  ].join(","));
-
-  editaveis.forEach(el => {
-    el.readOnly = false;
-    el.style.pointerEvents = "";
-    el.style.opacity = "";
-    el.style.cursor = "";
-  });
+/* ══════════════════════════════════════════════
+   MARCAS — CORPO / MENTE / SANGRIA (Personagem)
+   CURAR / DESCANSAR / TREINAR (Círculo)
+══════════════════════════════════════════════ */
+.candela-classico-window .mark.flex-group-center,
+.candela-classico-window .resource.flex-group-center {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 6px !important;
+  background: var(--co-card) !important;
+  border: 1px solid var(--co-border-dim) !important;
+  border-radius: 4px !important;
+  padding: 6px 8px !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+}
+.candela-classico-window .mark .resource-label,
+.candela-classico-window .resource .resource-label {
+  font-family: 'Cinzel', serif !important;
+  font-size: 9px !important;
+  letter-spacing: 0.08em !important;
+  color: var(--co-gold-dim) !important;
+  text-transform: uppercase !important;
+  white-space: nowrap !important;
+  flex-shrink: 1 !important;
+}
+.candela-classico-window .mark-content,
+.candela-classico-window .resource-content {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  gap: 3px !important;
+  flex-shrink: 0 !important;
+}
+.candela-classico-window .mark-content input[type="number"],
+.candela-classico-window .resource-content input[type="number"] {
+  font-family: 'Cinzel', serif !important;
+  font-size: 15px !important;
+  font-weight: 700 !important;
+  color: var(--co-gold) !important;
+  background: var(--co-bg) !important;
+  border: 1.5px solid var(--co-border) !important;
+  border-radius: 3px !important;
+  text-align: center !important;
+  padding: 0 !important;
+  width: 26px !important;
+  height: 26px !important;
+  flex-shrink: 0 !important;
+  -moz-appearance: textfield !important;
+}
+.candela-classico-window .mark-content > span,
+.candela-classico-window .resource-content > span:not(.flexrow) {
+  color: var(--co-muted) !important;
+  font-size: 12px !important;
+  flex-shrink: 0 !important;
+}
+.candela-classico-window .mark-content span[name$=".max"],
+.candela-classico-window .resource-content span.flexrow {
+  font-family: 'Cinzel', serif !important;
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  color: var(--co-gold-dim) !important;
+  flex-shrink: 0 !important;
 }
 
-function coInjetarCadeado(app, html) {
-  // Só para fichas de personagem Character
-  if (app?.actor?.type !== "Character") return;
-
-  const header = html.querySelector(".sheet-header");
-  if (!header) return;
-  if (html.querySelector(".co-lock-btn")) return; // já existe
-
-  const actorId = app?.actor?.id;
-  const locked = coLockState[actorId] ?? false;
-
-  const btn = document.createElement("button");
-  btn.type = "button";
-  btn.className = "co-lock-btn" + (locked ? " locked" : "");
-  btn.title = locked ? "Ficha travada — clique para destravar" : "Clique para travar os valores fixos";
-  btn.innerHTML = `<i class="fa-solid ${locked ? "fa-lock" : "fa-lock-open"}"></i>`;
-
-  header.style.position = "relative";
-  header.appendChild(btn);
-
-  // Aplica estado inicial
-  if (locked) coAplicarTravamento(html, true);
-
-  btn.addEventListener("click", (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-
-    const novoEstado = !coLockState[actorId];
-    coLockState[actorId] = novoEstado;
-
-    btn.classList.toggle("locked", novoEstado);
-    btn.title = novoEstado
-      ? "Ficha travada — clique para destravar"
-      : "Clique para travar os valores fixos";
-
-    const icon = btn.querySelector("i");
-    icon.className = `fa-solid ${novoEstado ? "fa-lock" : "fa-lock-open"}`;
-
-    coAplicarTravamento(html, novoEstado);
-  });
+/* ══════════════════════════════════════════════
+   INPUTS GLOBAIS
+══════════════════════════════════════════════ */
+.candela-classico-window input,
+.candela-classico-window textarea,
+.candela-classico-window select {
+  font-family: 'Crimson Text', Georgia, serif !important;
+  font-size: 15px !important;
+  color: var(--co-text) !important;
+  background: var(--co-card) !important;
+  border: 1px solid var(--co-border-dim) !important;
+  border-radius: 3px !important;
+  box-sizing: border-box !important;
+}
+.candela-classico-window input:focus,
+.candela-classico-window textarea:focus {
+  border-color: var(--co-border) !important;
+  outline: none !important;
+}
+.candela-classico-window input::placeholder,
+.candela-classico-window textarea::placeholder {
+  color: var(--co-muted) !important;
+  font-style: italic !important;
+}
+.candela-classico-window input[type="number"]::-webkit-inner-spin-button,
+.candela-classico-window input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none !important;
 }
 
-// Fix: última ação (Sentir) não fica cortada
-function coFixSentir(html) {
-  const lista = html.querySelectorAll("ol.actions-list");
-  if (lista.length) {
-    lista[lista.length - 1].style.marginBottom = "48px";
-  }
+/* ══════════════════════════════════════════════
+   ABAS PRINCIPAIS
+══════════════════════════════════════════════ */
+.candela-classico-window nav.sheet-tabs.tabs,
+.candela-classico-window nav.bio-tabs.tabs {
+  display: flex !important;
+  background: #0a0810 !important;
+  border-bottom: 1px solid var(--co-border-dim) !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  flex-shrink: 0 !important;
+  overflow: hidden !important;
+  flex-wrap: wrap !important;
+}
+.candela-classico-window nav.sheet-tabs.tabs a.item,
+.candela-classico-window nav.bio-tabs.tabs a.item {
+  flex: 1 1 auto !important;
+  padding: 10px 6px !important;
+  text-align: center !important;
+  font-family: 'Cinzel', serif !important;
+  font-size: 11px !important;
+  letter-spacing: 0.14em !important;
+  color: var(--co-muted) !important;
+  border-bottom: 2px solid transparent !important;
+  margin-bottom: -1px !important;
+  cursor: pointer !important;
+  text-decoration: none !important;
+  text-transform: uppercase !important;
+  transition: color 0.15s !important;
+  white-space: nowrap !important;
+}
+.candela-classico-window nav.sheet-tabs.tabs a.item:hover,
+.candela-classico-window nav.bio-tabs.tabs a.item:hover { color: var(--co-text) !important; }
+.candela-classico-window nav.sheet-tabs.tabs a.item.active,
+.candela-classico-window nav.bio-tabs.tabs a.item.active {
+  color: var(--co-gold) !important;
+  border-bottom-color: var(--co-gold) !important;
 }
 
-// ══════════════════════════════════════════════
-//  HOOKS PRINCIPAIS
-// ══════════════════════════════════════════════
+/* ══════════════════════════════════════════════
+   CORPO DAS ABAS
+   FIX: só escondemos a aba INATIVA. A aba ativa
+   mantém o display que o próprio Foundry define
+   (evita conflito com ApplicationV2 e sumiço de
+   conteúdo, como estava acontecendo com Habilidades).
+══════════════════════════════════════════════ */
+.candela-classico-window section.sheet-body {
+  background: var(--co-bg) !important;
+  padding: 0 !important;
+  overflow-y: scroll !important;
+  overflow-x: hidden !important;
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+  box-sizing: border-box !important;
+}
+.candela-classico-window section.sheet-body .tab:not(.active) { display: none !important; }
+.candela-classico-window .tab.actions { padding-bottom: 40px !important; }
+.candela-classico-window section.sheet-body::-webkit-scrollbar { width: 3px !important; }
+.candela-classico-window section.sheet-body::-webkit-scrollbar-track { background: transparent !important; }
+.candela-classico-window section.sheet-body::-webkit-scrollbar-thumb {
+  background: var(--co-border-dim) !important;
+  border-radius: 2px !important;
+}
 
-Hooks.once("ready", () => {
-  console.log("Candela Obscura PT-BR - Ficha Clássica | Tema ativo.");
-});
+/* ══════════════════════════════════════════════
+   CABEÇALHO DE CATEGORIA (Coragem/Astúcia/Intuição)
+══════════════════════════════════════════════ */
+.candela-classico-window .actioncategory.grid.grid-8col {
+  display: grid !important;
+  grid-template-columns: minmax(80px,110px) auto auto auto auto !important;
+  grid-template-rows: 36px !important;
+  align-items: center !important;
+  column-gap: 8px !important;
+  padding: 0 12px !important;
+  background: var(--co-card) !important;
+  border-bottom: 1px solid var(--co-border-dim) !important;
+  border-top: 2px solid var(--co-border-dim) !important;
+  height: 36px !important;
+  min-height: 36px !important;
+  max-height: 36px !important;
+  box-sizing: border-box !important;
+  overflow: hidden !important;
+}
+.candela-classico-window .actioncategory.grid.grid-8col:first-child {
+  border-top: none !important;
+}
 
-Hooks.on("renderActorSheet", (app, html) => {
-  const element = getRoot(html);
-  applyCandelaClassic(app, html);
-  if (element) {
-    coInjetarCadeado(app, element);
-    coFixSentir(element);
-  }
-});
+.candela-classico-window .actioncategory-label.grid-span-1 {
+  grid-column: 1 !important;
+  font-family: 'Cinzel', serif !important;
+  font-size: 12px !important;
+  font-weight: 700 !important;
+  color: var(--co-text) !important;
+  letter-spacing: 0.1em !important;
+  text-transform: uppercase !important;
+  white-space: nowrap !important;
+}
 
-Hooks.on("renderItemSheet", (app, html) => applyCandelaClassic(app, html));
-Hooks.on("renderApplicationV2", (app, element) => applyCandelaClassic(app, element));
+.candela-classico-window .actioncategory.grid.grid-8col > span.grid-span-2.align-center:not([class*="grid-start"]) {
+  grid-column: 2 !important;
+  font-family: 'Cinzel', serif !important;
+  font-size: 10px !important;
+  letter-spacing: 0.1em !important;
+  color: var(--co-muted) !important;
+  text-transform: uppercase !important;
+  white-space: nowrap !important;
+  text-align: center !important;
+}
 
-// ══════════════════════════════════════════════
-//  DADO DOURADO — DSN
-// ══════════════════════════════════════════════
+.candela-classico-window .actioncategory.grid.grid-8col > span.grid-span-1.align-center:nth-of-type(1) {
+  grid-column: 3 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 3px !important;
+}
 
-Hooks.on('diceSoNiceReady', (dice3d) => {
-  dice3d.addColorset({
-    name: 'candela_gilded',
-    description: 'Candela Obscura - Dado Dourado',
-    category: 'Candela Obscura',
-    foreground: '#FFFFFF',
-    background: '#D4AF37',
-    outline: '#8B6508',
-    edge: '#AA7C11',
-    texture: 'none'
-  }, "preferred");
-});
+.candela-classico-window .actioncategory.grid.grid-8col > span.grid-span-2.grid-start-6 {
+  grid-column: 4 !important;
+  font-family: 'Cinzel', serif !important;
+  font-size: 10px !important;
+  letter-spacing: 0.1em !important;
+  color: var(--co-muted) !important;
+  text-transform: uppercase !important;
+  white-space: nowrap !important;
+  text-align: center !important;
+}
 
-Hooks.on('diceSoNiceRollStart', (messageId, diceData) => {
-  const chatMessage = game.messages.get(messageId);
-  if (!chatMessage || !chatMessage.rolls || !diceData.throws || !diceData.throws[0]) return;
+.candela-classico-window .actioncategory.grid.grid-8col > span.grid-span-1.align-center:last-of-type {
+  grid-column: 5 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 3px !important;
+}
 
-  let flatDieIndex = 0;
-  const currentThrow = diceData.throws[0];
+/* Inputs numéricos das categorias */
+.candela-classico-window .actioncategory-value {
+  width: 30px !important;
+  height: 24px !important;
+  font-family: 'Cinzel', serif !important;
+  font-size: 13px !important;
+  font-weight: 700 !important;
+  color: var(--co-gold) !important;
+  background: var(--co-bg) !important;
+  border: 1.5px solid var(--co-border) !important;
+  border-radius: 3px !important;
+  text-align: center !important;
+  padding: 0 !important;
+  flex-shrink: 0 !important;
+  -moz-appearance: textfield !important;
+}
 
-  chatMessage.rolls.forEach(roll => {
-    roll.terms.forEach(term => {
-      if (!term.results) return;
+/* ── FIX: esconde o "/" e mostra só o número ── */
+.candela-classico-window .actioncategory-label[name$=".max"] {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 30px !important;
+  height: 24px !important;
+  padding: 0 !important;
+  font-family: 'Cinzel', serif !important;
+  font-size: 13px !important;
+  font-weight: 700 !important;
+  color: var(--co-gold-dim) !important;
+  background: var(--co-bg) !important;
+  border: 1.5px solid var(--co-border-dim) !important;
+  border-radius: 3px !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  direction: rtl !important;
+  text-indent: 0 !important;
+  padding-right: 0 !important;
+  text-overflow: clip !important;
+  max-width: 30px !important;
+  flex-shrink: 0 !important;
+  letter-spacing: 0 !important;
+  cursor: default !important;
+  pointer-events: none !important;
+}
 
-      const isGilded = term.faces === 6 &&
-        term.options &&
-        term.options.flavor &&
-        (term.options.flavor.toLowerCase().includes("dourado") ||
-         term.options.flavor.toLowerCase().includes("gilded"));
+/* ══════════════════════════════════════════════
+   LISTA DE AÇÕES
+══════════════════════════════════════════════ */
+.candela-classico-window ol.actions-list {
+  list-style: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+.candela-classico-window li.action.grid.grid-8col {
+  display: grid !important;
+  grid-template-columns: 36px 110px 1fr 42px !important;
+  grid-template-rows: 42px !important;
+  align-items: center !important;
+  padding: 0 12px !important;
+  border-bottom: 1px solid rgba(74,58,16,0.4) !important;
+  column-gap: 10px !important;
+  cursor: pointer !important;
+  transition: background 0.12s !important;
+  background: transparent !important;
+  height: 42px !important;
+  overflow: hidden !important;
+}
+.candela-classico-window li.action.grid.grid-8col:hover { background: var(--co-row-hover) !important; }
+.candela-classico-window ol.actions-list li.action:last-child { border-bottom: none !important; }
 
-      term.results.forEach(() => {
-        if (isGilded && currentThrow.dice[flatDieIndex]) {
-          currentThrow.dice[flatDieIndex].colorset = 'candela_gilded';
-        }
-        flatDieIndex++;
-      });
-    });
-  });
-});
+.candela-classico-window li.action.grid.grid-8col > .action-checkbox-icon { grid-column: 1 !important; }
+.candela-classico-window li.action.grid.grid-8col > a.rollable { grid-column: 2 !important; }
+.candela-classico-window li.action.grid.grid-8col > span.action-description { grid-column: 3 !important; }
+.candela-classico-window li.action.grid.grid-8col > .action-editbox { grid-column: 4 !important; }
+
+/* Checkbox gilded */
+.candela-classico-window .action-checkbox-icon {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 36px !important;
+  height: 100% !important;
+}
+/* FIX v11: o ícone/imagem original (o "quadradinho") continua visível
+   sempre. Quando marcado, ele apenas GANHA UM BRILHO dourado (drop-shadow),
+   em vez de ser coberto por um bloco de cor sólida como estava antes.
+   Cobrimos os formatos mais comuns que o Foundry pode usar para esse
+   ícone: input[type=checkbox] nativo, <img>, <i> (ícone de fonte) ou
+   um elemento genérico com classe indicando estado marcado. */
+.candela-classico-window .action-checkbox-icon {
+  --co-glow-off: drop-shadow(0 0 0 rgba(0,0,0,0));
+  --co-glow-on:
+    drop-shadow(0 0 3px rgba(240,201,58,0.95))
+    drop-shadow(0 0 7px rgba(212,168,32,0.75))
+    drop-shadow(0 0 14px rgba(212,168,32,0.4));
+}
+
+.candela-classico-window .action-checkbox-icon input[type="checkbox"] {
+  appearance: none !important;
+  -webkit-appearance: none !important;
+  width: 24px !important;
+  height: 24px !important;
+  min-width: 24px !important;
+  margin: 0 !important;
+  background: transparent !important;
+  border: none !important;
+  cursor: pointer !important;
+  position: relative !important;
+  filter: var(--co-glow-off) !important;
+  transition: filter 0.25s ease !important;
+}
+.candela-classico-window .action-checkbox-icon input[type="checkbox"]:hover {
+  filter: drop-shadow(0 0 5px rgba(212,168,32,0.5)) !important;
+}
+.candela-classico-window .action-checkbox-icon input[type="checkbox"]:checked {
+  filter: var(--co-glow-on) !important;
+  animation: co-pulse-gold 2s ease-in-out infinite !important;
+}
+
+/* Caso o ícone seja uma <img>, <i> ou <svg> dentro do wrapper, controlado
+   por uma classe (ex.: .checked/.active/.selected) em vez de :checked */
+.candela-classico-window .action-checkbox-icon img,
+.candela-classico-window .action-checkbox-icon svg,
+.candela-classico-window .action-checkbox-icon i {
+  filter: var(--co-glow-off) !important;
+  transition: filter 0.25s ease !important;
+}
+.candela-classico-window .action-checkbox-icon.checked img,
+.candela-classico-window .action-checkbox-icon.active img,
+.candela-classico-window .action-checkbox-icon.selected img,
+.candela-classico-window .action-checkbox-icon.checked svg,
+.candela-classico-window .action-checkbox-icon.active svg,
+.candela-classico-window .action-checkbox-icon.selected svg,
+.candela-classico-window .action-checkbox-icon.checked i,
+.candela-classico-window .action-checkbox-icon.active i,
+.candela-classico-window .action-checkbox-icon.selected i {
+  filter: var(--co-glow-on) !important;
+  animation: co-pulse-gold 2s ease-in-out infinite !important;
+}
+
+@keyframes co-pulse-gold {
+  0%   { filter: drop-shadow(0 0 3px rgba(240,201,58,0.95)) drop-shadow(0 0 7px rgba(212,168,32,0.75)) drop-shadow(0 0 14px rgba(212,168,32,0.4)); }
+  50%  { filter: drop-shadow(0 0 5px rgba(240,201,58,1)) drop-shadow(0 0 11px rgba(212,168,32,0.9)) drop-shadow(0 0 20px rgba(212,168,32,0.55)); }
+  100% { filter: drop-shadow(0 0 3px rgba(240,201,58,0.95)) drop-shadow(0 0 7px rgba(212,168,32,0.75)) drop-shadow(0 0 14px rgba(212,168,32,0.4)); }
+}
+
+/* Nome da ação */
+.candela-classico-window a.rollable {
+  text-decoration: none !important;
+  display: flex !important;
+  align-items: center !important;
+  height: 100% !important;
+}
+.candela-classico-window a.rollable .action-label {
+  font-family: 'Cinzel', serif !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  color: var(--co-text) !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+.candela-classico-window a.rollable:hover .action-label { color: var(--co-gold) !important; }
+
+/* Descrição */
+.candela-classico-window span.action-description {
+  font-family: 'Crimson Text', Georgia, serif !important;
+  font-style: italic !important;
+  font-size: 13px !important;
+  color: #b0a070 !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+  display: flex !important;
+  align-items: center !important;
+  height: 100% !important;
+}
+
+/* Score */
+.candela-classico-window .action-editbox {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+.candela-classico-window .action-editbox input.action-value {
+  width: 32px !important;
+  height: 26px !important;
+  border: 1.5px solid var(--co-border-dim) !important;
+  border-radius: 3px !important;
+  background: var(--co-bg) !important;
+  font-family: 'Cinzel', serif !important;
+  font-size: 14px !important;
+  font-weight: 700 !important;
+  color: var(--co-gold) !important;
+  text-align: center !important;
+  padding: 0 !important;
+  -moz-appearance: textfield !important;
+}
+.candela-classico-window .action-editbox input.action-value:hover {
+  border-color: var(--co-border) !important;
+}
+
+/* ══════════════════════════════════════════════
+   HABILIDADES
+══════════════════════════════════════════════ */
+.candela-classico-window li.items-header {
+  font-family: 'Cinzel', serif !important;
+  font-size: 11px !important;
+  letter-spacing: 0.1em !important;
+  color: var(--co-gold) !important;
+  text-transform: uppercase !important;
+  background: var(--co-card) !important;
+  border-bottom: 1px solid var(--co-border-dim) !important;
+  padding: 10px 14px !important;
+  list-style: none !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+}
+.candela-classico-window .item-controls { display: flex !important; gap: 8px !important; align-items: center !important; }
+.candela-classico-window .item-control { color: var(--co-gold) !important; text-decoration: none !important; font-size: 13px !important; }
+.candela-classico-window .item-control:hover { color: var(--co-gold-bright) !important; }
+
+.candela-classico-window .tab.abilities .item.flexrow,
+.candela-classico-window .tab.abilities li.item {
+  display: flex !important;
+  align-items: center !important;
+  padding: 10px 14px !important;
+  border-bottom: 1px solid rgba(74,58,16,0.35) !important;
+  gap: 10px !important;
+  background: transparent !important;
+  transition: background 0.12s !important;
+}
+.candela-classico-window .tab.abilities .item.flexrow:hover { background: var(--co-row-hover) !important; }
+
+.candela-classico-window .circle-ability-label {
+  font-family: 'Cinzel', serif !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  color: var(--co-text) !important;
+}
+.candela-classico-window .circle-abilities { flex: 1 !important; min-width: 0 !important; }
+.candela-classico-window .circle-abilities a.rollable:hover .circle-ability-label { color: var(--co-gold) !important; }
+
+/* FIX: texto das habilidades visível */
+.candela-classico-window .tab.abilities .item.flexrow,
+.candela-classico-window .tab.abilities .item.flexrow * {
+  color: var(--co-text) !important;
+}
+.candela-classico-window .tab.abilities .item.flexrow .item-control { color: var(--co-gold) !important; }
+
+/* ══════════════════════════════════════════════
+   EQUIPAMENTO
+══════════════════════════════════════════════ */
+.candela-classico-window .tab.gear .item.flexrow,
+.candela-classico-window .tab.gear li.item {
+  display: flex !important;
+  align-items: center !important;
+  padding: 9px 14px !important;
+  border-bottom: 1px solid rgba(74,58,16,0.35) !important;
+  gap: 10px !important;
+  background: transparent !important;
+  transition: background 0.12s !important;
+}
+.candela-classico-window .tab.gear .item.flexrow:hover { background: var(--co-row-hover) !important; }
+.candela-classico-window .tab.gear .item.flexrow,
+.candela-classico-window .tab.gear .item.flexrow * {
+  font-family: 'Crimson Text', Georgia, serif !important;
+  font-size: 14px !important;
+  color: var(--co-text) !important;
+}
+.candela-classico-window .tab.gear .item-control { color: var(--co-gold) !important; flex: 0 !important; }
+
+/* ══════════════════════════════════════════════
+   BIOGRAFIA
+══════════════════════════════════════════════ */
+.candela-classico-window section.bio-body { padding: 12px !important; }
+
+/* FIX: texto da biografia visível */
+.candela-classico-window section.bio-body,
+.candela-classico-window section.bio-body *,
+.candela-classico-window .editor-content,
+.candela-classico-window .editor-content * {
+  color: var(--co-text) !important;
+}
+.candela-classico-window .editor-content.prosemirror-editor {
+  min-height: 140px !important;
+  font-size: 15px !important;
+  line-height: 1.6 !important;
+}
+
+/* FIX: chaves de iluminação — texto visível */
+.candela-classico-window .tab.biography .items-list .item,
+.candela-classico-window .tab.biography .items-list .item *,
+.candela-classico-window .tab.biography .items-list li {
+  color: var(--co-text) !important;
+  font-family: 'Crimson Text', Georgia, serif !important;
+  font-size: 15px !important;
+}
+.candela-classico-window .tab.biography .items-list .item {
+  display: flex !important;
+  align-items: center !important;
+  padding: 9px 14px !important;
+  border-bottom: 1px solid rgba(74,58,16,0.35) !important;
+  gap: 10px !important;
+  background: transparent !important;
+  transition: background 0.12s !important;
+}
+.candela-classico-window .tab.biography .items-list .item:hover { background: var(--co-row-hover) !important; }
+.candela-classico-window .tab.biography .items-list .item .item-control { color: var(--co-gold) !important; }
+
+/* ══════════════════════════════════════════════
+   BOTÕES / TEXTAREA / SCROLLBAR
+══════════════════════════════════════════════ */
+.candela-classico-window section.sheet-body button {
+  font-family: 'Cinzel', serif !important;
+  font-size: 10px !important;
+  letter-spacing: 0.1em !important;
+  color: var(--co-gold) !important;
+  background: var(--co-card) !important;
+  border: 1px solid var(--co-border-dim) !important;
+  border-radius: 3px !important;
+  padding: 5px 12px !important;
+  cursor: pointer !important;
+  transition: all 0.15s !important;
+  text-transform: uppercase !important;
+}
+.candela-classico-window section.sheet-body button:hover {
+  border-color: var(--co-border) !important;
+  background: #1a1530 !important;
+}
+.candela-classico-window textarea {
+  min-height: 80px !important;
+  resize: vertical !important;
+  padding: 8px 12px !important;
+  line-height: 1.6 !important;
+  width: 100% !important;
+  color: var(--co-text) !important;
+}
+.candela-classico-window ::-webkit-scrollbar { width: 3px !important; height: 0 !important; }
+.candela-classico-window ::-webkit-scrollbar-track { background: transparent !important; }
+.candela-classico-window ::-webkit-scrollbar-thumb { background: var(--co-border-dim) !important; border-radius: 2px !important; }
+.candela-classico-window ::-webkit-scrollbar-thumb:hover { background: var(--co-border) !important; }
+
+/* Chapter House — linha com label + input + color picker (Círculo) */
+.candela-classico-window .co-header-mid .grid.grid-8col {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  gap: 8px !important;
+  width: 100% !important;
+  height: auto !important;
+}
+.candela-classico-window .chapterhouse {
+  font-family: 'Cinzel', serif !important;
+  font-size: 11px !important;
+  letter-spacing: 0.08em !important;
+  color: var(--co-gold-dim) !important;
+  text-transform: uppercase !important;
+  white-space: nowrap !important;
+  flex-shrink: 0 !important;
+}
+.candela-classico-window .co-header-mid .grid.grid-8col span.grid-span-5 { flex: 1 !important; }
+.candela-classico-window input[name="system.chapterHouse"] {
+  width: 100% !important;
+  font-family: 'Crimson Text', Georgia, serif !important;
+  font-size: 14px !important;
+  font-style: italic !important;
+  color: var(--co-text) !important;
+  background: transparent !important;
+  border: none !important;
+  border-bottom: 1px solid var(--co-border-dim) !important;
+  border-radius: 0 !important;
+  padding: 2px 0 !important;
+}
+.candela-classico-window input[name="system.chapterHouse"]:focus {
+  border-bottom-color: var(--co-border) !important;
+  outline: none !important;
+}
+.candela-classico-window input[name="system.chapterHouse"]::placeholder {
+  color: var(--co-muted) !important;
+  font-style: italic !important;
+}
+.candela-classico-window .circle-color-wrapper {
+  flex-shrink: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 4px !important;
+}
+.candela-classico-window .circle-color-wrapper input[type="text"] {
+  width: 58px !important;
+  font-size: 11px !important;
+  padding: 2px 4px !important;
+  height: 24px !important;
+}
+.candela-classico-window .circle-color-wrapper input[type="color"] {
+  width: 24px !important;
+  height: 24px !important;
+  padding: 0 !important;
+  border: 1px solid var(--co-border-dim) !important;
+  border-radius: 3px !important;
+  cursor: pointer !important;
+}
+
+/* ══════════════════════════════════════════════
+   CABEÇALHO REESTRUTURADO (v10)
+   O JS monta 3 blocos dentro de .sheet-header:
+     .co-header-photo  — a foto
+     .co-header-mid    — nome / pronomes (ou chapter house) / papel+especialidade
+     .co-header-right  — recursos (Corpo·Mente·Sangria / Curar·Descansar·Treinar)
+   Estas regras vêm por último de propósito, para vencer
+   qualquer resquício de estilo antigo baseado em grid.
+══════════════════════════════════════════════ */
+.candela-classico-window .sheet-header.co-header-restructured {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: stretch !important;
+  gap: 14px !important;
+  padding: 12px 14px !important;
+  background: #100d15 !important;
+  border-bottom: 2px solid var(--co-border-dim) !important;
+  box-sizing: border-box !important;
+  height: auto !important;
+  min-height: 150px !important;
+  max-height: none !important;
+  overflow: visible !important;
+  position: relative !important;
+}
+
+.candela-classico-window .co-header-photo {
+  flex: 0 0 128px !important;
+  width: 128px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: stretch !important;
+  gap: 4px !important;
+}
+.candela-classico-window .co-header-photo img.profile-img {
+  flex: 1 1 auto !important;
+  width: 100% !important;
+  height: 100% !important;
+  min-height: 0 !important;
+  object-fit: cover !important;
+  object-position: center !important;
+  border: 2px solid var(--co-border) !important;
+  border-radius: 3px !important;
+  box-shadow: 0 0 0 1px var(--co-border-dim), 0 6px 20px rgba(0,0,0,0.8) !important;
+}
+
+/* Papel (Estranho) e Especialidade (Ocultista) — editáveis pelo jogador */
+.candela-classico-window .co-header-photo .role,
+.candela-classico-window .co-header-photo .specialty {
+  /* Anula qualquer position:absolute herdado do sistema */
+  position: static !important;
+  top: auto !important; left: auto !important; right: auto !important; bottom: auto !important;
+  order: initial !important;
+  flex: 0 0 auto !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+  margin: 0 !important;
+  text-align: center !important;
+  font-family: 'Cinzel', serif !important;
+  font-size: 10px !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.08em !important;
+  text-transform: uppercase !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  background: transparent !important;
+  border: none !important;
+  border-bottom: 1px solid transparent !important;
+  border-radius: 0 !important;
+  padding: 2px 0 !important;
+  cursor: text !important;
+  outline: none !important;
+  transition: border-color 0.15s !important;
+}
+.candela-classico-window .co-header-photo .role { color: var(--co-gold-dim) !important; }
+.candela-classico-window .co-header-photo .specialty { color: var(--co-muted) !important; }
+.candela-classico-window .co-header-photo .role:hover,
+.candela-classico-window .co-header-photo .specialty:hover {
+  border-bottom-color: var(--co-border-dim) !important;
+}
+.candela-classico-window .co-header-photo .role:focus,
+.candela-classico-window .co-header-photo .specialty:focus {
+  border-bottom-color: var(--co-border) !important;
+  color: var(--co-gold) !important;
+}
+.candela-classico-window .co-header-photo .role::placeholder,
+.candela-classico-window .co-header-photo .specialty::placeholder {
+  color: var(--co-muted) !important;
+  text-transform: none !important;
+  font-style: italic !important;
+}
+
+.candela-classico-window .co-header-mid {
+  flex: 1 1 auto !important;
+  min-width: 0 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 6px !important;
+  justify-content: flex-start !important;
+}
+.candela-classico-window .co-header-mid > * {
+  width: 100% !important;
+  flex-shrink: 0 !important;
+}
+
+/* Linha do nome: nome à esquerda, papel/especialidade à direita */
+.candela-classico-window .co-header-namerow {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: baseline !important;
+  justify-content: space-between !important;
+  gap: 12px !important;
+  width: 100% !important;
+}
+.candela-classico-window .co-header-namerow .charname,
+.candela-classico-window .co-header-namerow input[name="name"] {
+  flex: 1 1 auto !important;
+  min-width: 0 !important;
+}
+
+.candela-classico-window .co-header-subtitle {
+  /* Anula qualquer position:absolute herdado do sistema — é isso que
+     estava prendendo Estranho/Ocultista em cima da foto. */
+  position: static !important;
+  top: auto !important;
+  left: auto !important;
+  right: auto !important;
+  bottom: auto !important;
+  display: flex !important;
+  flex-direction: row !important;
+  gap: 8px !important;
+  align-items: center !important;
+  flex: 0 0 auto !important;
+  white-space: nowrap !important;
+}
+.candela-classico-window .co-header-subtitle .role,
+.candela-classico-window .co-header-subtitle .specialty {
+  position: static !important;
+  top: auto !important;
+  left: auto !important;
+  right: auto !important;
+  bottom: auto !important;
+  order: initial !important;
+  margin: 0 !important;
+  /* Mesma fonte "bonita" usada nas ações (Atacar, Mover...) */
+  font-family: 'Cinzel', serif !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.04em !important;
+  text-transform: none !important;
+  color: var(--co-text) !important;
+  white-space: nowrap !important;
+}
+.candela-classico-window .co-header-subtitle .specialty {
+  color: var(--co-gold) !important;
+}
+.candela-classico-window .co-header-subtitle .specialty::before {
+  content: "· " !important;
+  color: var(--co-muted) !important;
+}
+
+.candela-classico-window .co-header-right {
+  flex: 0 0 148px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 7px !important;
+  justify-content: center !important;
+  border-left: 1px solid var(--co-border-dim) !important;
+  padding-left: 14px !important;
+  box-sizing: border-box !important;
+}
+.candela-classico-window .co-header-right .resources {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 7px !important;
+  width: 100% !important;
+}
+.candela-classico-window .co-header-right .mark.flex-group-center,
+.candela-classico-window .co-header-right .resource.flex-group-center {
+  width: 100% !important;
+}
+
+/* Botão do cadeado reposicionado dentro do bloco central */
+.candela-classico-window .co-header-mid .co-lock-btn {
+  position: static !important;
+  align-self: flex-start !important;
+  margin-top: 4px !important;
+}
