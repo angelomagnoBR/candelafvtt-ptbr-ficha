@@ -36,6 +36,9 @@ const CANDELA_CLASSICO_SIZE = Object.freeze({ width: 840, height: 580 });
 const LOCKED_WINDOWS = new WeakSet();
 let lockTimer = null;
 
+// Estado do cadeado por ator
+const coLockState = {};
+
 function getRoot(element) {
   if (!element) return null;
   if (element instanceof HTMLElement) return element;
@@ -167,55 +170,150 @@ function applyCandelaClassic(app, element) {
   }
 }
 
+// ══════════════════════════════════════════════
+//  CADEADO DE TRAVAMENTO DA FICHA
+// ══════════════════════════════════════════════
+
+function coAplicarTravamento(html, travar) {
+  // Inputs FIXOS — bloqueados quando travado (scores das ações)
+  const fixos = html.querySelectorAll([
+    "input.action-value",
+    "input[name$='.max']",
+  ].join(","));
+
+  fixos.forEach(el => {
+    el.readOnly = travar;
+    el.style.pointerEvents = travar ? "none" : "";
+    el.style.opacity = travar ? "0.5" : "";
+    el.style.cursor = travar ? "not-allowed" : "";
+  });
+
+  // Inputs EDITÁVEIS — sempre liberados (impulsos, resistências gastas, marks)
+  const editaveis = html.querySelectorAll([
+    "input.actioncategory-value",
+    "input[name$='.value']",
+    "input[name='name']",
+    "input[name='system.pronouns']",
+  ].join(","));
+
+  editaveis.forEach(el => {
+    el.readOnly = false;
+    el.style.pointerEvents = "";
+    el.style.opacity = "";
+    el.style.cursor = "";
+  });
+}
+
+function coInjetarCadeado(app, html) {
+  // Só para fichas de personagem Character
+  if (app?.actor?.type !== "Character") return;
+
+  const header = html.querySelector(".sheet-header");
+  if (!header) return;
+  if (html.querySelector(".co-lock-btn")) return; // já existe
+
+  const actorId = app?.actor?.id;
+  const locked = coLockState[actorId] ?? false;
+
+  const btn = document.createElement("button");
+  btn.type = "button";
+  btn.className = "co-lock-btn" + (locked ? " locked" : "");
+  btn.title = locked ? "Ficha travada — clique para destravar" : "Clique para travar os valores fixos";
+  btn.innerHTML = `<i class="fa-solid ${locked ? "fa-lock" : "fa-lock-open"}"></i>`;
+
+  header.style.position = "relative";
+  header.appendChild(btn);
+
+  // Aplica estado inicial
+  if (locked) coAplicarTravamento(html, true);
+
+  btn.addEventListener("click", (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    const novoEstado = !coLockState[actorId];
+    coLockState[actorId] = novoEstado;
+
+    btn.classList.toggle("locked", novoEstado);
+    btn.title = novoEstado
+      ? "Ficha travada — clique para destravar"
+      : "Clique para travar os valores fixos";
+
+    const icon = btn.querySelector("i");
+    icon.className = `fa-solid ${novoEstado ? "fa-lock" : "fa-lock-open"}`;
+
+    coAplicarTravamento(html, novoEstado);
+  });
+}
+
+// Fix: última ação (Sentir) não fica cortada
+function coFixSentir(html) {
+  const lista = html.querySelectorAll("ol.actions-list");
+  if (lista.length) {
+    lista[lista.length - 1].style.marginBottom = "48px";
+  }
+}
+
+// ══════════════════════════════════════════════
+//  HOOKS PRINCIPAIS
+// ══════════════════════════════════════════════
+
 Hooks.once("ready", () => {
   console.log("Candela Obscura PT-BR - Ficha Clássica | Tema ativo.");
 });
 
-Hooks.on("renderActorSheet", (app, html) => applyCandelaClassic(app, html));
+Hooks.on("renderActorSheet", (app, html) => {
+  const element = getRoot(html);
+  applyCandelaClassic(app, html);
+  if (element) {
+    coInjetarCadeado(app, element);
+    coFixSentir(element);
+  }
+});
+
 Hooks.on("renderItemSheet", (app, html) => applyCandelaClassic(app, html));
 Hooks.on("renderApplicationV2", (app, element) => applyCandelaClassic(app, element));
 
-// =====================================================================
-// AUTOMAÇÃO ADICIONADA: SUPORTE VISUAL DE ARREMESSO PARA DADOS DOURADOS
-// =====================================================================
+// ══════════════════════════════════════════════
+//  DADO DOURADO — DSN
+// ══════════════════════════════════════════════
 
 Hooks.on('diceSoNiceReady', (dice3d) => {
-    dice3d.addColorset({
-        name: 'candela_gilded',
-        description: 'Candela Obscura - Dado Dourado',
-        category: 'Candela Obscura',
-        foreground: '#FFFFFF', 
-        background: '#D4AF37', 
-        outline: '#8B6508',    
-        edge: '#AA7C11',       
-        texture: 'none'
-    }, "preferred");
+  dice3d.addColorset({
+    name: 'candela_gilded',
+    description: 'Candela Obscura - Dado Dourado',
+    category: 'Candela Obscura',
+    foreground: '#FFFFFF',
+    background: '#D4AF37',
+    outline: '#8B6508',
+    edge: '#AA7C11',
+    texture: 'none'
+  }, "preferred");
 });
 
 Hooks.on('diceSoNiceRollStart', (messageId, diceData) => {
-    const chatMessage = game.messages.get(messageId);
-    if (!chatMessage || !chatMessage.rolls || !diceData.throws || !diceData.throws[0]) return;
+  const chatMessage = game.messages.get(messageId);
+  if (!chatMessage || !chatMessage.rolls || !diceData.throws || !diceData.throws[0]) return;
 
-    let flatDieIndex = 0; 
-    const currentThrow = diceData.throws[0]; 
+  let flatDieIndex = 0;
+  const currentThrow = diceData.throws[0];
 
-    chatMessage.rolls.forEach(roll => {
-        roll.terms.forEach(term => {
-            if (!term.results) return;
+  chatMessage.rolls.forEach(roll => {
+    roll.terms.forEach(term => {
+      if (!term.results) return;
 
-            // Busca os termos exatos de identificação do seu arquivo de tradução (pt-BR.json)
-            const isGilded = term.faces === 6 && 
-                             term.options && 
-                             term.options.flavor && 
-                             (term.options.flavor.toLowerCase().includes("dourado") || 
-                              term.options.flavor.toLowerCase().includes("gilded"));
+      const isGilded = term.faces === 6 &&
+        term.options &&
+        term.options.flavor &&
+        (term.options.flavor.toLowerCase().includes("dourado") ||
+         term.options.flavor.toLowerCase().includes("gilded"));
 
-            term.results.forEach(() => {
-                if (isGilded && currentThrow.dice[flatDieIndex]) {
-                    currentThrow.dice[flatDieIndex].colorset = 'candela_gilded';
-                }
-                flatDieIndex++; 
-            });
-        });
+      term.results.forEach(() => {
+        if (isGilded && currentThrow.dice[flatDieIndex]) {
+          currentThrow.dice[flatDieIndex].colorset = 'candela_gilded';
+        }
+        flatDieIndex++;
+      });
     });
+  });
 });
