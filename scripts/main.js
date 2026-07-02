@@ -32,9 +32,12 @@ const CANDELA_PTBR_REPLACEMENTS = new Map([
   ["attune, channel, reveal", "sintonizar, canalizar, revelar"]
 ]);
 
-const CANDELA_CLASSICO_SIZE = Object.freeze({ width: 960, height: 700 });
+const CANDELA_CLASSICO_SIZE = Object.freeze({ width: 840, height: 580 });
 const LOCKED_WINDOWS = new WeakSet();
 let lockTimer = null;
+
+// Estado do cadeado por ator
+const coLockState = {};
 
 function getRoot(element) {
   if (!element) return null;
@@ -65,13 +68,21 @@ function isCandelaApplication(app, element) {
     || docName === "actor"
     || docName === "item"
     || actorType === "character"
+    || actorType === "circle"
     || !!root?.querySelector?.("[data-action], .sheet-tabs, .tabs, input[name^='system.']");
 }
 
 function isCandelaActorSheet(app) {
   const docName = String(app?.object?.documentName ?? app?.actor?.documentName ?? "").toLowerCase();
   const actorType = String(app?.actor?.type ?? app?.object?.type ?? "").toLowerCase();
-  return game?.system?.id === "candelafvtt" && (docName === "actor" || actorType === "character");
+  return game?.system?.id === "candelafvtt" && (docName === "actor" || docName === "item") && actorType === "character";
+}
+
+// Ficha de Círculo (grupo) — mesma família de sheets, tipo de ator diferente
+function isCandelaCircleSheet(app) {
+  const docName = String(app?.object?.documentName ?? app?.actor?.documentName ?? "").toLowerCase();
+  const actorType = String(app?.actor?.type ?? app?.object?.type ?? "").toLowerCase();
+  return game?.system?.id === "candelafvtt" && docName === "actor" && actorType === "circle";
 }
 
 function translateCandelaSheet(element) {
@@ -152,6 +163,103 @@ function applyLockedSize(app, windowElement) {
   observer.observe(windowElement, { attributes: true, attributeFilter: ["style", "class"] });
 }
 
+// ══════════════════════════════════════════════
+//  REESTRUTURAÇÃO DO CABEÇALHO (robusta a mudanças de HTML)
+//
+//  Em vez de confiar em grid-template-columns fixo (que quebra
+//  se a ordem/estrutura do HTML gerado pelo sistema mudar), o
+//  cabeçalho é remontado fisicamente em 3 blocos:
+//    .co-header-photo  -> a foto
+//    .co-header-mid    -> nome, pronomes/chapter house, papel/especialidade
+//    .co-header-right  -> recursos (Corpo/Mente/Sangria ou Curar/Descansar/Treinar)
+//  O CSS só precisa estilizar esses 3 blocos com flexbox simples.
+// ══════════════════════════════════════════════
+
+function moveIfExists(el, target) {
+  if (el) target.appendChild(el);
+}
+
+// Remove a "/" que o sistema imprime antes do valor máximo dos
+// recursos (Corpo/Mente/Sangria), deixando só o número.
+function coLimparBarraMaximo(root) {
+  root.querySelectorAll(".mark-content span[name$='.max'], .resource-content span.flexrow").forEach((span) => {
+    span.textContent = span.textContent.replace(/^\s*\/\s*/, "");
+  });
+}
+
+function restructureCandelaHeader(app, root, kind) {
+  const header = root.querySelector(".sheet-header");
+  if (!header) return;
+  if (header.dataset.coRestructured === "true") return;
+
+  const photo = header.querySelector("img.profile-img");
+  if (!photo) return; // estrutura desconhecida — não mexe para não quebrar mais
+
+  const left = document.createElement("div");
+  left.className = "co-header-photo";
+
+  const mid = document.createElement("div");
+  mid.className = "co-header-mid";
+
+  const right = document.createElement("div");
+  right.className = "co-header-right";
+
+  moveIfExists(photo, left);
+
+  if (kind === "character") {
+    const nameField = header.querySelector(".charname") ?? header.querySelector("input[name='name']");
+    const pronounsField = header.querySelector(".pronouns") ?? header.querySelector("input[name='system.pronouns']");
+    const role = header.querySelector(".role");
+    const specialty = header.querySelector(".specialty");
+    const resources = header.querySelector(".resources");
+
+    // A foto já foi movida para "left" acima e agora preenche
+    // sozinha toda a coluna esquerda do cabeçalho.
+
+    moveIfExists(nameField, mid);
+    moveIfExists(pronounsField, mid);
+
+    // Papel e Especialidade viram dois campos com rótulo em cima
+    // (Papel / Estranho, Especialidade / Ocultista), abaixo do nome.
+    const roleField = document.createElement("div");
+    roleField.className = "co-trait-field";
+    roleField.dataset.label = "Papel";
+    moveIfExists(role, roleField);
+    mid.appendChild(roleField);
+
+    const specialtyField = document.createElement("div");
+    specialtyField.className = "co-trait-field";
+    specialtyField.dataset.label = "Especialidade";
+    moveIfExists(specialty, specialtyField);
+    mid.appendChild(specialtyField);
+
+    moveIfExists(resources, right);
+  } else if (kind === "circle") {
+    const nameField = header.querySelector(".charname") ?? header.querySelector("input[name='name']");
+    const chapterRow = header.querySelector(".grid.grid-8col")
+      ?? header.querySelector(".chapterhouse")?.closest("div")
+      ?? header.querySelector("input[name='system.chapterHouse']")?.closest("div");
+    const resources = header.querySelector(".resources");
+
+    moveIfExists(nameField, mid);
+    moveIfExists(chapterRow, mid);
+    moveIfExists(resources, right);
+  }
+
+  // Qualquer coisa que tenha sobrado no header (wrappers vazios, elementos
+  // não previstos) é preservada dentro de .co-header-mid em vez de perdida.
+  Array.from(header.children).forEach((child) => {
+    mid.appendChild(child);
+  });
+
+  header.innerHTML = "";
+  header.appendChild(left);
+  header.appendChild(mid);
+  header.appendChild(right);
+  header.classList.add("co-header-restructured");
+  header.dataset.coRestructured = "true";
+}
+
 function applyCandelaClassic(app, element) {
   if (!isCandelaApplication(app, element)) return;
 
@@ -161,59 +269,165 @@ function applyCandelaClassic(app, element) {
 
   translateCandelaSheet(root);
 
-  if (isCandelaActorSheet(app)) {
+  const isCharacterSheet = isCandelaActorSheet(app);
+  const isCircleSheet = isCandelaCircleSheet(app);
+
+  if (isCharacterSheet || isCircleSheet) {
+    win.classList.add("candela-classico-window");
     root.classList.add("candela-classico-sheet-root");
+    restructureCandelaHeader(app, root, isCircleSheet ? "circle" : "character");
+    coLimparBarraMaximo(root);
+  }
+
+  if (isCharacterSheet) {
     applyLockedSize(app, win);
   }
 }
+
+// ══════════════════════════════════════════════
+//  CADEADO DE TRAVAMENTO DA FICHA
+// ══════════════════════════════════════════════
+
+function coAplicarTravamento(html, travar) {
+  // Inputs FIXOS — bloqueados quando travado (scores das ações)
+  const fixos = html.querySelectorAll([
+    "input.action-value",
+    "input[name$='.max']",
+  ].join(","));
+
+  fixos.forEach(el => {
+    el.readOnly = travar;
+    el.style.pointerEvents = travar ? "none" : "";
+    el.style.opacity = travar ? "0.5" : "";
+    el.style.cursor = travar ? "not-allowed" : "";
+  });
+
+  // Inputs EDITÁVEIS — sempre liberados (impulsos, resistências gastas, marks)
+  const editaveis = html.querySelectorAll([
+    "input.actioncategory-value",
+    "input[name$='.value']",
+    "input[name='name']",
+    "input[name='system.pronouns']",
+  ].join(","));
+
+  editaveis.forEach(el => {
+    el.readOnly = false;
+    el.style.pointerEvents = "";
+    el.style.opacity = "";
+    el.style.cursor = "";
+  });
+}
+
+function coInjetarCadeado(app, html) {
+  // Só para fichas de personagem Character
+  if (app?.actor?.type !== "Character") return;
+
+  const header = html.querySelector(".sheet-header");
+  if (!header) return;
+  if (html.querySelector(".co-lock-btn")) return; // já existe
+
+  const actorId = app?.actor?.id;
+  const locked = coLockState[actorId] ?? false;
+
+  const btn = document.createElement("button");
+  btn.type = "button";
+  btn.className = "co-lock-btn" + (locked ? " locked" : "");
+  btn.title = locked ? "Ficha travada — clique para destravar" : "Clique para travar os valores fixos";
+  btn.innerHTML = `<i class="fa-solid ${locked ? "fa-lock" : "fa-lock-open"}"></i>`;
+
+  header.style.position = "relative";
+  header.appendChild(btn);
+
+  // Aplica estado inicial
+  if (locked) coAplicarTravamento(html, true);
+
+  btn.addEventListener("click", (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    const novoEstado = !coLockState[actorId];
+    coLockState[actorId] = novoEstado;
+
+    btn.classList.toggle("locked", novoEstado);
+    btn.title = novoEstado
+      ? "Ficha travada — clique para destravar"
+      : "Clique para travar os valores fixos";
+
+    const icon = btn.querySelector("i");
+    icon.className = `fa-solid ${novoEstado ? "fa-lock" : "fa-lock-open"}`;
+
+    coAplicarTravamento(html, novoEstado);
+  });
+}
+
+// Fix: última ação (Sentir) não fica cortada
+function coFixSentir(html) {
+  const lista = html.querySelectorAll("ol.actions-list");
+  if (lista.length) {
+    lista[lista.length - 1].style.marginBottom = "48px";
+  }
+}
+
+// ══════════════════════════════════════════════
+//  HOOKS PRINCIPAIS
+// ══════════════════════════════════════════════
 
 Hooks.once("ready", () => {
   console.log("Candela Obscura PT-BR - Ficha Clássica | Tema ativo.");
 });
 
-Hooks.on("renderActorSheet", (app, html) => applyCandelaClassic(app, html));
+Hooks.on("renderActorSheet", (app, html) => {
+  const element = getRoot(html);
+  applyCandelaClassic(app, html);
+  if (element) {
+    coInjetarCadeado(app, element);
+    coFixSentir(element);
+  }
+});
+
 Hooks.on("renderItemSheet", (app, html) => applyCandelaClassic(app, html));
 Hooks.on("renderApplicationV2", (app, element) => applyCandelaClassic(app, element));
 
-// =====================================================================
-// AUTOMAÇÃO ADICIONADA: SUPORTE VISUAL DE ARREMESSO PARA DADOS DOURADOS
-// =====================================================================
+// ══════════════════════════════════════════════
+//  DADO DOURADO — DSN
+// ══════════════════════════════════════════════
+
 Hooks.on('diceSoNiceReady', (dice3d) => {
-    dice3d.addColorset({
-        name: 'candela_gilded',
-        description: 'Candela Obscura - Dado Dourado',
-        category: 'Candela Obscura',
-        foreground: '#FFFFFF', 
-        background: '#D4AF37', 
-        outline: '#8B6508',    
-        edge: '#AA7C11',       
-        texture: 'none'
-    }, "preferred");
+  dice3d.addColorset({
+    name: 'candela_gilded',
+    description: 'Candela Obscura - Dado Dourado',
+    category: 'Candela Obscura',
+    foreground: '#FFFFFF',
+    background: '#D4AF37',
+    outline: '#8B6508',
+    edge: '#AA7C11',
+    texture: 'none'
+  }, "preferred");
 });
 
 Hooks.on('diceSoNiceRollStart', (messageId, diceData) => {
-    const chatMessage = game.messages.get(messageId);
-    if (!chatMessage || !chatMessage.rolls || !diceData.throws || !diceData.throws[0]) return;
+  const chatMessage = game.messages.get(messageId);
+  if (!chatMessage || !chatMessage.rolls || !diceData.throws || !diceData.throws[0]) return;
 
-    let flatDieIndex = 0; 
-    const currentThrow = diceData.throws[0]; 
+  let flatDieIndex = 0;
+  const currentThrow = diceData.throws[0];
 
-    chatMessage.rolls.forEach(roll => {
-        roll.terms.forEach(term => {
-            if (!term.results) return;
+  chatMessage.rolls.forEach(roll => {
+    roll.terms.forEach(term => {
+      if (!term.results) return;
 
-            const isGilded = term.faces === 6 && 
-                             term.options && 
-                             term.options.flavor && 
-                             (term.options.flavor.toLowerCase().includes("dourado") || 
-                              term.options.flavor.toLowerCase().includes("gilded"));
+      const isGilded = term.faces === 6 &&
+        term.options &&
+        term.options.flavor &&
+        (term.options.flavor.toLowerCase().includes("dourado") ||
+         term.options.flavor.toLowerCase().includes("gilded"));
 
-            term.results.forEach(() => {
-                if (isGilded && currentThrow.dice[flatDieIndex]) {
-                    currentThrow.dice[flatDieIndex].colorset = 'candela_gilded';
-                }
-                flatDieIndex++; 
-            });
-        });
+      term.results.forEach(() => {
+        if (isGilded && currentThrow.dice[flatDieIndex]) {
+          currentThrow.dice[flatDieIndex].colorset = 'candela_gilded';
+        }
+        flatDieIndex++;
+      });
     });
+  });
 });
