@@ -310,18 +310,18 @@
   flex-direction: row !important;
   align-items: center !important;
   justify-content: space-between !important;
-  gap: 6px !important;
+  gap: 8px !important;
   background: var(--co-card) !important;
   border: 1px solid var(--co-border-dim) !important;
   border-radius: 4px !important;
-  padding: 6px 8px !important;
+  padding: 7px 10px !important;
   width: 100% !important;
   box-sizing: border-box !important;
 }
 .candela-classico-window .mark .resource-label,
 .candela-classico-window .resource .resource-label {
   font-family: 'Cinzel', serif !important;
-  font-size: 9px !important;
+  font-size: 10px !important;
   letter-spacing: 0.08em !important;
   color: var(--co-gold-dim) !important;
   text-transform: uppercase !important;
@@ -333,13 +333,13 @@
   display: flex !important;
   flex-direction: row !important;
   align-items: center !important;
-  gap: 3px !important;
+  gap: 6px !important;
   flex-shrink: 0 !important;
 }
 .candela-classico-window .mark-content input[type="number"],
 .candela-classico-window .resource-content input[type="number"] {
   font-family: 'Cinzel', serif !important;
-  font-size: 15px !important;
+  font-size: 16px !important;
   font-weight: 700 !important;
   color: var(--co-gold) !important;
   background: var(--co-bg) !important;
@@ -347,8 +347,8 @@
   border-radius: 3px !important;
   text-align: center !important;
   padding: 0 !important;
-  width: 26px !important;
-  height: 26px !important;
+  width: 30px !important;
+  height: 30px !important;
   flex-shrink: 0 !important;
   -moz-appearance: textfield !important;
 }
@@ -361,10 +361,11 @@
 .candela-classico-window .mark-content span[name$=".max"],
 .candela-classico-window .resource-content span.flexrow {
   font-family: 'Cinzel', serif !important;
-  font-size: 12px !important;
-  font-weight: 600 !important;
+  font-size: 17px !important;
+  font-weight: 700 !important;
   color: var(--co-gold-dim) !important;
   flex-shrink: 0 !important;
+  text-align: center !important;
 }
 
 /* ══════════════════════════════════════════════
@@ -955,7 +956,7 @@
   border-bottom: 2px solid var(--co-border-dim) !important;
   box-sizing: border-box !important;
   height: auto !important;
-  min-height: 150px !important;
+  min-height: 196px !important;
   max-height: none !important;
   overflow: visible !important;
   position: relative !important;
@@ -981,48 +982,62 @@
   box-shadow: 0 0 0 1px var(--co-border-dim), 0 6px 20px rgba(0,0,0,0.8) !important;
 }
 
-/* Papel (Estranho) e Especialidade (Ocultista) — editáveis pelo jogador */
-.candela-classico-window .co-header-photo .role,
-.candela-classico-window .co-header-photo .specialty {
-  /* Anula qualquer position:absolute herdado do sistema */
-  position: static !important;
-  top: auto !important; left: auto !important; right: auto !important; bottom: auto !important;
-  order: initial !important;
-  flex: 0 0 auto !important;
-  width: 100% !important;
-  box-sizing: border-box !important;
-  margin: 0 !important;
-  text-align: center !important;
+/* Papel e Especialidade — agora ficam como dois campos abaixo do
+   nome/pronomes, com o rótulo (PAPEL / ESPECIALIDADE) em cima e o
+   texto do jogador (Estranho / Ocultista) embaixo. */
+.candela-classico-window .co-trait-field {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 2px !important;
+}
+.candela-classico-window .co-trait-field::before {
+  content: attr(data-label) !important;
   font-family: 'Cinzel', serif !important;
-  font-size: 10px !important;
+  font-size: 9px !important;
   font-weight: 600 !important;
   letter-spacing: 0.08em !important;
   text-transform: uppercase !important;
+  color: var(--co-gold-dim) !important;
+}
+.candela-classico-window .co-trait-field .role,
+.candela-classico-window .co-trait-field .specialty {
+  position: static !important;
+  top: auto !important; left: auto !important; right: auto !important; bottom: auto !important;
+  order: initial !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+  margin: 0 !important;
+  text-align: left !important;
+  font-family: 'Crimson Text', Georgia, serif !important;
+  font-size: 13px !important;
+  font-weight: 400 !important;
+  font-style: italic !important;
+  letter-spacing: 0.02em !important;
+  text-transform: none !important;
   white-space: nowrap !important;
   overflow: hidden !important;
   text-overflow: ellipsis !important;
+  color: var(--co-text) !important;
   background: transparent !important;
   border: none !important;
-  border-bottom: 1px solid transparent !important;
+  border-bottom: 1px solid var(--co-border-dim) !important;
   border-radius: 0 !important;
   padding: 2px 0 !important;
   cursor: text !important;
   outline: none !important;
   transition: border-color 0.15s !important;
 }
-.candela-classico-window .co-header-photo .role { color: var(--co-gold-dim) !important; }
-.candela-classico-window .co-header-photo .specialty { color: var(--co-muted) !important; }
-.candela-classico-window .co-header-photo .role:hover,
-.candela-classico-window .co-header-photo .specialty:hover {
-  border-bottom-color: var(--co-border-dim) !important;
+.candela-classico-window .co-trait-field .role:hover,
+.candela-classico-window .co-trait-field .specialty:hover {
+  border-bottom-color: var(--co-border) !important;
 }
-.candela-classico-window .co-header-photo .role:focus,
-.candela-classico-window .co-header-photo .specialty:focus {
+.candela-classico-window .co-trait-field .role:focus,
+.candela-classico-window .co-trait-field .specialty:focus {
   border-bottom-color: var(--co-border) !important;
   color: var(--co-gold) !important;
 }
-.candela-classico-window .co-header-photo .role::placeholder,
-.candela-classico-window .co-header-photo .specialty::placeholder {
+.candela-classico-window .co-trait-field .role::placeholder,
+.candela-classico-window .co-trait-field .specialty::placeholder {
   color: var(--co-muted) !important;
   text-transform: none !important;
   font-style: italic !important;
@@ -1033,7 +1048,7 @@
   min-width: 0 !important;
   display: flex !important;
   flex-direction: column !important;
-  gap: 6px !important;
+  gap: 9px !important;
   justify-content: flex-start !important;
 }
 .candela-classico-window .co-header-mid > * {
@@ -1098,7 +1113,7 @@
 }
 
 .candela-classico-window .co-header-right {
-  flex: 0 0 148px !important;
+  flex: 0 0 158px !important;
   display: flex !important;
   flex-direction: column !important;
   gap: 7px !important;
