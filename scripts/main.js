@@ -32,9 +32,8 @@ const CANDELA_PTBR_REPLACEMENTS = new Map([
   ["attune, channel, reveal", "sintonizar, canalizar, revelar"]
 ]);
 
-const CANDELA_CLASSICO_SIZE = Object.freeze({ width: 680, height: 730 });
+const CANDELA_CLASSICO_SIZE = Object.freeze({ width: 680, height: 820 });
 const LOCKED_WINDOWS = new WeakSet();
-let lockTimer = null;
 
 // Estado do cadeado por ator
 const coLockState = {};
@@ -117,50 +116,24 @@ function translateCandelaSheet(element) {
 function applyLockedSize(app, windowElement) {
   if (!windowElement || !isCandelaActorSheet(app)) return;
 
-  const { width, height } = CANDELA_CLASSICO_SIZE;
   windowElement.classList.add("candela-classico-window", "candela-classico-locked");
-  windowElement.dataset.candelaLockedWidth = String(width);
-  windowElement.dataset.candelaLockedHeight = String(height);
 
+  // A largura continua travada (o layout em colunas foi feito sob medida
+  // pra essa largura, via CSS !important — não precisa reforçar aqui).
+  // A altura agora é só um valor INICIAL, aplicado uma única vez quando a
+  // ficha deste ator é aberta. Depois disso o jogador pode arrastar a
+  // borda de baixo pra ajustar manualmente, caso o conteúdo não caiba
+  // perfeitamente (evita ficar cortando conteúdo sem ter como corrigir).
+  if (LOCKED_WINDOWS.has(windowElement)) return;
+  LOCKED_WINDOWS.add(windowElement);
+
+  const { width, height } = CANDELA_CLASSICO_SIZE;
   try {
-    if (app?.options) app.options.resizable = false;
+    if (app?.options) app.options.resizable = true;
     if (typeof app?.setPosition === "function") app.setPosition({ width, height });
   } catch (err) {
     console.warn("Candela Clássico | Não foi possível aplicar setPosition.", err);
   }
-
-  Object.assign(windowElement.style, {
-    width: `${width}px`,
-    minWidth: `${width}px`,
-    maxWidth: `${width}px`,
-    height: `${height}px`,
-    minHeight: `${height}px`,
-    maxHeight: `${height}px`,
-    resize: "none"
-  });
-
-  windowElement.querySelectorAll(".window-resizable-handle, .resize-handle, [data-resize-handle]").forEach((handle) => {
-    handle.remove();
-  });
-
-  if (LOCKED_WINDOWS.has(windowElement)) return;
-  LOCKED_WINDOWS.add(windowElement);
-
-  const observer = new MutationObserver(() => {
-    if (lockTimer) return;
-    lockTimer = window.setTimeout(() => {
-      lockTimer = null;
-      if (!document.body.contains(windowElement)) {
-        observer.disconnect();
-        return;
-      }
-      if (windowElement.offsetWidth !== width || windowElement.offsetHeight !== height) {
-        applyLockedSize(app, windowElement);
-      }
-    }, 80);
-  });
-
-  observer.observe(windowElement, { attributes: true, attributeFilter: ["style", "class"] });
 }
 
 // ══════════════════════════════════════════════
